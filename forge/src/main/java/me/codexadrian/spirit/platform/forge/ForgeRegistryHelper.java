@@ -25,11 +25,18 @@ import java.util.function.Supplier;
 public class ForgeRegistryHelper implements IRegistryHelper {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Spirit.MODID);
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Spirit.MODID);
-    public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, Spirit.MODID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Spirit.MODID);
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Spirit.MODID);
-    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, Spirit.MODID);
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Spirit.MODID);
+    public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister
+            .create(ForgeRegistries.ENCHANTMENTS, Spirit.MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister
+            .create(ForgeRegistries.BLOCK_ENTITY_TYPES, Spirit.MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES,
+            Spirit.MODID);
+    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister
+            .create(ForgeRegistries.RECIPE_TYPES, Spirit.MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister
+            .create(ForgeRegistries.RECIPE_SERIALIZERS, Spirit.MODID);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister
+            .create(net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB, Spirit.MODID);
 
     @Override
     public <T extends Item> Supplier<T> registerItem(String id, Supplier<T> item) {
@@ -42,12 +49,14 @@ public class ForgeRegistryHelper implements IRegistryHelper {
     }
 
     @Override
-    public <E extends BlockEntity, T extends BlockEntityType<E>> Supplier<T> registerBlockEntity(String id, Supplier<T> item) {
+    public <E extends BlockEntity, T extends BlockEntityType<E>> Supplier<T> registerBlockEntity(String id,
+            Supplier<T> item) {
         return BLOCK_ENTITIES.register(id, item);
     }
 
     @Override
-    public <E extends BlockEntity> BlockEntityType<E> createBlockEntityType(BlockEntityFactory<E> factory, Block... blocks) {
+    public <E extends BlockEntity> BlockEntityType<E> createBlockEntityType(BlockEntityFactory<E> factory,
+            Block... blocks) {
         return BlockEntityType.Builder.of(factory::create, blocks).build(null);
     }
 
@@ -57,27 +66,31 @@ public class ForgeRegistryHelper implements IRegistryHelper {
     }
 
     @Override
-    public <T extends Entity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory, MobCategory group, float width, float height) {
+    public <T extends Entity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory,
+            MobCategory group, float width, float height) {
         return ENTITIES.register(name, () -> EntityType.Builder.of(factory, group).sized(width, height).build(name));
     }
 
     @Override
-    public <R extends Recipe<?>, T extends RecipeType<R>> Supplier<T> registerRecipeType(String name, Supplier<T> recipe) {
+    public <R extends Recipe<?>, T extends RecipeType<R>> Supplier<T> registerRecipeType(String name,
+            Supplier<T> recipe) {
         return RECIPE_TYPES.register(name, recipe);
     }
 
     @Override
-    public <R extends Recipe<?>, T extends RecipeSerializer<R>> Supplier<T> registerRecipeSerializer(String name, Supplier<T> recipe) {
+    public <R extends Recipe<?>, T extends RecipeSerializer<R>> Supplier<T> registerRecipeSerializer(String name,
+            Supplier<T> recipe) {
         return RECIPE_SERIALIZERS.register(name, recipe);
     }
 
     @Override
-    public CreativeModeTab registerCreativeTab(ResourceLocation tab, Supplier<ItemStack> supplier) {
-        return new CreativeModeTab(tab.getNamespace() + "." + tab.getPath()) {
-            @Override
-            public @NotNull ItemStack makeIcon() {
-                return supplier.get();
-            }
-        };
+    public Supplier<CreativeModeTab> registerCreativeTab(ResourceLocation tab, Supplier<ItemStack> supplier,
+            CreativeModeTab.DisplayItemsGenerator displayItems) {
+        return CREATIVE_MODE_TABS.register(tab.getPath(), () -> CreativeModeTab.builder()
+                .title(net.minecraft.network.chat.Component
+                        .translatable("itemGroup." + tab.getNamespace() + "." + tab.getPath()))
+                .icon(supplier)
+                .displayItems(displayItems)
+                .build());
     }
 }

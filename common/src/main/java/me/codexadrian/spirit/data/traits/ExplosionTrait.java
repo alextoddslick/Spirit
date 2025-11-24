@@ -13,18 +13,20 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public record ExplosionTrait(float power, Explosion.BlockInteraction blockInteraction) implements MobTrait<ExplosionTrait> {
+public record ExplosionTrait(float power, Level.ExplosionInteraction blockInteraction)
+        implements MobTrait<ExplosionTrait> {
     public static final Serializer SERIALIZER = new Serializer();
 
     @Override
     public void onHitEntity(ToolType type, Entity attacker, Entity victim) {
-        victim.level.explode(null, victim.getX(), victim.getY(), victim.getZ(), power(), blockInteraction());
+        victim.level().explode(null, victim.getX(), victim.getY(), victim.getZ(), power(), blockInteraction());
     }
 
     @Override
     public void onHitBlock(ToolType type, Entity entity, BlockState blockState, Level level, BlockPos pos) {
-        entity.level.explode(null, pos.getX(), pos.getY(), pos.getZ(), power(), blockInteraction());
-        if(type == ToolType.BOW) entity.discard();
+        entity.level().explode(null, pos.getX(), pos.getY(), pos.getZ(), power(), blockInteraction());
+        if (type == ToolType.BOW)
+            entity.discard();
     }
 
     @Override
@@ -35,8 +37,10 @@ public record ExplosionTrait(float power, Explosion.BlockInteraction blockIntera
     private static class Serializer implements MobTraitSerializer<ExplosionTrait> {
         public static final Codec<ExplosionTrait> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.FLOAT.fieldOf("power").forGetter(ExplosionTrait::power),
-                Codec.STRING.xmap(Explosion.BlockInteraction::valueOf, Explosion.BlockInteraction::toString).fieldOf("interaction").orElse(Explosion.BlockInteraction.NONE).forGetter(ExplosionTrait::blockInteraction)
-        ).apply(instance, ExplosionTrait::new));
+                Codec.STRING.xmap(Level.ExplosionInteraction::valueOf, Level.ExplosionInteraction::toString)
+                        .fieldOf("interaction").orElse(Level.ExplosionInteraction.NONE)
+                        .forGetter(ExplosionTrait::blockInteraction))
+                .apply(instance, ExplosionTrait::new));
 
         @Override
         public ResourceLocation id() {

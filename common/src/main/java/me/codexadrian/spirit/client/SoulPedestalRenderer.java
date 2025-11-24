@@ -1,7 +1,8 @@
 package me.codexadrian.spirit.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
+import com.mojang.math.Axis;
 import me.codexadrian.spirit.blocks.blockentity.SoulPedestalBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -22,9 +23,11 @@ public class SoulPedestalRenderer implements BlockEntityRenderer<SoulPedestalBlo
     }
 
     @Override
-    public void render(SoulPedestalBlockEntity blockEntity, float partialTicks, @NotNull PoseStack matrixStack, @NotNull MultiBufferSource multiBufferSource, int i, int j) {
-        if (!blockEntity.hasLevel()) return;
-        if(blockEntity.type != null) {
+    public void render(SoulPedestalBlockEntity blockEntity, float partialTicks, @NotNull PoseStack matrixStack,
+            @NotNull MultiBufferSource multiBufferSource, int i, int j) {
+        if (!blockEntity.hasLevel())
+            return;
+        if (blockEntity.type != null) {
             var entity = blockEntity.getOrCreateEntity();
             entity.tickCount = blockEntity.age;
             entity.tick();
@@ -38,10 +41,11 @@ public class SoulPedestalRenderer implements BlockEntityRenderer<SoulPedestalBlo
             matrixStack.translate(0.5D, .75D, 0.5D);
             var degrees = blockEntity.age;
             var oldTick = Math.max(blockEntity.age - 1, 0);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, oldTick, degrees) % 360));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, oldTick, degrees) % 360));
             matrixStack.scale(g, g, g);
-            matrixStack.translate(0, Math.sin(blockEntity.age * .1) * 0.05 + 0.05,0);
-            Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, matrixStack, multiBufferSource, i);
+            matrixStack.translate(0, Math.sin(blockEntity.age * .1) * 0.05 + 0.05, 0);
+            Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks,
+                    matrixStack, multiBufferSource, i);
             matrixStack.popPose();
         }
     }

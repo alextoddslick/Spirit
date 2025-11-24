@@ -1,9 +1,10 @@
+
 package me.codexadrian.spirit.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.codexadrian.spirit.registry.SpiritMisc;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -18,9 +19,9 @@ public record MobTraitData(ResourceLocation id, EntityType<?> entity, List<MobTr
     public static Codec<MobTraitData> codec(ResourceLocation id) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 RecordCodecBuilder.point(id),
-                Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(MobTraitData::entity),
-                MobTraitRegistry.CODEC.listOf().fieldOf("traits").forGetter(MobTraitData::traits)
-        ).apply(instance, MobTraitData::new));
+                BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(MobTraitData::entity),
+                MobTraitRegistry.CODEC.listOf().fieldOf("traits").forGetter(MobTraitData::traits))
+                .apply(instance, MobTraitData::new));
     }
 
     @Override
@@ -39,7 +40,8 @@ public record MobTraitData(ResourceLocation id, EntityType<?> entity, List<MobTr
     }
 
     public static Optional<MobTraitData> getEffectForEntity(EntityType<?> entityType, RecipeManager manager) {
-        return manager.getAllRecipesFor(SpiritMisc.MOB_TRAIT.get()).stream().filter(recipe -> recipe.entity.equals(entityType)).findFirst();
+        return manager.getAllRecipesFor(SpiritMisc.MOB_TRAIT.get()).stream()
+                .filter(recipe -> recipe.entity.equals(entityType)).findFirst();
     }
 
     @SuppressWarnings("ConstantConditions")

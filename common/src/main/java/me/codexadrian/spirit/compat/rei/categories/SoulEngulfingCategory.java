@@ -2,8 +2,9 @@ package me.codexadrian.spirit.compat.rei.categories;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import net.minecraft.client.gui.GuiGraphics;
+import org.joml.Vector3f;
+import com.mojang.math.Axis;
 import me.codexadrian.spirit.Spirit;
 import me.codexadrian.spirit.compat.jei.multiblock.SoulEngulfingRecipeWrapper;
 import me.codexadrian.spirit.compat.rei.displays.SoulEngulfingDisplay;
@@ -36,7 +37,8 @@ import java.util.List;
 
 public class SoulEngulfingCategory implements DisplayCategory<SoulEngulfingDisplay> {
 
-    public static final ResourceLocation GUI_BACKGROUND = new ResourceLocation(Spirit.MODID, "textures/gui/soul_engulfing.png");
+    public static final ResourceLocation GUI_BACKGROUND = new ResourceLocation(Spirit.MODID,
+            "textures/gui/soul_engulfing.png");
     public static final ResourceLocation ID = new ResourceLocation(Spirit.MODID, "soul_engulfing");
     public static final CategoryIdentifier<SoulEngulfingDisplay> RECIPE = CategoryIdentifier.of(ID);
     private static final double OFFSET = Math.sqrt(512) * .5;
@@ -88,16 +90,17 @@ public class SoulEngulfingCategory implements DisplayCategory<SoulEngulfingDispl
         widgets.add(Widgets.createSlot(new Point(startX + 133, startY + 83)).markOutput().entries(display.getOutput()));
         widgets.add(new DelegateWidget(Widgets.noOp()) {
             @Override
-            public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-                stack.pushPose();
-                stack.translate(startX, startY, 0);
-                draw(display.getWrapper(), stack, mouseX, mouseY);
-                stack.popPose();
+            public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+                guiGraphics.pose().pushPose();
+                guiGraphics.pose().translate(startX, startY, 0);
+                draw(display.getWrapper(), guiGraphics, mouseX, mouseY);
+                guiGraphics.pose().popPose();
                 List<Component> strings = getTooltipStrings(display.getWrapper(), mouseX - startX, mouseY - startY);
                 if (!strings.isEmpty()) {
                     Tooltip.create(new Point(mouseX, mouseY), strings).queue();
                 }
             }
+
             public Rectangle getBounds() {
                 return new Rectangle(2, 26, 103, 74);
             }
@@ -109,18 +112,19 @@ public class SoulEngulfingCategory implements DisplayCategory<SoulEngulfingDispl
 
             @Override
             public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-                if(button == 1) {
+                if (button == 1) {
                     xOffset += deltaX * .5;
                     yOffset += deltaY * .5;
                 }
                 return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
             }
         });
-        widgets.add(Widgets.wrapVanillaWidget(new PlainTextButton(startX + 140, startY + 2, 20, 20, Component.literal("♺"), button -> {
-            xOffset = 0;
-            yOffset = 0;
-            scale = 10 - (display.getWrapper().getMultiblock().pattern().get(0).size() * 2 - 6);
-        }, Minecraft.getInstance().font)));
+        widgets.add(Widgets.wrapVanillaWidget(
+                new PlainTextButton(startX + 140, startY + 2, 20, 20, Component.literal("♺"), button -> {
+                    xOffset = 0;
+                    yOffset = 0;
+                    scale = 10 - (display.getWrapper().getMultiblock().pattern().get(0).size() * 2 - 6);
+                }, Minecraft.getInstance().font)));
         return widgets;
     }
 
@@ -130,48 +134,53 @@ public class SoulEngulfingCategory implements DisplayCategory<SoulEngulfingDispl
         Collections.reverse(tempBlockMap);
         if (mouseX > 1 && mouseX < 105 && mouseY > 27 && mouseY < 99) {
             for (int i = 0; i < tempBlockMap.size(); i++) {
-                components.add(Component.translatable("spirit.jei.soul_engulfing.layer", (i + 1)).withStyle(ChatFormatting.DARK_GRAY));
+                components.add(Component.translatable("spirit.jei.soul_engulfing.layer", (i + 1))
+                        .withStyle(ChatFormatting.DARK_GRAY));
                 for (SoulEngulfingRecipeWrapper.BlockMap blockMap : tempBlockMap.get(i)) {
-                    components.add(Component.literal("  ").append(blockMap.blocks().getCurrent().getName()).withStyle(ChatFormatting.GRAY));
+                    components.add(Component.literal("  ").append(blockMap.blocks().getCurrent().getName())
+                            .withStyle(ChatFormatting.GRAY));
                 }
             }
             if (recipe.getRecipe().breaksBlocks())
-                components.add(Component.translatable("spirit.jei.soul_engulfing.consumes").withStyle(ChatFormatting.RED));
+                components.add(
+                        Component.translatable("spirit.jei.soul_engulfing.consumes").withStyle(ChatFormatting.RED));
         }
         if (mouseX > 107 && mouseX < 129 && mouseY > 83 && mouseY < 98) {
-            components.add(Component.translatable("spirit.jei.soul_engulfing.duration", recipe.getRecipe().duration() * 0.05));
+            components.add(
+                    Component.translatable("spirit.jei.soul_engulfing.duration", recipe.getRecipe().duration() * 0.05));
         }
         return components;
     }
 
-    public void draw(SoulEngulfingRecipeWrapper recipe, PoseStack stack, double mouseX, double mouseY) {
+    public void draw(SoulEngulfingRecipeWrapper recipe, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         long l = System.currentTimeMillis();
 
         if (lastTime + 1500 <= l && !Screen.hasShiftDown()) {
             recipe.tick();
             lastTime = l;
         }
-        try (CloseableScissors ignored = Widget.scissor(stack, new Rectangle(2, 26, 103, 74))) {
-            stack.pushPose();
+        try (CloseableScissors ignored = Widget.scissor(guiGraphics, new Rectangle(2, 26, 103, 74))) {
+            guiGraphics.pose().pushPose();
             Lighting.setupForFlatItems();
             float scaled = 1.6F * scale;
-            double width = recipe.getMultiblock().pattern().get(0).size() * OFFSET * (scaled/16f);
-            double height = recipe.blockMap.size() * 16 + (66 - recipe.blockMap.size() * OFFSET  * (scaled/16f));
-            stack.translate(52 - width + xOffset, height + yOffset - ((16 - scaled)/16 * 48), 100);
-            stack.scale(scaled, -scaled, 1);
-            stack.mulPose(Vector3f.XP.rotationDegrees(45));
-            stack.mulPose(Vector3f.YP.rotationDegrees(45));
+            double width = recipe.getMultiblock().pattern().get(0).size() * OFFSET * (scaled / 16f);
+            double height = recipe.blockMap.size() * 16 + (66 - recipe.blockMap.size() * OFFSET * (scaled / 16f));
+            guiGraphics.pose().translate(52 - width + xOffset, height + yOffset - ((16 - scaled) / 16 * 48), 100);
+            guiGraphics.pose().scale(scaled, -scaled, 1);
+            guiGraphics.pose().mulPose(Axis.XP.rotationDegrees(45));
+            guiGraphics.pose().mulPose(Axis.YP.rotationDegrees(45));
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
             for (int i = 0; i < Math.min(recipe.blockMap.size(), recipe.layer); i++) {
                 for (SoulEngulfingRecipeWrapper.BlockMap blockMap : recipe.blockMap.get(i)) {
-                    stack.pushPose();
-                    stack.translate(blockMap.pos().getX(), blockMap.pos().getY(), blockMap.pos().getZ());
-                    dispatcher.renderSingleBlock(blockMap.blocks().getCurrent().defaultBlockState(), stack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
-                    stack.popPose();
+                    guiGraphics.pose().pushPose();
+                    guiGraphics.pose().translate(blockMap.pos().getX(), blockMap.pos().getY(), blockMap.pos().getZ());
+                    dispatcher.renderSingleBlock(blockMap.blocks().getCurrent().defaultBlockState(), guiGraphics.pose(),
+                            bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+                    guiGraphics.pose().popPose();
                 }
             }
             bufferSource.endBatch();
-            stack.popPose();
+            guiGraphics.pose().popPose();
             Lighting.setupFor3DItems();
         }
     }
@@ -185,11 +194,11 @@ public class SoulEngulfingCategory implements DisplayCategory<SoulEngulfingDispl
             recipe.layer = Math.max(recipe.layer - 1, 0);
             return true;
         }
-        if(keyCode == InputConstants.KEY_MINUS) {
+        if (keyCode == InputConstants.KEY_MINUS) {
             scale = Math.max(scale - 1, 1);
             return true;
         }
-        if(keyCode == InputConstants.KEY_EQUALS) {
+        if (keyCode == InputConstants.KEY_EQUALS) {
             scale = Math.min(scale + 1, 20);
             return true;
         }

@@ -32,15 +32,20 @@ public interface IRegistryHelper {
 
     <T extends Enchantment> Supplier<T> registerEnchantment(String id, Supplier<T> enchantment);
 
-    <T extends Entity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory, MobCategory group, float width, float height);
+    <T extends Entity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory,
+            MobCategory group, float width, float height);
 
     <R extends Recipe<?>, T extends RecipeType<R>> Supplier<T> registerRecipeType(String name, Supplier<T> recipe);
-    <R extends Recipe<?>, T extends RecipeSerializer<R>> Supplier<T> registerRecipeSerializer(String name, Supplier<T> recipe);
+
+    <R extends Recipe<?>, T extends RecipeSerializer<R>> Supplier<T> registerRecipeSerializer(String name,
+            Supplier<T> recipe);
 
     @FunctionalInterface
     interface BlockEntityFactory<T extends BlockEntity> {
-        @NotNull T create(BlockPos blockPos, BlockState blockState);
+        @NotNull
+        T create(BlockPos blockPos, BlockState blockState);
     }
 
-    CreativeModeTab registerCreativeTab(ResourceLocation tab, Supplier<ItemStack> supplier);
+    Supplier<CreativeModeTab> registerCreativeTab(ResourceLocation tab, Supplier<ItemStack> supplier,
+            CreativeModeTab.DisplayItemsGenerator displayItems);
 }

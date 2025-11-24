@@ -1,7 +1,8 @@
 package me.codexadrian.spirit.compat.jei.ingredients;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
+import com.mojang.math.Axis;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -14,19 +15,22 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
- * This class was largely inspired by or taken from the Resourceful Bees repository with
+ * This class was largely inspired by or taken from the Resourceful Bees
+ * repository with
  * the expressed permission from one of their developers.
+ * 
  * @author Team Resourceful
  */
 public class EntityRenderer implements IIngredientRenderer<EntityIngredient> {
 
     @Override
-    public void render(@NotNull PoseStack stack, @NotNull EntityIngredient ingredient) {
+    public void render(net.minecraft.client.gui.GuiGraphics guiGraphics, @NotNull EntityIngredient ingredient) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && ingredient.getEntity() != null) {
             int y = 0;
-            renderEntity(stack, ingredient.getEntity(), mc.level, -2, y, ingredient.getRotation(), 1);
+            renderEntity(guiGraphics.pose(), ingredient.getEntity(), mc.level, -2, y, ingredient.getRotation(), 1);
         }
     }
 
@@ -39,8 +43,10 @@ public class EntityRenderer implements IIngredientRenderer<EntityIngredient> {
         return tooltip;
     }
 
-    public static void renderEntity(PoseStack matrixStack, Entity entity, Level world, float x, float y, float rotation, float renderScale) {
-        if (world == null) return;
+    public static void renderEntity(PoseStack matrixStack, Entity entity, Level world, float x, float y, float rotation,
+            float renderScale) {
+        if (world == null)
+            return;
         Minecraft mc = Minecraft.getInstance();
 
         if (mc.player != null) {
@@ -49,13 +55,14 @@ public class EntityRenderer implements IIngredientRenderer<EntityIngredient> {
             matrixStack.pushPose();
             matrixStack.translate(14, 20 * renderScale + 4, 0.5);
             matrixStack.translate(x, y, 1);
-            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
+            matrixStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
             matrixStack.translate(0, 0, 100);
-            matrixStack.scale(- scaledSize * renderScale, scaledSize * renderScale, 30);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(rotation));
+            matrixStack.scale(-scaledSize * renderScale, scaledSize * renderScale, 30);
+            matrixStack.mulPose(Axis.YP.rotationDegrees(rotation));
             EntityRenderDispatcher entityrenderermanager = mc.getEntityRenderDispatcher();
             MultiBufferSource.BufferSource renderTypeBuffer = mc.renderBuffers().bufferSource();
-            entityrenderermanager.render(entity, 0, 0, 0.0D, mc.getFrameTime(), 1, matrixStack, renderTypeBuffer, 15728880);
+            entityrenderermanager.render(entity, 0, 0, 0.0D, mc.getFrameTime(), 1, matrixStack, renderTypeBuffer,
+                    15728880);
             renderTypeBuffer.endBatch();
             matrixStack.popPose();
         }

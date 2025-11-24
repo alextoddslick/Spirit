@@ -52,24 +52,49 @@ public class SoulCageCategory implements DisplayCategory<TierDisplay> {
     public List<Widget> setupDisplay(TierDisplay display, Rectangle bounds) {
         List<Widget> widgets = new ArrayList<>();
         widgets.add(Widgets.createRecipeBase(bounds));
-        widgets.add(Widgets.createDrawableWidget((helper, stack, mouseX, mouseY, delta) -> {
-            stack.pushPose();
-            stack.translate(bounds.x + 4, bounds.y + 4, 0);
+        widgets.add(Widgets.createDrawableWidget((guiGraphics, mouseX, mouseY, delta) -> {
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(bounds.x + 4, bounds.y + 4, 0);
             Tier recipe = display.tier();
             Font font = Minecraft.getInstance().font;
-            font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.tier_prefix", Component.translatable(recipe.displayName())), 5, 5, 0x00a8ba);
-            font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.required_souls", recipe.requiredSouls()), 5, 17, 0x373737);
-            font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.spawn_delay", recipe.minSpawnDelay(), recipe.maxSpawnDelay()), 5, 29, 0x373737);
-            font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.spawn_count", recipe.spawnCount()), 5, 41, 0x373737);
-            font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.spawn_range", recipe.spawnRange()), 5, 53, 0x373737);
-            if (recipe.nearbyRange() == -1) font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.player_nearby_not_required"), 5, 65, 0x373737);
-            else font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.player_nearby", recipe.nearbyRange()), 5, 65, 0x373737);
-            if (recipe.redstoneControlled()) font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.redstone_controlled_true"), 5, 77, 0x373737);
-            else font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.redstone_controlled_false"), 5, 77, 0x373737);
+            guiGraphics.drawString(font, Component.translatable("spirit.jei.soul_cage_info.tier_prefix",
+                    Component.translatable(recipe.displayName())), 5, 5, 0x00a8ba, false);
+            guiGraphics.drawString(font,
+                    Component.translatable("spirit.jei.soul_cage_info.required_souls", recipe.requiredSouls()), 5, 17,
+                    0x373737, false);
+            guiGraphics.drawString(font, Component.translatable("spirit.jei.soul_cage_info.spawn_delay",
+                    recipe.minSpawnDelay(), recipe.maxSpawnDelay()), 5, 29, 0x373737, false);
+            guiGraphics.drawString(font,
+                    Component.translatable("spirit.jei.soul_cage_info.spawn_count", recipe.spawnCount()), 5, 41,
+                    0x373737, false);
+            guiGraphics.drawString(font,
+                    Component.translatable("spirit.jei.soul_cage_info.spawn_range", recipe.spawnRange()), 5, 53,
+                    0x373737, false);
+            if (recipe.nearbyRange() == -1)
+                guiGraphics.drawString(font,
+                        Component.translatable("spirit.jei.soul_cage_info.player_nearby_not_required"), 5, 65, 0x373737,
+                        false);
+            else
+                guiGraphics.drawString(font,
+                        Component.translatable("spirit.jei.soul_cage_info.player_nearby", recipe.nearbyRange()), 5, 65,
+                        0x373737, false);
             if (recipe.redstoneControlled())
-                font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.ignored_spawn_conditions_true"), 5, 89, 0x373737);
-            else font.draw(stack, Component.translatable("spirit.jei.soul_cage_info.ignored_spawn_conditions_false"), 5, 89, 0x373737);
-            stack.popPose();
+                guiGraphics.drawString(font,
+                        Component.translatable("spirit.jei.soul_cage_info.redstone_controlled_true"), 5, 77, 0x373737,
+                        false);
+            else
+                guiGraphics.drawString(font,
+                        Component.translatable("spirit.jei.soul_cage_info.redstone_controlled_false"), 5, 77, 0x373737,
+                        false);
+            if (recipe.redstoneControlled())
+                guiGraphics.drawString(font,
+                        Component.translatable("spirit.jei.soul_cage_info.ignored_spawn_conditions_true"), 5, 89,
+                        0x373737, false);
+            else
+                guiGraphics.drawString(font,
+                        Component.translatable("spirit.jei.soul_cage_info.ignored_spawn_conditions_false"), 5, 89,
+                        0x373737, false);
+            guiGraphics.pose().popPose();
         }));
 
         return widgets;

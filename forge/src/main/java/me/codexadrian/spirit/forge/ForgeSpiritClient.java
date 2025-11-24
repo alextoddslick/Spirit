@@ -30,10 +30,9 @@ public class ForgeSpiritClient {
     @SubscribeEvent
     public static void onShadersRegistered(RegisterShadersEvent event) throws IOException {
         event.registerShader(new ShaderInstance(
-                event.getResourceManager(),
+                event.getResourceProvider(),
                 new ResourceLocation("rendertype_entity_corrupted"),
-                DefaultVertexFormat.BLOCK
-        ), shader -> ForgeSoulShader.rendertypeTranslucentShader = shader);
+                DefaultVertexFormat.BLOCK), shader -> ForgeSoulShader.rendertypeTranslucentShader = shader);
     }
 
     @SubscribeEvent

@@ -14,7 +14,7 @@ public interface SyncedData extends Recipe<Container> {
     }
 
     @Override
-    default ItemStack assemble(@NotNull Container container) {
+    default ItemStack assemble(@NotNull Container container, net.minecraft.core.RegistryAccess registryAccess) {
         return ItemStack.EMPTY;
     }
 
@@ -24,7 +24,7 @@ public interface SyncedData extends Recipe<Container> {
     }
 
     @Override
-    default ItemStack getResultItem() {
+    default ItemStack getResultItem(net.minecraft.core.RegistryAccess registryAccess) {
         return ItemStack.EMPTY;
     }
 }

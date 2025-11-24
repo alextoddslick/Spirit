@@ -8,6 +8,7 @@ import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
@@ -32,7 +33,8 @@ public class SoulEngulfingDisplay implements Display {
         var items = new ArrayList<ItemStack>();
         var blocks = recipe.input().multiblock().keys().values();
         var holderSets = blocks.stream().flatMap(predicate -> {
-            if (predicate.blocks().isPresent()) return predicate.blocks().get().stream();
+            if (predicate.blocks().isPresent())
+                return predicate.blocks().get().stream();
             return Stream.of();
         }).toList();
         for (Holder<Block> holderSet : holderSets) {
@@ -40,7 +42,7 @@ public class SoulEngulfingDisplay implements Display {
         }
         input = EntryIngredients.ofIngredient(recipe.input().item());
         catalyst = EntryIngredients.ofIngredient(Ingredient.of(items.stream()));
-        output = EntryIngredients.of(recipe.getResultItem());
+        output = EntryIngredients.of(recipe.getResultItem(RegistryAccess.EMPTY));
     }
 
     @Override

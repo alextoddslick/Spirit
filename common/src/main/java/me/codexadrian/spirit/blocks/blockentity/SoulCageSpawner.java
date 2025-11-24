@@ -32,7 +32,8 @@ public class SoulCageSpawner {
             if (this.isNearPlayer()) {
                 double spinAmount = 20D;
                 Tier tier = SoulUtils.getTier(soulCageBlockEntity.getItem(0), level);
-                if (tier != null && tier.redstoneControlled() && level.hasNeighborSignal(soulCageBlockEntity.getBlockPos())) {
+                if (tier != null && tier.redstoneControlled()
+                        && level.hasNeighborSignal(soulCageBlockEntity.getBlockPos())) {
                     spinAmount /= 30;
                 } else {
                     double d = (double) blockPos.getX() + level.random.nextDouble();
@@ -78,12 +79,15 @@ public class SoulCageSpawner {
                     return;
                 }
 
-                double x = blockPos.getX() + (level.random.nextDouble() - level.random.nextDouble()) * tier.spawnRange() + 0.5D;
+                double x = blockPos.getX() + (level.random.nextDouble() - level.random.nextDouble()) * tier.spawnRange()
+                        + 0.5D;
                 double y = blockPos.getY() + level.random.nextInt(3) - 1;
-                double z = blockPos.getZ() + (level.random.nextDouble() - level.random.nextDouble()) * tier.spawnRange() + 0.5D;
+                double z = blockPos.getZ() + (level.random.nextDouble() - level.random.nextDouble()) * tier.spawnRange()
+                        + 0.5D;
                 if (level.noCollision(soulCageBlockEntity.type.getAABB(x, y, z))) {
                     ServerLevel serverLevel = (ServerLevel) level;
-                    if (tier.ignoreSpawnConditions() || SpawnPlacements.checkSpawnRules(soulCageBlockEntity.type, serverLevel, MobSpawnType.SPAWNER, new BlockPos(x, y, z), level.getRandom())) {
+                    if (tier.ignoreSpawnConditions() || SpawnPlacements.checkSpawnRules(soulCageBlockEntity.type,
+                            serverLevel, MobSpawnType.SPAWNER, BlockPos.containing(x, y, z), level.getRandom())) {
                         Entity spawned = soulCageBlockEntity.type.create(level);
                         if (spawned == null) {
                             this.delay(tier);
@@ -92,20 +96,25 @@ public class SoulCageSpawner {
                         ((Corrupted) spawned).setCorrupted();
                         spawned.moveTo(x, y, z, spawned.getYRot(), spawned.getXRot());
 
-                        int l = level.getEntitiesOfClass(spawned.getClass(), new AABB(blockPos).inflate(tier.spawnRange())).size();
+                        int l = level
+                                .getEntitiesOfClass(spawned.getClass(), new AABB(blockPos).inflate(tier.spawnRange()))
+                                .size();
                         if (l >= 6) {
                             this.delay(tier);
                             return;
                         }
 
-                        spawned.moveTo(spawned.getX(), spawned.getY(), spawned.getZ(), level.random.nextFloat() * 360.0F, 0.0F);
+                        spawned.moveTo(spawned.getX(), spawned.getY(), spawned.getZ(),
+                                level.random.nextFloat() * 360.0F, 0.0F);
                         if (spawned instanceof Mob mob) {
-                            if ((!tier.ignoreSpawnConditions() && !mob.checkSpawnRules(level, MobSpawnType.SPAWNER)) || !mob.checkSpawnObstruction(level)) {
+                            if ((!tier.ignoreSpawnConditions() && !mob.checkSpawnRules(level, MobSpawnType.SPAWNER))
+                                    || !mob.checkSpawnObstruction(level)) {
                                 this.delay(tier);
                                 return;
                             }
 
-                            mob.finalizeSpawn(serverLevel, level.getCurrentDifficultyAt(spawned.blockPosition()), MobSpawnType.SPAWNER, null, null);
+                            mob.finalizeSpawn(serverLevel, level.getCurrentDifficultyAt(spawned.blockPosition()),
+                                    MobSpawnType.SPAWNER, null, null);
                         }
 
                         if (!serverLevel.tryAddFreshEntityWithPassengers(spawned)) {
@@ -113,7 +122,8 @@ public class SoulCageSpawner {
                             return;
                         }
 
-                        serverLevel.sendParticles(ParticleTypes.SOUL, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 20, 1, 1, 1, 0);
+                        serverLevel.sendParticles(ParticleTypes.SOUL, blockPos.getX(), blockPos.getY(), blockPos.getZ(),
+                                20, 1, 1, 1, 0);
 
                         if (spawned instanceof Mob mob) {
                             mob.spawnAnim();

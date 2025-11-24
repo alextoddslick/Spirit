@@ -8,7 +8,7 @@ import me.codexadrian.spirit.data.MobTraitSerializer;
 import me.codexadrian.spirit.data.ToolType;
 import me.codexadrian.spirit.entity.SoulArrowEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -35,9 +35,10 @@ public record PotionTrait(List<MobEffectInstance> effects) implements MobTrait<P
 
     @Override
     public void onHitBlock(ToolType type, Entity entity, BlockState blockState, Level level, BlockPos pos) {
-        AreaEffectCloud potionCloud = EntityType.AREA_EFFECT_CLOUD.create(entity.level);
-        if(potionCloud == null) return;
-        for(var effect : effects()) {
+        AreaEffectCloud potionCloud = EntityType.AREA_EFFECT_CLOUD.create(entity.level());
+        if (potionCloud == null)
+            return;
+        for (var effect : effects()) {
             potionCloud.addEffect(new MobEffectInstance(effect));
         }
         potionCloud.setDuration(60);
@@ -48,8 +49,9 @@ public record PotionTrait(List<MobEffectInstance> effects) implements MobTrait<P
 
     @Override
     public void onHitEntity(ToolType type, Entity attacker, Entity victim) {
-        if(type == ToolType.BOW) return;
-        if(victim instanceof LivingEntity livingEntity) {
+        if (type == ToolType.BOW)
+            return;
+        if (victim instanceof LivingEntity livingEntity) {
             for (MobEffectInstance effect : effects()) {
                 livingEntity.addEffect(new MobEffectInstance(effect));
             }
@@ -66,20 +68,21 @@ public record PotionTrait(List<MobEffectInstance> effects) implements MobTrait<P
 
         static {
             EFFECT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    Registry.MOB_EFFECT.byNameCodec().fieldOf("effect").forGetter(MobEffectInstance::getEffect),
+                    BuiltInRegistries.MOB_EFFECT.byNameCodec().fieldOf("effect")
+                            .forGetter(MobEffectInstance::getEffect),
                     Codec.INT.fieldOf("duration").orElse(0).forGetter(MobEffectInstance::getDuration),
                     Codec.INT.fieldOf("amplifier").orElse(0).forGetter(MobEffectInstance::getAmplifier),
                     Codec.BOOL.fieldOf("ambient").orElse(false).forGetter(MobEffectInstance::isAmbient),
                     Codec.BOOL.fieldOf("visible").orElse(true).forGetter(MobEffectInstance::isVisible),
                     Codec.BOOL.fieldOf("showIcon").orElse(true).forGetter(MobEffectInstance::showIcon),
-                    MobEffectInstance.FactorData.CODEC.optionalFieldOf("factorData").forGetter(MobEffectInstance::getFactorData)
-            ).apply(instance, Serializer::mobEffectInstanceOf));
+                    MobEffectInstance.FactorData.CODEC.optionalFieldOf("factorData")
+                            .forGetter(MobEffectInstance::getFactorData))
+                    .apply(instance, Serializer::mobEffectInstanceOf));
         }
 
         public static final Codec<PotionTrait> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                EFFECT_CODEC.listOf().fieldOf("effects").forGetter(PotionTrait::effects)
-        ).apply(instance, PotionTrait::new));
-
+                EFFECT_CODEC.listOf().fieldOf("effects").forGetter(PotionTrait::effects))
+                .apply(instance, PotionTrait::new));
 
         @Override
         public ResourceLocation id() {
@@ -91,7 +94,8 @@ public record PotionTrait(List<MobEffectInstance> effects) implements MobTrait<P
             return CODEC;
         }
 
-        public static MobEffectInstance mobEffectInstanceOf(MobEffect effect, int dur, int amp, boolean ambient, boolean visible, boolean icon, Optional<MobEffectInstance.FactorData> data) {
+        public static MobEffectInstance mobEffectInstanceOf(MobEffect effect, int dur, int amp, boolean ambient,
+                boolean visible, boolean icon, Optional<MobEffectInstance.FactorData> data) {
             return new MobEffectInstance(effect, dur, amp, ambient, visible, icon, null, data);
         }
     }

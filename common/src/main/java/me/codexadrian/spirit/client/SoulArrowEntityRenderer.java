@@ -2,9 +2,10 @@ package me.codexadrian.spirit.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import com.mojang.math.Axis;
 import me.codexadrian.spirit.Spirit;
 import me.codexadrian.spirit.entity.SoulArrowEntity;
 import me.codexadrian.spirit.platform.fabric.ClientServices;
@@ -29,19 +30,22 @@ public class SoulArrowEntityRenderer extends ArrowRenderer<SoulArrowEntity> {
     }
 
     @Override
-    public void render(@NotNull SoulArrowEntity abstractArrow, float f, float g, PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int i) {
+    public void render(@NotNull SoulArrowEntity abstractArrow, float f, float g, PoseStack poseStack,
+            @NotNull MultiBufferSource multiBufferSource, int i) {
         poseStack.pushPose();
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(g, (abstractArrow).yRotO, (abstractArrow).getYRot()) - 90.0f));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(g, (abstractArrow).xRotO, (abstractArrow).getXRot())));
-        float s = (float)(abstractArrow).shakeTime - g;
+        poseStack.mulPose(
+                Axis.YP.rotationDegrees(Mth.lerp(g, (abstractArrow).yRotO, (abstractArrow).getYRot()) - 90.0f));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(g, (abstractArrow).xRotO, (abstractArrow).getXRot())));
+        float s = (float) (abstractArrow).shakeTime - g;
         if (s > 0.0f) {
             float t = -Mth.sin(s * 3.0f) * s;
-            poseStack.mulPose(Vector3f.ZP.rotationDegrees(t));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(t));
         }
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(45.0f));
+        poseStack.mulPose(Axis.XP.rotationDegrees(45.0f));
         poseStack.scale(0.05625f, 0.05625f, 0.05625f);
         poseStack.translate(-4.0, 0.0, 0.0);
-        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(ClientServices.SHADERS.getSoulShader(abstractArrow, SOUL_ARROW));
+        VertexConsumer vertexConsumer = multiBufferSource
+                .getBuffer(ClientServices.SHADERS.getSoulShader(abstractArrow, SOUL_ARROW));
         PoseStack.Pose pose = poseStack.last();
         Matrix4f matrix4f = pose.pose();
         Matrix3f matrix3f = pose.normal();
@@ -54,7 +58,7 @@ public class SoulArrowEntityRenderer extends ArrowRenderer<SoulArrowEntity> {
         this.vertex(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625f, 0.3125f, 1, 0, 0, i);
         this.vertex(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0f, 0.3125f, 1, 0, 0, i);
         for (int u = 0; u < 4; ++u) {
-            poseStack.mulPose(Vector3f.XP.rotationDegrees(90.0f));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
             this.vertex(matrix4f, matrix3f, vertexConsumer, -8, -2, 0, 0.0f, 0.0f, 0, 1, 0, i);
             this.vertex(matrix4f, matrix3f, vertexConsumer, 8, -2, 0, 0.5f, 0.0f, 0, 1, 0, i);
             this.vertex(matrix4f, matrix3f, vertexConsumer, 8, 2, 0, 0.5f, 0.15625f, 0, 1, 0, i);

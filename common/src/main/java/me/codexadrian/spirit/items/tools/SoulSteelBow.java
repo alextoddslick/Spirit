@@ -9,7 +9,7 @@ import me.codexadrian.spirit.utils.ClientUtils;
 import me.codexadrian.spirit.utils.SoulUtils;
 import me.codexadrian.spirit.utils.ToolUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -39,7 +39,8 @@ public class SoulSteelBow extends BowItem {
     }
 
     @Override
-    public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int drawTime) {
+    public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity,
+            int drawTime) {
         if (livingEntity instanceof Player player) {
             float power;
             boolean isCreative = player.getAbilities().instabuild;
@@ -54,12 +55,16 @@ public class SoulSteelBow extends BowItem {
                 int l;
                 int k;
                 SoulArrowEntity soulArrow = SpiritMisc.SOUL_ARROW_ENTITY.get().create(level);
-                if (soulArrow == null) return;
+                if (soulArrow == null)
+                    return;
                 soulArrow.setOwner(player);
                 soulArrow.setPos(player.getEyePosition());
                 soulArrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0f, power * 3.0f, 1.0f);
                 if (soulCrystal.is(SpiritItems.SOUL_CRYSTAL.get())) {
-                    var arrowEffect = MobTraitData.getEffectForEntity(Registry.ENTITY_TYPE.get(ResourceLocation.tryParse(Objects.requireNonNull(SoulUtils.getSoulCrystalType(soulCrystal)))), level.getRecipeManager());
+                    var arrowEffect = MobTraitData.getEffectForEntity(
+                            BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation
+                                    .tryParse(Objects.requireNonNull(SoulUtils.getSoulCrystalType(soulCrystal)))),
+                            level.getRecipeManager());
                     arrowEffect.ifPresent(soulArrow::addArrowEffect);
                 }
                 if (power == 1.0f) {
@@ -78,7 +83,8 @@ public class SoulSteelBow extends BowItem {
                 soulArrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                 level.addFreshEntity(soulArrow);
             }
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 1.0f / (level.getRandom().nextFloat() * 0.4f + 1.2f) + power * 0.5f);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT,
+                    SoundSource.PLAYERS, 1.0f, 1.0f / (level.getRandom().nextFloat() * 0.4f + 1.2f) + power * 0.5f);
             if (!isCreative) {
                 SoulUtils.deviateSoulCount(soulCrystal, -1, level, null);
             }
@@ -87,7 +93,8 @@ public class SoulSteelBow extends BowItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand interactionHand) {
+    public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
+            @NotNull InteractionHand interactionHand) {
         return ToolUtils.handleToolDrawing(player, interactionHand);
     }
 
@@ -97,10 +104,14 @@ public class SoulSteelBow extends BowItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> list, TooltipFlag tooltipFlag) {
-        Component bowDescription = Component.translatable("item.spirit.soul_steel_bow.description").withStyle(ChatFormatting.GRAY);
-        Component description = Component.translatable("item.spirit.soul_steel_tools.description").withStyle(ChatFormatting.GRAY);
-        Component soulSteelRepairable = Component.translatable("item.spirit.soul_steel_tools.soul_fire_repairable").withStyle(ChatFormatting.GRAY);
+    public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> list,
+            TooltipFlag tooltipFlag) {
+        Component bowDescription = Component.translatable("item.spirit.soul_steel_bow.description")
+                .withStyle(ChatFormatting.GRAY);
+        Component description = Component.translatable("item.spirit.soul_steel_tools.description")
+                .withStyle(ChatFormatting.GRAY);
+        Component soulSteelRepairable = Component.translatable("item.spirit.soul_steel_tools.soul_fire_repairable")
+                .withStyle(ChatFormatting.GRAY);
         ClientUtils.shiftTooltip(list, List.of(bowDescription, description, soulSteelRepairable));
     }
 }

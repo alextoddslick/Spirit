@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -15,9 +15,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+
 /**
- * This class was largely inspired by or taken from the Resourceful Bees repository with
+ * This class was largely inspired by or taken from the Resourceful Bees
+ * repository with
  * the expressed permission from one of their developers.
+ * 
  * @author Team Resourceful
  */
 public class EntityIngredientHelper implements IIngredientHelper<EntityIngredient> {
@@ -26,7 +29,6 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityIngredien
     public @NotNull IIngredientType<EntityIngredient> getIngredientType() {
         return SpiritPlugin.ENTITY_INGREDIENT;
     }
-
 
     @NotNull
     @Override
@@ -37,7 +39,8 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityIngredien
     @Override
     public @NotNull String getUniqueId(@NotNull EntityIngredient entityIngredient, @NotNull UidContext context) {
         Entity entity = entityIngredient.getEntity();
-        if (entity == null) return "spirit_entity:error";
+        if (entity == null)
+            return "spirit_entity:error";
         ResourceLocation id = EntityType.getKey(entity.getType());
         return id == null ? "spirit_entity:error" : "spirit_entity:" + id;
     }
@@ -56,8 +59,9 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityIngredien
 
     @Override
     public @NotNull ResourceLocation getResourceLocation(EntityIngredient ingredient) {
-        ResourceLocation id = Registry.ENTITY_TYPE.getKey(ingredient.getEntityType());
-        if (id == null) return new ResourceLocation("error");
+        ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(ingredient.getEntityType());
+        if (id == null)
+            return new ResourceLocation("error");
         return id;
     }
 

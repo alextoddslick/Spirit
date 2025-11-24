@@ -1,7 +1,8 @@
 package me.codexadrian.spirit.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
+import com.mojang.math.Axis;
 import me.codexadrian.spirit.blocks.blockentity.PedestalBlockEntity;
 import me.codexadrian.spirit.blocks.blockentity.SoulPedestalBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -20,14 +21,17 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
     }
 
     @Override
-    public void render(PedestalBlockEntity blockEntity, float f, @NotNull PoseStack matrixStack, @NotNull MultiBufferSource multiBufferSource, int i, int j) {
-        if (!blockEntity.hasLevel() || blockEntity.isEmpty()) return;
+    public void render(PedestalBlockEntity blockEntity, float f, @NotNull PoseStack matrixStack,
+            @NotNull MultiBufferSource multiBufferSource, int i, int j) {
+        if (!blockEntity.hasLevel() || blockEntity.isEmpty())
+            return;
         matrixStack.pushPose();
         matrixStack.translate(0.5D, 1.05D, 0.5D);
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(blockEntity.age % 360));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(blockEntity.age % 360));
         matrixStack.scale(0.55f, 0.55f, 0.55f);
-        matrixStack.translate(0, Math.sin(blockEntity.age * .1) * 0.05 + 0.05,0);
-        itemRenderer.renderStatic(blockEntity.getItem(0), ItemTransforms.TransformType.NONE, i, OverlayTexture.NO_OVERLAY, matrixStack, multiBufferSource, 0);
+        matrixStack.translate(0, Math.sin(blockEntity.age * .1) * 0.05 + 0.05, 0);
+        itemRenderer.renderStatic(blockEntity.getItem(0), net.minecraft.world.item.ItemDisplayContext.NONE, i,
+                OverlayTexture.NO_OVERLAY, matrixStack, multiBufferSource, blockEntity.getLevel(), 0);
         matrixStack.popPose();
     }
 }

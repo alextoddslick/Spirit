@@ -11,7 +11,7 @@ import me.codexadrian.spirit.data.SyncedData;
 import me.codexadrian.spirit.registry.SpiritMisc;
 import me.codexadrian.spirit.utils.CodecUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 public record SoulEngulfingRecipe(ResourceLocation id, SoulEngulfingInput input, int duration, boolean breaksBlocks,
-                                  Item output, int outputAmount) implements SyncedData {
+        Item output, int outputAmount) implements SyncedData {
 
     public static Codec<SoulEngulfingRecipe> codec(ResourceLocation id) {
         return RecordCodecBuilder.create(instance -> instance.group(
@@ -35,13 +35,13 @@ public record SoulEngulfingRecipe(ResourceLocation id, SoulEngulfingInput input,
                 SoulEngulfingInput.CODEC.fieldOf("input").forGetter(SoulEngulfingRecipe::input),
                 Codec.INT.fieldOf("duration").orElse(0).forGetter(SoulEngulfingRecipe::duration),
                 Codec.BOOL.fieldOf("destroysStructure").orElse(true).forGetter(SoulEngulfingRecipe::breaksBlocks),
-                Registry.ITEM.byNameCodec().fieldOf("outputItem").forGetter(SoulEngulfingRecipe::output),
-                Codec.INT.fieldOf("outputAmount").orElse(1).forGetter(SoulEngulfingRecipe::outputAmount)
-        ).apply(instance, SoulEngulfingRecipe::new));
+                BuiltInRegistries.ITEM.byNameCodec().fieldOf("outputItem").forGetter(SoulEngulfingRecipe::output),
+                Codec.INT.fieldOf("outputAmount").orElse(1).forGetter(SoulEngulfingRecipe::outputAmount))
+                .apply(instance, SoulEngulfingRecipe::new));
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(net.minecraft.core.RegistryAccess registryAccess) {
         return new ItemStack(this.output, this.outputAmount);
     }
 
@@ -63,22 +63,28 @@ public record SoulEngulfingRecipe(ResourceLocation id, SoulEngulfingInput input,
     public boolean validateRecipe(BlockPos blockPos, ItemEntity itemE, ServerLevel level) {
         SoulfireMultiblock multiblock = input().multiblock();
         if (itemE instanceof EngulfableItem engulfableItem) {
-            if (!engulfableItem.isEngulfed() && this.duration() > 0) engulfableItem.setMaxEngulfTime(this.duration());
+            if (!engulfableItem.isEngulfed() && this.duration() > 0)
+                engulfableItem.setMaxEngulfTime(this.duration());
             else if (engulfableItem.isEngulfed() || this.duration() == 0) {
                 if (!multiblock.validateMultiblock(blockPos, level, false)) {
                     engulfableItem.resetEngulfing();
-                    if (!engulfableItem.isRecipeOutput()) itemE.setInvulnerable(false);
+                    if (!engulfableItem.isRecipeOutput())
+                        itemE.setInvulnerable(false);
                     return false;
                 }
-                if (engulfableItem.isFullyEngulfed() && multiblock.validateMultiblock(blockPos, level, breaksBlocks())) {
+                if (engulfableItem.isFullyEngulfed()
+                        && multiblock.validateMultiblock(blockPos, level, breaksBlocks())) {
                     itemE.setInvulnerable(true);
-                    ItemEntity output = new ItemEntity(itemE.level, itemE.getX(), itemE.getY(), itemE.getZ(), this.getResultItem());
+                    ItemEntity output = new ItemEntity(itemE.level(), itemE.getX(), itemE.getY(), itemE.getZ(),
+                            this.getResultItem(itemE.level().registryAccess()));
                     output.setInvulnerable(true);
-                    itemE.level.addFreshEntity(output);
-                    if (output instanceof EngulfableItem outputEngulf) outputEngulf.setRecipeOutput();
+                    itemE.level().addFreshEntity(output);
+                    if (output instanceof EngulfableItem outputEngulf)
+                        outputEngulf.setRecipeOutput();
                     itemE.getItem().shrink(1);
                     engulfableItem.resetEngulfing();
-                    level.sendParticles(ParticleTypes.SOUL, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 40, 1, 2, 1, 0);
+                    level.sendParticles(ParticleTypes.SOUL, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 40, 1, 2,
+                            1, 0);
                 }
             }
             return true;
@@ -87,13 +93,15 @@ public record SoulEngulfingRecipe(ResourceLocation id, SoulEngulfingInput input,
     }
 
     public static List<SoulEngulfingRecipe> getRecipesForStack(ItemStack stack, RecipeManager manager) {
-        return manager.getAllRecipesFor(SpiritMisc.SOUL_ENGULFING_RECIPE.get()).stream().filter(recipe -> recipe.input.item().test(stack)).toList();
+        return manager.getAllRecipesFor(SpiritMisc.SOUL_ENGULFING_RECIPE.get()).stream()
+                .filter(recipe -> recipe.input.item().test(stack)).toList();
     }
 
     public record SoulEngulfingInput(Ingredient item, SoulfireMultiblock multiblock) {
         public static final Codec<SoulEngulfingInput> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 CodecUtils.INGREDIENT_CODEC.fieldOf("ingredient").forGetter(SoulEngulfingInput::item),
-                SoulfireMultiblock.CODEC.fieldOf("multiblock").orElse(SoulfireMultiblock.DEFAULT_RECIPE).forGetter(SoulEngulfingInput::multiblock)
-        ).apply(instance, SoulEngulfingInput::new));
+                SoulfireMultiblock.CODEC.fieldOf("multiblock").orElse(SoulfireMultiblock.DEFAULT_RECIPE)
+                        .forGetter(SoulEngulfingInput::multiblock))
+                .apply(instance, SoulEngulfingInput::new));
     }
 }

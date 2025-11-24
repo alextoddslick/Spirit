@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import me.codexadrian.spirit.platform.fabric.ClientServices;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceProvider;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,10 +26,12 @@ public class GameRendererMixin {
     private Map<String, ShaderInstance> shaders;
 
     @Inject(method = "reloadShaders", at = @At("TAIL"))
-    private void reloadShaders(ResourceManager resourceManager, CallbackInfo ci) {
+    private void reloadShaders(ResourceProvider resourceProvider, CallbackInfo ci) {
         List<Pair<ShaderInstance, Consumer<ShaderInstance>>> list = new ArrayList<>();
         try {
-            list.add(Pair.of(new ShaderInstance(resourceManager, "rendertype_entity_corrupted", DefaultVertexFormat.BLOCK), ClientServices.SHADERS::setSoulShader));
+            list.add(Pair.of(
+                    new ShaderInstance(resourceProvider, "rendertype_entity_corrupted", DefaultVertexFormat.BLOCK),
+                    ClientServices.SHADERS::setSoulShader));
         } catch (Exception e) {
             list.forEach(pair -> pair.getFirst().close());
             throw new RuntimeException("could not reload shaders", e);

@@ -43,7 +43,7 @@ public class SoulArrowEntity extends Arrow implements ItemSupplier {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.inGround) {
                 if (this.inGroundTime % 5 == 0) {
                     this.makeSoulParticle(1);
@@ -56,24 +56,28 @@ public class SoulArrowEntity extends Arrow implements ItemSupplier {
 
     public void makeSoulParticle(int i) {
         for (int k = 0; k < i; ++k) {
-            this.level.addParticle(ParticleTypes.SOUL, this.getRandomX(0.5), this.getRandomY(), this.getRandomZ(0.5), 0, 0, 0);
-            this.level.addParticle(ParticleTypes.SOUL_FIRE_FLAME, this.getRandomX(0.5), this.getRandomY(), this.getRandomZ(0.5), 0, 0, 0);
+            this.level().addParticle(ParticleTypes.SOUL, this.getRandomX(0.5), this.getRandomY(), this.getRandomZ(0.5),
+                    0, 0, 0);
+            this.level().addParticle(ParticleTypes.SOUL_FIRE_FLAME, this.getRandomX(0.5), this.getRandomY(),
+                    this.getRandomZ(0.5), 0, 0, 0);
         }
     }
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult entityHitResult) {
         super.onHitEntity(entityHitResult);
-        if(effect != null) {
-            effect.traits().forEach(soulArrowTrait -> soulArrowTrait.onHitEntity(ToolType.BOW, this.getOwner(), entityHitResult.getEntity()));
+        if (effect != null) {
+            effect.traits().forEach(soulArrowTrait -> soulArrowTrait.onHitEntity(ToolType.BOW, this.getOwner(),
+                    entityHitResult.getEntity()));
         }
     }
 
     @Override
     protected void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
-        if(effect != null) {
-            effect.traits().forEach(soulArrowTrait -> soulArrowTrait.onHitBlock(ToolType.BOW,this, level.getBlockState(blockHitResult.getBlockPos()), level, blockHitResult.getBlockPos()));
+        if (effect != null) {
+            effect.traits().forEach(soulArrowTrait -> soulArrowTrait.onHitBlock(ToolType.BOW, this,
+                    level().getBlockState(blockHitResult.getBlockPos()), level(), blockHitResult.getBlockPos()));
             this.discard();
         }
     }
@@ -82,8 +86,9 @@ public class SoulArrowEntity extends Arrow implements ItemSupplier {
     public void setEnchantmentEffectsFromEntity(@NotNull LivingEntity arg, float f) {
         int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER_ARROWS, arg);
         int j = EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH_ARROWS, arg);
-        //Overridden to literally fix this one line. piss off mojang -_-.
-        this.setBaseDamage((f * this.getBaseDamage()) + this.random.triangle((double) this.level.getDifficulty().getId() * 0.11, 0.57425));
+        // Overridden to literally fix this one line. piss off mojang -_-.
+        this.setBaseDamage((f * this.getBaseDamage())
+                + this.random.triangle((double) this.level().getDifficulty().getId() * 0.11, 0.57425));
         if (i > 0) {
             this.setBaseDamage(this.getBaseDamage() + (double) i * 0.5 + 0.5);
         }

@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -42,16 +42,20 @@ public class SoulCageBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<T> blockEntityType) {
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level,
+            @NotNull BlockState blockState, @NotNull BlockEntityType<T> blockEntityType) {
         return createTickerHelper(blockEntityType, SpiritBlocks.SOUL_CAGE_ENTITY.get(), SoulCageBlockEntity::tick);
     }
 
-    public @NotNull InteractionResult use(@NotNull BlockState blockState, @NotNull Level level, @NotNull BlockPos blockPos, @NotNull Player player, @NotNull InteractionHand interactionHand, @NotNull BlockHitResult blockHitResult) {
+    public @NotNull InteractionResult use(@NotNull BlockState blockState, @NotNull Level level,
+            @NotNull BlockPos blockPos, @NotNull Player player, @NotNull InteractionHand interactionHand,
+            @NotNull BlockHitResult blockHitResult) {
         if (interactionHand != InteractionHand.OFF_HAND) {
             ItemStack itemStack = player.getMainHandItem();
             if (level.getBlockEntity(blockPos) instanceof SoulCageBlockEntity soulSpawner) {
                 if (soulSpawner.isEmpty()) {
-                    if (SoulUtils.canCrystalBeUsedInCage(itemStack) && itemStack.hasTag() && SoulUtils.getTier(itemStack, level) != null) {
+                    if (SoulUtils.canCrystalBeUsedInCage(itemStack) && itemStack.hasTag()
+                            && SoulUtils.getTier(itemStack, level) != null) {
                         soulSpawner.entity = null;
                         soulSpawner.setItem(0, itemStack.copy());
                         if (!player.getAbilities().instabuild) {
@@ -76,7 +80,7 @@ public class SoulCageBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull List<ItemStack> getDrops(@NotNull BlockState blockState, LootContext.@NotNull Builder builder) {
+    public @NotNull List<ItemStack> getDrops(@NotNull BlockState blockState, LootParams.@NotNull Builder builder) {
         List<ItemStack> drops = super.getDrops(blockState, builder);
         BlockEntity blockE = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (blockE instanceof SoulCageBlockEntity) {
@@ -87,7 +91,8 @@ public class SoulCageBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
+    public @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
+            @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
         return SHAPE;
     }
 

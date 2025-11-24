@@ -5,7 +5,7 @@ import me.codexadrian.spirit.registry.SpiritBlocks;
 import me.codexadrian.spirit.utils.SoulUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -131,16 +131,17 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
     public void setType() {
         String soulCrystalType = SoulUtils.getSoulCrystalType(soulCrystal);
         if (soulCrystalType != null) {
-            type = Registry.ENTITY_TYPE.get(new ResourceLocation(soulCrystalType));
+            type = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(soulCrystalType));
         } else {
             type = null;
         }
     }
 
     public Entity getOrCreateEntity() {
-        if(this.entity == null && this.getLevel() != null) {
+        if (this.entity == null && this.getLevel() != null) {
             this.entity = this.type.create(getLevel());
-            if(entity instanceof Corrupted corrupted) corrupted.setCorrupted();
+            if (entity instanceof Corrupted corrupted)
+                corrupted.setCorrupted();
         }
         return entity;
     }
@@ -151,7 +152,8 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
 
     public void update(int update) {
         this.setChanged();
-        if(this.getLevel() != null) getLevel().sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), update);
+        if (this.getLevel() != null)
+            getLevel().sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), update);
     }
 
     @Override

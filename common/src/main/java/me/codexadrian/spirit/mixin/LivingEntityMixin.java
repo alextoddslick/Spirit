@@ -11,6 +11,7 @@ import me.codexadrian.spirit.registry.SpiritItems;
 import me.codexadrian.spirit.utils.SoulUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -42,7 +43,8 @@ import java.util.Optional;
 public abstract class LivingEntityMixin extends Entity implements Corrupted {
 
     @SuppressWarnings("WrongEntityDataParameterClass")
-    private static final EntityDataAccessor<Boolean> CORRUPTED = SynchedEntityData.defineId(LivingEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> CORRUPTED = SynchedEntityData.defineId(LivingEntity.class,
+            EntityDataSerializers.BOOLEAN);
 
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -71,22 +73,29 @@ public abstract class LivingEntityMixin extends Entity implements Corrupted {
     private void onDeath(DamageSource source, CallbackInfo ci) {
         LivingEntity victim = (LivingEntity) (Object) this;
         Corrupted corrupt = (Corrupted) victim;
-        if (!victim.level.isClientSide) {
+        if (!victim.level().isClientSide) {
             Entity entity = source.getEntity();
-            if (entity instanceof Projectile projectile) entity = projectile.getOwner();
+            if (entity instanceof Projectile projectile)
+                entity = projectile.getOwner();
             if (entity instanceof Player player) {
                 if (!victim.getType().is(Spirit.COLLECT_BLACKLISTED_TAG)) {
-                    if (victim.canChangeDimensions() && (SpiritConfig.isCollectFromCorrupt() || !corrupt.isCorrupted())) {
+                    if (victim.canChangeDimensions()
+                            && (SpiritConfig.isCollectFromCorrupt() || !corrupt.isCorrupted())) {
                         boolean pedestalHasCrystal = false;
                         ItemStack crystal = ItemStack.EMPTY;
                         int radius = SpiritConfig.getSoulPedestalRadius();
                         AABB entityArea = victim.getBoundingBox().inflate(radius, 2, radius);
-                        Optional<BlockPos> pedestalPos = BlockPos.betweenClosedStream(entityArea).filter(pos -> level.getBlockState(pos).is(SpiritBlocks.CRYSTAL_PEDESTAL.get())).map(BlockPos::immutable).findFirst();
-                        if (pedestalPos.isPresent() && level.getBlockEntity(pedestalPos.get()) instanceof PedestalBlockEntity pedestal && !pedestal.isEmpty() && SoulUtils.canCrystalAcceptSoul(pedestal.getItem(0), victim)) {
+                        Optional<BlockPos> pedestalPos = BlockPos.betweenClosedStream(entityArea)
+                                .filter(pos -> level().getBlockState(pos).is(SpiritBlocks.CRYSTAL_PEDESTAL.get()))
+                                .map(BlockPos::immutable).findFirst();
+                        if (pedestalPos.isPresent()
+                                && level().getBlockEntity(pedestalPos.get()) instanceof PedestalBlockEntity pedestal
+                                && !pedestal.isEmpty() && SoulUtils.canCrystalAcceptSoul(pedestal.getItem(0), victim)) {
                             crystal = pedestal.getItem(0);
                             pedestalHasCrystal = true;
                             pedestal.setChanged();
-                            level.sendBlockUpdated(pedestalPos.get(), pedestal.getBlockState(), pedestal.getBlockState(), Block.UPDATE_ALL);
+                            level().sendBlockUpdated(pedestalPos.get(), pedestal.getBlockState(),
+                                    pedestal.getBlockState(), Block.UPDATE_ALL);
                         }
                         if (crystal.isEmpty() && !SoulUtils.canCrystalAcceptSoul(crystal, victim)) {
                             crystal = SoulUtils.findCrystal(player, victim, false, false, true);
@@ -100,9 +109,13 @@ public abstract class LivingEntityMixin extends Entity implements Corrupted {
                                 SoulUtils.handleMobCrystal(crystal, player, victim);
                             }
                             if (pedestalPos.isPresent() && pedestalHasCrystal) {
-                                ServerLevel sLevel = (ServerLevel) player.level;
-                                sLevel.sendParticles(ParticleTypes.SOUL, pedestalPos.get().getX() + 0.5, pedestalPos.get().getY() + 0.5, pedestalPos.get().getZ() + 0.5, 15, 0.5, 1, 0.5, 0);
-                                sLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pedestalPos.get().getX() + 0.5, pedestalPos.get().getY() + 0.5, pedestalPos.get().getZ() + 0.5, 15, 0.5, 1, 0.5, 0);
+                                ServerLevel sLevel = (ServerLevel) player.level();
+                                sLevel.sendParticles(ParticleTypes.SOUL, pedestalPos.get().getX() + 0.5,
+                                        pedestalPos.get().getY() + 0.5, pedestalPos.get().getZ() + 0.5, 15, 0.5, 1, 0.5,
+                                        0);
+                                sLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pedestalPos.get().getX() + 0.5,
+                                        pedestalPos.get().getY() + 0.5, pedestalPos.get().getZ() + 0.5, 15, 0.5, 1, 0.5,
+                                        0);
                             }
                         }
                     }
@@ -122,16 +135,20 @@ public abstract class LivingEntityMixin extends Entity implements Corrupted {
     }
 
     @Inject(method = "getAttributeValue", at = @At("RETURN"), cancellable = true)
-    public void getMobTraitDamage(Attribute attribute, CallbackInfoReturnable<Double> cir) {
-        //noinspection ConstantConditions
-        if(attribute == Attributes.ATTACK_DAMAGE && (Object) this instanceof Player player && player.getInventory() != null) {
-            if (player.getMainHandItem().is(SpiritItems.SOUL_STEEL_AXE.get()) || player.getMainHandItem().is(SpiritItems.SOUL_STEEL_BLADE.get())) {
+    public void getMobTraitDamage(net.minecraft.core.Holder<Attribute> attribute, CallbackInfoReturnable<Double> cir) {
+        // noinspection ConstantConditions
+        if (attribute.value() == Attributes.ATTACK_DAMAGE && (Object) this instanceof Player player
+                && player.getInventory() != null) {
+            if (player.getMainHandItem().is(SpiritItems.SOUL_STEEL_AXE.get())
+                    || player.getMainHandItem().is(SpiritItems.SOUL_STEEL_BLADE.get())) {
                 if (player.getMainHandItem().getOrCreateTag().getBoolean("Charged")) {
                     ItemStack soulCrystal = SoulUtils.findCrystal(player, null, true, true, false);
                     if (!soulCrystal.isEmpty()) {
                         String soulCrystalType = SoulUtils.getSoulCrystalType(soulCrystal);
                         if (soulCrystalType != null && SoulUtils.getSoulsInCrystal(soulCrystal) > 0) {
-                            var entityEffect = MobTraitData.getEffectForEntity(Registry.ENTITY_TYPE.get(ResourceLocation.tryParse(soulCrystalType)), player.getLevel().getRecipeManager());
+                            var entityEffect = MobTraitData.getEffectForEntity(
+                                    BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(soulCrystalType)),
+                                    player.level().getRecipeManager());
                             if (entityEffect.isPresent()) {
                                 int damage = 0;
                                 for (var trait : entityEffect.get().traits()) {

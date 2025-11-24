@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[41,)"
+loaderVersion="[47,)"
 license="All rights reserved"
 
 [[mods]]
@@ -10,3 +10,10 @@ authors="Devs: (Lead) CodexAdrian, Ashh/MsRandom1, ThatGravyBoat, ExpensiveKoala
 description='''
 A Soul Shards inspired mod - Spawn your own mobs with an enhanced mob spawner
 '''
+
+[[dependencies.spirit]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"

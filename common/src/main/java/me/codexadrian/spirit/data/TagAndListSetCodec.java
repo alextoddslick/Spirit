@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * This class was largely inspired by or taken from the Resourceful Bees repository with
+ * This class was largely inspired by or taken from the Resourceful Bees
+ * repository with
  * the expressed permission from one of their developers.
+ * 
  * @author Team Resourceful
  */
 
@@ -40,8 +42,7 @@ public class TagAndListSetCodec<E> implements Codec<HolderSet<E>> {
         return Codec.either(codec, holderCodec)
                 .xmap(
                         either -> either.map(p -> p, List::of),
-                        set -> set.size() == 1 ? Either.right(set.get(0)) : Either.left(set)
-                );
+                        set -> set.size() == 1 ? Either.right(set.get(0)) : Either.left(set));
     }
 
     @Override
@@ -52,8 +53,8 @@ public class TagAndListSetCodec<E> implements Codec<HolderSet<E>> {
 
     @Override
     public <T> DataResult<T> encode(HolderSet<E> p_206674_, DynamicOps<T> p_206675_, T p_206676_) {
-        if (!p_206674_.isValidInRegistry(registry)) {
-            return DataResult.error("HolderSet " + p_206674_ + " is not valid in current registry set");
+        if (!p_206674_.canSerializeIn(registry.asLookup())) {
+            return DataResult.error(() -> "HolderSet " + p_206674_ + " is not valid in current registry set");
         }
 
         return this.holderCodec.encode(p_206674_.unwrap().mapRight(List::copyOf), p_206675_, p_206676_);

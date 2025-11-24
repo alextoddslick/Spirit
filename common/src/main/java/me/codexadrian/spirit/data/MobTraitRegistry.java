@@ -10,14 +10,18 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * This class was largely inspired by or taken from the Resourceful Bees repository with
+ * This class was largely inspired by or taken from the Resourceful Bees
+ * repository with
  * the expressed permission from one of their developers.
+ * 
  * @author Team Resourceful
  */
 
 public class MobTraitRegistry {
-    public static final Codec<MobTraitSerializer<?>> TRAIT_CODEC = ResourceLocation.CODEC.comapFlatMap(MobTraitRegistry::decode, MobTraitSerializer::id);
-    public static final Codec<MobTrait<?>> CODEC = TRAIT_CODEC.dispatch(MobTrait::serializer, MobTraitSerializer::codec);
+    public static final Codec<MobTraitSerializer<?>> TRAIT_CODEC = ResourceLocation.CODEC
+            .comapFlatMap(MobTraitRegistry::decode, MobTraitSerializer::id);
+    public static final Codec<MobTrait<?>> CODEC = TRAIT_CODEC.dispatch(MobTrait::serializer,
+            MobTraitSerializer::codec);
     private static final Map<ResourceLocation, MobTraitSerializer<?>> SERIALIZERS = new HashMap<>();
 
     static {
@@ -29,7 +33,8 @@ public class MobTraitRegistry {
     }
 
     private static DataResult<? extends MobTraitSerializer<?>> decode(ResourceLocation id) {
-        return Optional.ofNullable(SERIALIZERS.get(id)).map(DataResult::success).orElse(DataResult.error("No trait type found."));
+        return Optional.ofNullable(SERIALIZERS.get(id)).map(DataResult::success)
+                .orElse(DataResult.error(() -> "No trait type found."));
     }
 
     public static void add(MobTraitSerializer<?> serializer) {

@@ -1,7 +1,8 @@
 package me.codexadrian.spirit.compat.rei.ingredients;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
+import com.mojang.math.Axis;
 import me.codexadrian.spirit.compat.jei.ingredients.EntityIngredient;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.entry.renderer.EntryRenderer;
@@ -21,15 +22,17 @@ import java.util.List;
 
 public class EntityIngredientRenderer implements EntryRenderer<EntityIngredient> {
     @Override
-    public void render(EntryStack<EntityIngredient> entry, PoseStack matrices, Rectangle bounds, int mouseX, int mouseY, float delta) {
+    public void render(EntryStack<EntityIngredient> entry, net.minecraft.client.gui.GuiGraphics guiGraphics,
+            Rectangle bounds, int mouseX, int mouseY,
+            float delta) {
         Minecraft mc = Minecraft.getInstance();
         EntityIngredient value = entry.getValue();
         if (mc.level != null && value.getEntity() != null) {
             int y = 0;
-            matrices.pushPose();
-            matrices.translate(bounds.getX(), bounds.getY(), 0);
-            renderEntity(matrices, value.getEntity(), mc.level, -2, y, value.getRotation(), 1);
-            matrices.popPose();
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(bounds.getX(), bounds.getY(), 0);
+            renderEntity(guiGraphics.pose(), value.getEntity(), mc.level, -2, y, value.getRotation(), 1);
+            guiGraphics.pose().popPose();
         }
     }
 
@@ -43,8 +46,10 @@ public class EntityIngredientRenderer implements EntryRenderer<EntityIngredient>
         return Tooltip.create(context.getPoint(), tooltip);
     }
 
-    public static void renderEntity(PoseStack matrixStack, Entity entity, Level world, float x, float y, float rotation, float renderScale) {
-        if (world == null) return;
+    public static void renderEntity(PoseStack matrixStack, Entity entity, Level world, float x, float y, float rotation,
+            float renderScale) {
+        if (world == null)
+            return;
         Minecraft mc = Minecraft.getInstance();
 
         if (mc.player != null) {
@@ -53,13 +58,14 @@ public class EntityIngredientRenderer implements EntryRenderer<EntityIngredient>
             matrixStack.pushPose();
             matrixStack.translate(14, 20 * renderScale + 4, 0.5);
             matrixStack.translate(x, y, 1);
-            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
+            matrixStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
             matrixStack.translate(0, 0, 100);
             matrixStack.scale(-scaledSize * renderScale, scaledSize * renderScale, 30);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(rotation));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(rotation));
             EntityRenderDispatcher entityrenderermanager = mc.getEntityRenderDispatcher();
             MultiBufferSource.BufferSource renderTypeBuffer = mc.renderBuffers().bufferSource();
-            entityrenderermanager.render(entity, 0, 0, 0.0D, mc.getFrameTime(), 1, matrixStack, renderTypeBuffer, 15728880);
+            entityrenderermanager.render(entity, 0, 0, 0.0D, mc.getFrameTime(), 1, matrixStack, renderTypeBuffer,
+                    15728880);
             renderTypeBuffer.endBatch();
             matrixStack.popPose();
         }
