@@ -1,8 +1,8 @@
-package earth.terrarium.spirit.client.mixin;
+package me.codexadrian.spirit.fabric.mixin;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.datafixers.util.Pair;
-import earth.terrarium.spirit.common.util.ClientUtils;
+import me.codexadrian.spirit.platform.fabric.ClientServices;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.server.packs.resources.ResourceProvider;
@@ -29,7 +29,9 @@ public class GameRendererMixin {
     private void reloadShaders(ResourceProvider resourceProvider, CallbackInfo ci) {
         List<Pair<ShaderInstance, Consumer<ShaderInstance>>> list = new ArrayList<>();
         try {
-            list.add(Pair.of(new ShaderInstance(resourceProvider, "rendertype_entity_corrupted", DefaultVertexFormat.BLOCK), ClientUtils::setSoulShader));
+            list.add(Pair.of(
+                    new ShaderInstance(resourceProvider, "rendertype_entity_corrupted", DefaultVertexFormat.BLOCK),
+                    ClientServices.SHADERS::setSoulShader));
         } catch (Exception e) {
             list.forEach(pair -> pair.getFirst().close());
             throw new RuntimeException("could not reload shaders", e);

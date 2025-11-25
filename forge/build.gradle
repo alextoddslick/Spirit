@@ -1,25 +1,17 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
+
+def ENV = System.getenv()
+
 architectury {
     platformSetupLoomIde()
     forge()
 }
 
 loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
     forge {
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-        mixinConfig "$project.mod_id-common.mixins.json"
-        mixinConfig "${project.mod_id}.mixins.json"
-        dataGen {
-            mod project.mod_id
-        }
-    }
-    runs {
-        data {
-            programArgs "--existing", project(":common").file("src/main/resources").absolutePath
-        }
+        mixinConfig "spirit.common.mixins.json"
     }
 }
 
@@ -32,51 +24,30 @@ configurations {
 }
 
 dependencies {
-    forge "net.neoforged:forge:$rootProject.minecraft_version-$rootProject.forge_version"
-
+    forge "net.minecraftforge:forge:${rootProject.forge_version}"
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-    implementation(include("com.github.llamalad7.mixinextras:mixinextras-forge:0.2.0-beta.9"))
-    //modCompileOnly "mezz.jei:jei-$rootProject.minecraft_version-forge-api:$rootProject.jei_version"
-    //modLocalRuntime("mezz.jei:jei-$rootProject.minecraft_version-forge:$rootProject.jei_version") { transitive = false }
+    include modApi("com.teamresourceful.resourcefullib:resourcefullib-forge-$rootProject.resourcefullib_version")
+    modCompileOnly ("mcjty.theoneprobe:theoneprobe:1.19-+:api") { transitive = false }
+    modRuntimeOnly ("mcjty.theoneprobe:theoneprobe:1.19-+") { transitive = false }
 
-    modApi "com.teamresourceful.resourcefullib:resourcefullib-forge-1.20:$rootProject.resourcefullib_version"
-    modApi "earth.terrarium.botarium:botarium-forge-1.20.1:$rootProject.botarium_version"
+    //modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-forge:${rootProject.rei_version}"
+    //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-forge: ${rootProject.rei_version}"
 
-    modRuntimeOnly "top.theillusivec4.curios:curios-forge:${rootProject.curiosVersion}"
-    modCompileOnly "top.theillusivec4.curios:curios-forge:${rootProject.curiosVersion}:api"
 }
 
 processResources {
     inputs.property "version", project.version
+}
 
-    filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from(sourceSets.main.resources.srcDirs) {
+        include('**/data/spirit/recipes/**')
+        expand "common": "forge"
     }
 }
 
-shadowJar {
-    exclude "fabric.mod.json"
-
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
-}
-
-remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    classifier null
-}
-
-jar {
-    classifier "dev"
-}
-
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-}
 
 components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
@@ -86,14 +57,37 @@ components.java {
 
 publishing {
     publications {
-        mavenForge(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
-            from components.java
+        mavenJava(MavenPublication) {
+            artifact remapJar
+            artifactId = rootProject.mod_id + "-" + project.name + "-" + project.minecraft_version
+            pom {
+                name = 'Spirit'
+                description = 'A magic mod revolving around souls originally inspired by Soul Shards'
+                url = 'https://github.com/terrarium-earth/Spirit'
+
+                scm {
+                    connection = 'git:https://github.com/terrarium-earth/Spirit.git'
+                    developerConnection = 'git:https://github.com/terrarium-earth/Spirit.git'
+                    url = 'https://github.com/terrarium-earth/Spirit'
+                }
+
+                licenses {
+                    license {
+                        name = 'ARR'
+                    }
+                }
+            }
         }
     }
 
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
+        maven {
+            url = "https://maven.resourcefulbees.com/repository/codexadrian/"
+            credentials {
+                username ENV.MAVEN_USERNAME
+                password ENV.MAVEN_PASSWORD
+            }
+        }
     }
 }

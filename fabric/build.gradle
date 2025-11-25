@@ -2,13 +2,15 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
-loom {
-    accessWidenerPath.set(project(":common").file("src/main/resources/spirit.accesswidener"))
-}
+def ENV = System.getenv()
 
 architectury {
     platformSetupLoomIde()
     fabric()
+}
+
+loom {
+    accessWidenerPath.set(project(":fabric").file("src/main/resources/${mod_id}.accesswidener"))
 }
 
 configurations {
@@ -20,22 +22,20 @@ configurations {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
-    modApi "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version+$rootProject.minecraft_version"
-
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+    include modApi("com.teamresourceful.resourcefullib:resourcefullib-fabric-$rootProject.resourcefullib_version")
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
-    include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:0.2.0-beta.9")))
+    modApi("com.terraformersmc:modmenu:${modmenu_version}")
+    modLocalRuntime "dev.architectury:architectury-fabric:6.2.43"
+    modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") {
+        exclude group: "net.fabricmc.fabric-api"
+    }
 
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:$rootProject.rei_version"
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:$rootProject.rei_version"
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rootProject.rei_version"
-    modLocalRuntime "dev.architectury:architectury-fabric:7.0.66"
-
-    modApi "com.teamresourceful.resourcefullib:resourcefullib-fabric-1.20:$rootProject.resourcefullib_version"
-    modApi "earth.terrarium.botarium:botarium-fabric-1.20.1:$rootProject.botarium_version"
-    modImplementation "dev.emi:trinkets:$rootProject.trinketsVersion"
+    //modCompileOnly("mezz.jei:jei-${minecraft_version}-fabric:$jei_version") {exclude group: "mezz.jei"}
+    //modRuntimeOnly("mezz.jei:jei-${project.jei_minecraft_release}-fabric:${project.jei_version}")
 }
 
 processResources {
@@ -46,19 +46,32 @@ processResources {
     }
 }
 
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from(sourceSets.main.resources.srcDirs) {
+        include('**/data/spirit/recipes/**')
+        expand "dependent": "c"
+    }
+}
+
+
 shadowJar {
+    exclude "architectury.common.json"
+
     configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    archiveClassifier.set("dev-shadow")
 }
 
 remapJar {
+    injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
+    archiveClassifier.set(null)
 }
 
 jar {
-    classifier "dev"
+    archiveClassifier.set("dev")
+    archivesBaseName = "$mod_id-fabric-$minecraft_version"
 }
 
 sourcesJar {
@@ -73,16 +86,43 @@ components.java {
     }
 }
 
+repositories {
+    //maven { url = "https://nexus.resourcefulbees.com/repository/maven-public/"}
+}
+
 publishing {
     publications {
         mavenFabric(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
-            from components.java
+            artifact remapJar
+            artifactId = rootProject.mod_id + "-" + project.name + "-" + project.minecraft_version
+            pom {
+                name = 'Spirit'
+                description = 'A magic mod revolving around souls originally inspired by Soul Shards'
+                url = 'https://github.com/terrarium-earth/Spirit'
+
+                scm {
+                    connection = 'git:https://github.com/terrarium-earth/Spirit.git'
+                    developerConnection = 'git:https://github.com/terrarium-earth/Spirit.git'
+                    url = 'https://github.com/terrarium-earth/Spirit'
+                }
+
+                licenses {
+                    license {
+                        name = 'ARR'
+                    }
+                }
+            }
         }
     }
 
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-    }
+//    repositories {
+//        maven {
+//            url = "https://maven.resourcefulbees.com/repository/codexadrian/"
+//            credentials {
+//                username ENV.MAVEN_USERNAME
+//                password ENV.MAVEN_PASSWORD
+//            }
+//        }
+//    }
 }

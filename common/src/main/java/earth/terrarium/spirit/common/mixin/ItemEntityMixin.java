@@ -1,6 +1,6 @@
-package earth.terrarium.spirit.common.mixin;
+package me.codexadrian.spirit.mixin;
 
-import earth.terrarium.spirit.api.utils.EngulfableItem;
+import me.codexadrian.spirit.EngulfableItem;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -18,9 +18,12 @@ public abstract class ItemEntityMixin implements EngulfableItem {
     int engulfTime = 0;
     int maxEngulfTime = 0;
 
-    private static final EntityDataAccessor<Boolean> RECIPE_OUTPUT = SynchedEntityData.defineId(ItemEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> ENGULF_TIME = SynchedEntityData.defineId(ItemEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> MAX_ENGULF_TIME = SynchedEntityData.defineId(ItemEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> RECIPE_OUTPUT = SynchedEntityData.defineId(ItemEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> ENGULF_TIME = SynchedEntityData.defineId(ItemEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> MAX_ENGULF_TIME = SynchedEntityData.defineId(ItemEntity.class,
+            EntityDataSerializers.INT);
 
     @Inject(method = "defineSynchedData", at = @At("TAIL"))
     private void defineCorrupted(CallbackInfo ci) {
@@ -85,8 +88,10 @@ public abstract class ItemEntityMixin implements EngulfableItem {
         if (isEngulfed() && !itemEntity.level().isClientSide()) {
             if (engulfTime % 5 == 0) {
                 ServerLevel sLevel = (ServerLevel) itemEntity.level();
-                sLevel.sendParticles(ParticleTypes.SOUL, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), 10, 0.5, 0.5, 0.5, 0);
-                sLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), 10, 0.5, 0.5, 0.5, 0);
+                sLevel.sendParticles(ParticleTypes.SOUL, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), 10,
+                        0.5, 0.5, 0.5, 0);
+                sLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, itemEntity.getX(), itemEntity.getY(),
+                        itemEntity.getZ(), 10, 0.5, 0.5, 0.5, 0);
             }
             engulfTime++;
         }
