@@ -1,7 +1,7 @@
 package me.codexadrian.spirit.platform.fabric.services;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -46,6 +46,6 @@ public interface IRegistryHelper {
         T create(BlockPos blockPos, BlockState blockState);
     }
 
-    Supplier<CreativeModeTab> registerCreativeTab(ResourceLocation tab, Supplier<ItemStack> supplier,
+    Supplier<CreativeModeTab> registerCreativeTab(Identifier tab, Supplier<ItemStack> supplier,
             CreativeModeTab.DisplayItemsGenerator displayItems);
 }

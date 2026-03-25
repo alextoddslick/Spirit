@@ -7,7 +7,7 @@ import me.codexadrian.spirit.Spirit;
 import me.codexadrian.spirit.data.MobTrait;
 import me.codexadrian.spirit.data.MobTraitSerializer;
 import me.codexadrian.spirit.entity.SoulArrowEntity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record KnockbackTrait(int knockback) implements MobTrait<KnockbackTrait> {
 
@@ -30,8 +30,8 @@ public record KnockbackTrait(int knockback) implements MobTrait<KnockbackTrait> 
                 .apply(instance, KnockbackTrait::new));
 
         @Override
-        public ResourceLocation id() {
-            return ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "knockback");
+        public Identifier id() {
+            return Identifier.fromNamespaceAndPath(Spirit.MODID, "knockback");
         }
 
         @Override

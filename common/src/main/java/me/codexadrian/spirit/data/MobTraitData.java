@@ -5,8 +5,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.codexadrian.spirit.registry.SpiritMisc;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -25,12 +29,12 @@ public record MobTraitData(EntityType<?> entity, List<MobTrait<?>> traits)
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends net.minecraft.world.item.crafting.Recipe<net.minecraft.world.item.crafting.RecipeInput>> getSerializer() {
         return SpiritMisc.MOB_TRAIT_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends net.minecraft.world.item.crafting.Recipe<net.minecraft.world.item.crafting.RecipeInput>> getType() {
         return SpiritMisc.MOB_TRAIT.get();
     }
 
@@ -47,13 +51,13 @@ public record MobTraitData(EntityType<?> entity, List<MobTrait<?>> traits)
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return true;
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
     }
 
     @Override
-    public net.minecraft.world.item.ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider registries) {
-        return net.minecraft.world.item.ItemStack.EMPTY;
+    public RecipeBookCategory recipeBookCategory() {
+        return new RecipeBookCategory();
     }
 
     public static Optional<MobTraitData> getEffectForEntity(EntityType<?> entityType, RecipeManager manager) {
@@ -67,6 +71,6 @@ public record MobTraitData(EntityType<?> entity, List<MobTrait<?>> traits)
 
     @SuppressWarnings("ConstantConditions")
     public static Optional<MobTraitData> getEffect(String id, RecipeManager manager) {
-        return manager.byKey(ResourceLocation.tryParse(id)).map(holder -> (MobTraitData) holder.value());
+        return manager.byKey(ResourceKey.create(Registries.RECIPE, Identifier.tryParse(id))).map(holder -> (MobTraitData) holder.value());
     }
 }

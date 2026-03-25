@@ -13,10 +13,10 @@ public class CodecUtils {
             ingredient -> CodecUtils.writeIngredient(ingredient, JsonOps.INSTANCE));
 
     public static DataResult<Ingredient> readIngredient(Dynamic<?> dynamic) {
-        return Ingredient.CODEC_NONEMPTY.parse(dynamic);
+        return Ingredient.CODEC.parse(dynamic);
     }
 
     public static <T> Dynamic<T> writeIngredient(Ingredient ingredient, DynamicOps<T> ops) {
-        return new Dynamic<>(ops, Ingredient.CODEC_NONEMPTY.encodeStart(ops, ingredient).getOrThrow());
+        return new Dynamic<>(ops, Ingredient.CODEC.encodeStart(ops, ingredient).getOrThrow());
     }
 }

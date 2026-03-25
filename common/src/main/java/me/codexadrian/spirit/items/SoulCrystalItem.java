@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class SoulCrystalItem extends Item {
 
@@ -31,8 +32,10 @@ public class SoulCrystalItem extends Item {
         super(properties);
     }
 
+    @Override
     public void appendHoverText(@NotNull ItemStack itemStack, @NotNull TooltipContext context,
-            @NotNull List<Component> list, @NotNull TooltipFlag tooltipFlag) {
+            @NotNull net.minecraft.world.item.component.TooltipDisplay tooltipDisplay,
+            @NotNull Consumer<Component> list, @NotNull TooltipFlag tooltipFlag) {
         Level level = Minecraft.getInstance().level;
         Component entityOrNone = Optional.ofNullable(SoulUtils.getSoulCrystalType(itemStack))
                 .flatMap(EntityType::byString)
@@ -41,12 +44,12 @@ public class SoulCrystalItem extends Item {
                                 SoulUtils.getSoulsInCrystal(itemStack), entityType.getDescription())
                         .withStyle(EntityRarity.getRarity(entityType).color))
                 .orElse(Component.translatable("item.spirit.soul_crystal.none"));
-        list.add(Component.translatable("item.spirit.soul_crystal.tooltip", entityOrNone)
+        list.accept(Component.translatable("item.spirit.soul_crystal.tooltip", entityOrNone)
                 .withStyle(ChatFormatting.GRAY));
         if (SoulUtils.getSoulsInCrystal(itemStack) > 0) {
             ClientUtils.shiftTooltip(list, shiftToolTipComponents(itemStack, level), List.of());
         } else {
-            list.add(Component.translatable("item.spirit.soul_crystal.info_empty").withStyle(ChatFormatting.GRAY));
+            list.accept(Component.translatable("item.spirit.soul_crystal.info_empty").withStyle(ChatFormatting.GRAY));
         }
     }
 

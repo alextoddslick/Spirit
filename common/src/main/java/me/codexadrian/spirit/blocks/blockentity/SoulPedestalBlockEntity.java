@@ -8,7 +8,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -79,10 +84,10 @@ public class SoulPedestalBlockEntity extends BlockEntity {
                     }
                 } else if (RecipeUtils.validatePedestals(blockPos, level1,
                         new ArrayList<>(recipe.ingredients()), true)) {
-                    Entity entity = recipe.entityOutput().create(level1);
+                    Entity entity = recipe.entityOutput().create(level1, EntitySpawnReason.TRIGGERED);
                     if (entity != null) {
                         if (recipe.outputNbt().isPresent())
-                            entity.load(recipe.outputNbt().get());
+                            entity.load(TagValueInput.create(ProblemReporter.DISCARDING, level1.registryAccess(), recipe.outputNbt().get()));
                         entity.setPos(blockPos.getX() + 0.5, blockPos.getY() + 0.75, blockPos.getZ() + 0.5);
                         level1.addFreshEntity(entity);
                         for (int i = 0; i < 10; i++) {
@@ -100,49 +105,41 @@ public class SoulPedestalBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(@NotNull CompoundTag compoundTag, net.minecraft.core.HolderLookup.Provider provider) {
-        super.loadAdditional(compoundTag, provider);
-        if (compoundTag.contains("Soul")) {
-            setType(BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(compoundTag.getString("Soul"))));
-        } else {
-            setType(null);
-        }
-        if (compoundTag.contains("PedestalRecipe") && hasLevel()) {
-            var recipe = PedestalRecipe.getEffect(compoundTag.getString("PedestalRecipe"),
-                    getLevel().getRecipeManager());
-            recipe.ifPresent(pedestalRecipe -> containedRecipe = pedestalRecipe);
-        } else {
-            containedRecipe = null;
-        }
-        burnTime = compoundTag.getInt("BurnTime");
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        input.getString("Soul").ifPresentOrElse(
+                soul -> setType(BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.tryParse(soul))),
+                () -> setType(null)
+        );
+        input.getString("PedestalRecipe").ifPresentOrElse(recipeId -> {
+            if (hasLevel()) {
+                var recipe = PedestalRecipe.getEffect(recipeId, ((net.minecraft.world.item.crafting.RecipeManager) getLevel().recipeAccess()));
+                recipe.ifPresent(pedestalRecipe -> containedRecipe = pedestalRecipe);
+            }
+        }, () -> containedRecipe = null);
+        burnTime = input.getIntOr("BurnTime", 0);
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag compoundTag, net.minecraft.core.HolderLookup.Provider provider) {
-        super.saveAdditional(compoundTag, provider);
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
         if (type != null) {
-            compoundTag.putString("Soul", BuiltInRegistries.ENTITY_TYPE.getKey(type).toString());
-        } else {
-            compoundTag.remove("Soul");
+            output.putString("Soul", BuiltInRegistries.ENTITY_TYPE.getKey(type).toString());
         }
         if (containedRecipe != null) {
-            compoundTag.putString("PedestalRecipe", "spirit:" + containedRecipe.hashCode());
-        } else {
-            compoundTag.remove("PedestalRecipe");
+            output.putString("PedestalRecipe", "spirit:" + containedRecipe.hashCode());
         }
-        compoundTag.putInt("BurnTime", burnTime);
+        output.putInt("BurnTime", burnTime);
     }
 
     @Override
     public CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, provider);
-        return tag;
+        return this.saveCustomOnly(provider);
     }
 
     public Entity getOrCreateEntity() {
         if (this.entity == null && this.hasLevel() && this.type != null) {
-            this.entity = this.type.create(getLevel());
+            this.entity = this.type.create(getLevel(), EntitySpawnReason.TRIGGERED);
             if (entity instanceof Corrupted corrupted)
                 corrupted.setCorrupted();
         }

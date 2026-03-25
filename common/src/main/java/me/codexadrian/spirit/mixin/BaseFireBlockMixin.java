@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -23,9 +24,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BaseFireBlockMixin {
 
     @Inject(method = "entityInside", at = @At("HEAD"), cancellable = true)
-    private void onBurn(BlockState blockState, Level level, BlockPos blockPos, Entity entity, CallbackInfo ci) {
+    private void onBurn(BlockState blockState, Level level, BlockPos blockPos, Entity entity, InsideBlockEffectApplier effectApplier, boolean bl, CallbackInfo ci) {
         if (blockState.is(Blocks.SOUL_FIRE) && entity instanceof ItemEntity itemE && level instanceof ServerLevel serverLevel) {
-            for (var recipe : SoulEngulfingRecipe.getRecipesForStack(itemE.getItem(), level.getRecipeManager())) {
+            for (var recipe : SoulEngulfingRecipe.getRecipesForStack(itemE.getItem(), serverLevel.recipeAccess())) {
                 if (recipe.validateRecipe(blockPos, itemE, serverLevel)) {
                     ci.cancel();
                     break;

@@ -5,54 +5,48 @@ import me.codexadrian.spirit.data.MobTraitData;
 import me.codexadrian.spirit.data.ToolType;
 import me.codexadrian.spirit.registry.SpiritItems;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ToolUtils {
 
     @NotNull
-    public static InteractionResultHolder<ItemStack> handleToolDrawing(Player player,
+    public static InteractionResult handleToolDrawing(Player player,
             @NotNull InteractionHand interactionHand) {
-        ItemStack itemStack = player.getItemInHand(interactionHand);
         ItemStack crystal = SoulUtils.findCrystal(player, null, true);
         if (player.getAbilities().instabuild || (!crystal.isEmpty() && SoulUtils.getSoulsInCrystal(crystal) > 0)) {
             player.startUsingItem(interactionHand);
-            return InteractionResultHolder.consume(itemStack);
+            return InteractionResult.CONSUME;
         }
-        return InteractionResultHolder.fail(itemStack);
+        return InteractionResult.FAIL;
     }
 
     public static InteractionResult handleOnHitBlock(InteractionResult result, ToolType type, Player player,
             ItemStack tool, Level level, BlockPos pos) {
-        if (result == InteractionResult.CONSUME) {
+        if (result.consumesAction()) {
             ItemStack soulCrystal = SoulUtils.findCrystal(player, null, true, true, false);
             if (soulCrystal.is(SpiritItems.SOUL_CRYSTAL.get()) && SoulUtils.getSoulsInCrystal(soulCrystal) > 0) {
-                if (SoulUtils.getTag(tool).getBoolean("Charged")) {
-                    var entityEffect = MobTraitData.getEffectForEntity(
-                            BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation
-                                    .tryParse(Objects.requireNonNull(SoulUtils.getSoulCrystalType(soulCrystal)))),
-                            level.getRecipeManager());
+                if (SoulUtils.getTag(tool).getBooleanOr("Charged", false)) {
+                    var entityEffect = BuiltInRegistries.ENTITY_TYPE.get(Identifier
+                                    .tryParse(Objects.requireNonNull(SoulUtils.getSoulCrystalType(soulCrystal))))
+                                    .map(net.minecraft.core.Holder::value)
+                                    .flatMap(et -> MobTraitData.getEffectForEntity(et, ((ServerLevel) level).recipeAccess()));
                     if (entityEffect.isPresent()) {
                         for (MobTrait<?> trait : entityEffect.get().traits()) {
                             trait.onHitBlock(type, player, level.getBlockState(pos), level, pos);
@@ -70,11 +64,11 @@ public class ToolUtils {
             Level level, BlockPos blockPos) {
         ItemStack soulCrystal = SoulUtils.findCrystal(player, null, true, true, false);
         if (soulCrystal.is(SpiritItems.SOUL_CRYSTAL.get()) && SoulUtils.getSoulsInCrystal(soulCrystal) > 0) {
-            if (SoulUtils.getTag(itemStack).getBoolean("Charged")) {
-                var entityEffect = MobTraitData.getEffectForEntity(
-                        BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation
-                                .tryParse(Objects.requireNonNull(SoulUtils.getSoulCrystalType(soulCrystal)))),
-                        level.getRecipeManager());
+            if (SoulUtils.getTag(itemStack).getBooleanOr("Charged", false)) {
+                var entityEffect = BuiltInRegistries.ENTITY_TYPE.get(Identifier
+                                .tryParse(Objects.requireNonNull(SoulUtils.getSoulCrystalType(soulCrystal))))
+                                .map(net.minecraft.core.Holder::value)
+                                .flatMap(et -> MobTraitData.getEffectForEntity(et, ((ServerLevel) level).recipeAccess()));
                 if (entityEffect.isPresent()) {
                     for (MobTrait<?> trait : entityEffect.get().traits()) {
                         trait.onHitBlock(type, player, blockState, level, blockPos);
@@ -90,11 +84,11 @@ public class ToolUtils {
         ItemStack soulCrystal = SoulUtils.findCrystal(player, null, true, true, false);
         if (!soulCrystal.isEmpty() && soulCrystal.is(SpiritItems.SOUL_CRYSTAL.get())
                 && SoulUtils.getSoulsInCrystal(soulCrystal) > 0) {
-            if (SoulUtils.getTag(itemStack).getBoolean("Charged")) {
-                var entityEffect = MobTraitData.getEffectForEntity(
-                        BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation
-                                .tryParse(Objects.requireNonNull(SoulUtils.getSoulCrystalType(soulCrystal)))),
-                        player.level().getRecipeManager());
+            if (SoulUtils.getTag(itemStack).getBooleanOr("Charged", false)) {
+                var entityEffect = BuiltInRegistries.ENTITY_TYPE.get(Identifier
+                                .tryParse(Objects.requireNonNull(SoulUtils.getSoulCrystalType(soulCrystal))))
+                                .map(net.minecraft.core.Holder::value)
+                                .flatMap(et -> MobTraitData.getEffectForEntity(et, ((ServerLevel) player.level()).recipeAccess()));
                 if (entityEffect.isPresent()) {
                     for (MobTrait<?> trait : entityEffect.get().traits()) {
                         trait.onHitEntity(type, player, victim);
@@ -106,12 +100,12 @@ public class ToolUtils {
         }
     }
 
-    public static void appendEmpoweredText(@NotNull ItemStack itemStack, @NotNull List<Component> list) {
-        if (SoulUtils.getTag(itemStack).getBoolean("Charged")) {
-            list.add(Component.translatable("spirit.item.soul_steel_tool.empowered",
+    public static void appendEmpoweredText(@NotNull ItemStack itemStack, @NotNull Consumer<Component> list) {
+        if (SoulUtils.getTag(itemStack).getBooleanOr("Charged", false)) {
+            list.accept(Component.translatable("spirit.item.soul_steel_tool.empowered",
                     Component.keybind("key.spirit.toggle").withStyle(ChatFormatting.RED)));
         } else {
-            list.add(Component.translatable("spirit.item.soul_steel_tool.unpowered",
+            list.accept(Component.translatable("spirit.item.soul_steel_tool.unpowered",
                     Component.keybind("key.spirit.toggle").withStyle(ChatFormatting.AQUA)));
         }
         Component description = Component.translatable("item.spirit.soul_steel_tools.description")

@@ -1,9 +1,7 @@
 {
   "type": "spirit:soul_engulfing",
   "input": {
-    "ingredient": {
-      "item": "spirit:broken_spawner"
-    },
+    "ingredient": "spirit:broken_spawner",
     "multiblock": {
       "pattern": [
         [

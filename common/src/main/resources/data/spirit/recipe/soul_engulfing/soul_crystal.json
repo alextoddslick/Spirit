@@ -1,9 +1,7 @@
 {
   "type": "spirit:soul_engulfing",
   "input": {
-    "ingredient": {
-      "item": "spirit:crude_soul_crystal"
-    },
+    "ingredient": "spirit:crude_soul_crystal",
     "multiblock": {
       "pattern": [
         [

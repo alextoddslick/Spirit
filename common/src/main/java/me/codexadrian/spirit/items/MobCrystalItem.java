@@ -3,12 +3,12 @@ package me.codexadrian.spirit.items;
 import me.codexadrian.spirit.data.Tier;
 import me.codexadrian.spirit.utils.SoulUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MobCrystalItem extends Item {
     public MobCrystalItem(Properties properties) {
@@ -26,23 +27,24 @@ public class MobCrystalItem extends Item {
 
     @Override
     public void appendHoverText(@NotNull ItemStack itemStack, Item.TooltipContext context,
-            @NotNull List<Component> list, @NotNull TooltipFlag tooltipFlag) {
-        super.appendHoverText(itemStack, context, list, tooltipFlag);
+            @NotNull net.minecraft.world.item.component.TooltipDisplay tooltipDisplay,
+            @NotNull Consumer<Component> list, @NotNull TooltipFlag tooltipFlag) {
+        super.appendHoverText(itemStack, context, tooltipDisplay, list, tooltipFlag);
         CompoundTag tag = SoulUtils.getTag(itemStack);
         if (tag != null) {
             if (tag.contains("EntityType")) {
                 MutableComponent tooltip = Component.translatable("spirit.item.soul_crystal_shard.tooltip",
                         Component.translatable(Util.makeDescriptionId("entity",
-                                ResourceLocation.tryParse(tag.getString("EntityType")))));
-                list.add(tooltip.withStyle(ChatFormatting.GRAY));
+                                Identifier.tryParse(tag.getStringOr("EntityType", "")))));
+                list.accept(tooltip.withStyle(ChatFormatting.GRAY));
             } else {
                 MutableComponent unboundTooltip = Component
                         .translatable("spirit.item.crude_soul_crystal.tooltip_empty");
-                list.add(unboundTooltip.withStyle(ChatFormatting.DARK_GRAY));
+                list.accept(unboundTooltip.withStyle(ChatFormatting.DARK_GRAY));
             }
         } else {
             MutableComponent unboundTooltip = Component.translatable("spirit.item.crude_soul_crystal.tooltip_empty");
-            list.add(unboundTooltip.withStyle(ChatFormatting.DARK_GRAY));
+            list.accept(unboundTooltip.withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 

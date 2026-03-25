@@ -10,7 +10,7 @@ import me.codexadrian.spirit.data.ToolType;
 import me.codexadrian.spirit.entity.SoulArrowEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -63,8 +63,8 @@ public class FireTrait implements MobTrait<FireTrait> {
                 .apply(instance, FireTrait::new));
 
         @Override
-        public ResourceLocation id() {
-            return ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "fire");
+        public Identifier id() {
+            return Identifier.fromNamespaceAndPath(Spirit.MODID, "fire");
         }
 
         @Override

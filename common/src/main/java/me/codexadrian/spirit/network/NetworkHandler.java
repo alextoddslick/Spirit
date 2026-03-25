@@ -4,7 +4,7 @@ import dev.architectury.injectables.annotations.ExpectPlatform;
 import me.codexadrian.spirit.network.messages.ToggleEmpoweredPacket;
 import me.codexadrian.spirit.network.packet.IPacket;
 import me.codexadrian.spirit.network.packet.IPacketHandler;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class NetworkHandler {
 
@@ -13,7 +13,7 @@ public class NetworkHandler {
     }
 
     @ExpectPlatform
-    public static <T> void registerClientToServerPacket(ResourceLocation location, IPacketHandler<T> handler, Class<T> tClass) {
+    public static <T> void registerClientToServerPacket(Identifier location, IPacketHandler<T> handler, Class<T> tClass) {
     }
 
     public static void register() {

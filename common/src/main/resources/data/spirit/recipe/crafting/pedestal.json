@@ -1,9 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "key": {
-    "#": {
-      "item": "spirit:soul_slate"
-    }
+    "#": "spirit:soul_slate"
   },
   "pattern": [
     "###",
@@ -11,6 +9,6 @@
     "###"
   ],
   "result": {
-    "item": "spirit:pedestal"
+    "id": "spirit:pedestal"
   }
 }

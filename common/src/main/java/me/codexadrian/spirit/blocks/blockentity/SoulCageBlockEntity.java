@@ -9,7 +9,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.Entity;
@@ -109,30 +112,28 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
     }
 
     @Override
-    protected void loadAdditional(@NotNull CompoundTag compoundTag, HolderLookup.Provider provider) {
-        super.loadAdditional(compoundTag, provider);
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
         type = null;
-        soulCrystal = ItemStack.parseOptional(provider, compoundTag.getCompound("crystal"));
+        soulCrystal = input.read("crystal", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         setType();
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag compoundTag, HolderLookup.Provider provider) {
-        super.saveAdditional(compoundTag, provider);
-        compoundTag.put("crystal", soulCrystal.saveOptional(provider));
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        output.store("crystal", ItemStack.OPTIONAL_CODEC, soulCrystal);
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, provider);
-        return tag;
+        return this.saveCustomOnly(provider);
     }
 
     public void setType() {
         String soulCrystalType = SoulUtils.getSoulCrystalType(soulCrystal);
         if (soulCrystalType != null) {
-            type = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(soulCrystalType));
+            type = BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.tryParse(soulCrystalType));
         } else {
             type = null;
         }
@@ -140,7 +141,7 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
 
     public Entity getOrCreateEntity() {
         if (this.entity == null && this.getLevel() != null) {
-            this.entity = this.type.create(getLevel());
+            this.entity = this.type.create(getLevel(), EntitySpawnReason.TRIGGERED);
             if (entity instanceof Corrupted corrupted)
                 corrupted.setCorrupted();
         }

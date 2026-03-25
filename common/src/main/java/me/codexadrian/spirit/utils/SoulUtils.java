@@ -29,6 +29,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 
 public class SoulUtils {
@@ -98,9 +99,9 @@ public class SoulUtils {
         CompoundTag tag = getTag(itemStack);
         if (!tag.isEmpty()) {
             if (itemStack.is(SpiritItems.SOUL_CRYSTAL.get())) {
-                return tag.getCompound("StoredEntity").getInt("Souls");
+                return tag.getCompoundOrEmpty("StoredEntity").getIntOr("Souls", 0);
             } else if (itemStack.is(SpiritItems.CRUDE_SOUL_CRYSTAL.get())) {
-                return tag.getInt("Souls");
+                return tag.getIntOr("Souls", 0);
             } else if (itemStack.is(SpiritItems.SOUL_CRYSTAL_SHARD.get())) {
                 return tag.contains("EntityType") ? 1 : 0;
             }
@@ -146,14 +147,14 @@ public class SoulUtils {
         CompoundTag tag = getTag(crystal);
         if (crystal.is(SpiritItems.SOUL_CRYSTAL.get())) {
             if (!tag.isEmpty()) {
-                String string = tag.getCompound("StoredEntity").getString("Type");
+                String string = tag.getCompoundOrEmpty("StoredEntity").getStringOr("Type", "");
                 return string.isBlank() ? null : string;
             }
             return null;
         }
         if (crystal.is(SpiritItems.SOUL_CRYSTAL_SHARD.get())) {
             if (!tag.isEmpty()) {
-                String string = tag.getString("EntityType");
+                String string = tag.getStringOr("EntityType", "");
                 return string.isBlank() ? null : string;
             }
             return null;
@@ -166,17 +167,17 @@ public class SoulUtils {
         ItemStack returnStack;
         returnStack = searchTrinkets(player, victim);
         if (returnStack.isEmpty() && canFindMobCrystal)
-            returnStack = getMobCrystal(player.getHandSlots());
+            returnStack = getMobCrystal(List.of(player.getMainHandItem(), player.getOffhandItem()));
         if (returnStack.isEmpty())
-            returnStack = getSoulCrystal(player.getHandSlots(), victim, mustContainSouls);
+            returnStack = getSoulCrystal(List.of(player.getMainHandItem(), player.getOffhandItem()), victim, mustContainSouls);
         if (returnStack.isEmpty() && !mustBeSoulCrystal)
-            returnStack = getCrudeSoulCrystal(player.getHandSlots(), mustContainSouls);
+            returnStack = getCrudeSoulCrystal(List.of(player.getMainHandItem(), player.getOffhandItem()), mustContainSouls);
         if (returnStack.isEmpty() && canFindMobCrystal)
-            returnStack = getMobCrystal(player.getInventory().items);
+            returnStack = getMobCrystal(player.getInventory().getNonEquipmentItems());
         if (returnStack.isEmpty())
-            returnStack = getSoulCrystal(player.getInventory().items, victim, mustContainSouls);
+            returnStack = getSoulCrystal(player.getInventory().getNonEquipmentItems(), victim, mustContainSouls);
         if (returnStack.isEmpty() && !mustBeSoulCrystal)
-            returnStack = getCrudeSoulCrystal(player.getInventory().items, mustContainSouls);
+            returnStack = getCrudeSoulCrystal(player.getInventory().getNonEquipmentItems(), mustContainSouls);
         return returnStack;
     }
 
@@ -282,7 +283,7 @@ public class SoulUtils {
                 tag.put("StoredEntity", newTag);
                 storedEntity = newTag;
             } else {
-                storedEntity = tag.getCompound("StoredEntity");
+                storedEntity = tag.getCompoundOrEmpty("StoredEntity");
             }
 
             // We must update the stack with the modified tag immediately if we added
@@ -301,7 +302,7 @@ public class SoulUtils {
             setTag(soulCrystal, tag);
 
             Tier tier = SoulUtils.getNextTier(soulCrystal, serverLevel);
-            int currentSouls = storedEntity.getInt("Souls");
+            int currentSouls = storedEntity.getIntOr("Souls", 0);
 
             int incrementAmount = getSoulHarvestAmount(player);
 
@@ -313,14 +314,14 @@ public class SoulUtils {
                 System.out.println("SoulUtils: No next tier found.");
             }
 
-            if (tier != null && storedEntity.getInt("Souls") + incrementAmount >= tier.requiredSouls()) {
+            if (tier != null && storedEntity.getIntOr("Souls", 0) + incrementAmount >= tier.requiredSouls()) {
                 player.displayClientMessage(Component.translatable("item.spirit.soul_crystal.upgrade_message")
                         .withStyle(ChatFormatting.AQUA), true);
                 serverLevel.sendParticles(ParticleTypes.SOUL, player.getX(), player.getY(), player.getZ(), 40, 1, 2, 1,
                         0);
             }
 
-            storedEntity.putInt("Souls", storedEntity.getInt("Souls") + incrementAmount);
+            storedEntity.putInt("Souls", storedEntity.getIntOr("Souls", 0) + incrementAmount);
             setTag(soulCrystal, tag);
         }
     }
@@ -337,16 +338,16 @@ public class SoulUtils {
         }
         if (!tag.isEmpty()) {
             if (stack.is(SpiritItems.SOUL_CRYSTAL.get())) {
-                CompoundTag storedEntity = tag.getCompound("StoredEntity");
+                CompoundTag storedEntity = tag.getCompoundOrEmpty("StoredEntity");
                 storedEntity.putInt("Souls",
                         Mth.clamp(getSoulsInCrystal(stack) + deviation, 0, SoulUtils.getMaxSouls(stack, level)));
-                if (storedEntity.getInt("Souls") == 0) {
+                if (storedEntity.getIntOr("Souls", 0) == 0) {
                     tag = new CompoundTag(); // Clear tag
                 }
             } else if (stack.is(SpiritItems.CRUDE_SOUL_CRYSTAL.get())) {
                 tag.putInt("Souls",
                         Mth.clamp(getSoulsInCrystal(stack) + deviation, 0, SpiritConfig.getCrudeSoulCrystalCap()));
-                if (tag.getInt("Souls") == 0) {
+                if (tag.getIntOr("Souls", 0) == 0) {
                     tag = new CompoundTag(); // Clear tag
                 }
             }
@@ -383,11 +384,11 @@ public class SoulUtils {
         if (player.getMainHandItem().is(Spirit.SOUL_STEEL_MAINHAND)
                 || player.getOffhandItem().is(Spirit.SOUL_STEEL_OFFHAND))
             returnAmount++;
-        if (player.level().registryAccess().registry(net.minecraft.core.registries.Registries.ENCHANTMENT)
+        if (player.level().registryAccess().lookup(net.minecraft.core.registries.Registries.ENCHANTMENT)
                 .isPresent()) {
             var registry = player.level().registryAccess()
-                    .registry(net.minecraft.core.registries.Registries.ENCHANTMENT).get();
-            var holder = registry.getHolder(SpiritMisc.SOUL_REAPER);
+                    .lookup(net.minecraft.core.registries.Registries.ENCHANTMENT).get();
+            var holder = registry.get(SpiritMisc.SOUL_REAPER);
             if (holder.isPresent()) {
                 return returnAmount + EnchantmentHelper.getItemEnchantmentLevel(holder.get(), player.getMainHandItem());
             }
@@ -405,7 +406,7 @@ public class SoulUtils {
 
     public static boolean isEmpowered(ItemStack stack) {
         CompoundTag tag = getTag(stack);
-        return tag.contains("Charged") && tag.getBoolean("Charged");
+        return tag.getBooleanOr("Charged", false);
     }
 
     public static void setEmpowered(ItemStack stack, boolean empowered) {

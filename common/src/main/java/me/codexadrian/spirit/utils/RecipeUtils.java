@@ -1,7 +1,7 @@
 package me.codexadrian.spirit.utils;
 
 import me.codexadrian.spirit.blocks.blockentity.PedestalBlockEntity;
-import net.minecraft.advancements.critereon.BlockPredicate;
+import net.minecraft.advancements.criterion.BlockPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;

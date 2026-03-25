@@ -6,7 +6,7 @@ import me.codexadrian.spirit.registry.SpiritBlocks;
 import me.codexadrian.spirit.registry.SpiritItems;
 import me.codexadrian.spirit.registry.SpiritMisc;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -28,32 +28,32 @@ public class Spirit {
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
     public static final List<Supplier<? extends ItemLike>> TAB_ITEMS = new ArrayList<>();
     public static final Supplier<CreativeModeTab> SPIRIT = Services.REGISTRY.registerCreativeTab(
-            ResourceLocation.fromNamespaceAndPath(MODID, "itemgroup"),
+            Identifier.fromNamespaceAndPath(MODID, "itemgroup"),
             () -> new ItemStack(SpiritItems.SOUL_CRYSTAL.get()),
             (parameters, output) -> TAB_ITEMS.forEach(item -> output.accept(item.get())));
 
     public static final TagKey<EntityType<?>> BLACKLISTED_TAG = TagKey.create(Registries.ENTITY_TYPE,
-            ResourceLocation.fromNamespaceAndPath(MODID, "soul_cage_blacklisted"));
+            Identifier.fromNamespaceAndPath(MODID, "soul_cage_blacklisted"));
     public static final TagKey<EntityType<?>> REVITALIZER_TAG = TagKey.create(Registries.ENTITY_TYPE,
-            ResourceLocation.fromNamespaceAndPath("vitalize", "revitalizer_blacklist"));
+            Identifier.fromNamespaceAndPath("vitalize", "revitalizer_blacklist"));
     public static final TagKey<EntityType<?>> COLLECT_BLACKLISTED_TAG = TagKey.create(Registries.ENTITY_TYPE,
-            ResourceLocation.fromNamespaceAndPath(MODID, "collect_blacklisted"));
+            Identifier.fromNamespaceAndPath(MODID, "collect_blacklisted"));
 
     public static final TagKey<EntityType<?>> UNCOMMON = TagKey.create(Registries.ENTITY_TYPE,
-            ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "rarity/uncommon"));
+            Identifier.fromNamespaceAndPath(Spirit.MODID, "rarity/uncommon"));
     public static final TagKey<EntityType<?>> RARE = TagKey.create(Registries.ENTITY_TYPE,
-            ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "rarity/rare"));
+            Identifier.fromNamespaceAndPath(Spirit.MODID, "rarity/rare"));
     public static final TagKey<EntityType<?>> EPIC = TagKey.create(Registries.ENTITY_TYPE,
-            ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "rarity/epic"));
+            Identifier.fromNamespaceAndPath(Spirit.MODID, "rarity/epic"));
     public static final TagKey<EntityType<?>> LEGENDARY = TagKey.create(Registries.ENTITY_TYPE,
-            ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "rarity/legendary"));
+            Identifier.fromNamespaceAndPath(Spirit.MODID, "rarity/legendary"));
 
     public static final TagKey<Item> SOUL_STEEL_MAINHAND = TagKey.create(Registries.ITEM,
-            ResourceLocation.fromNamespaceAndPath(MODID, "soul_steel_mainhand"));
+            Identifier.fromNamespaceAndPath(MODID, "soul_steel_mainhand"));
     public static final TagKey<Item> SOUL_FIRE_IMMUNE = TagKey.create(Registries.ITEM,
-            ResourceLocation.fromNamespaceAndPath(MODID, "soul_fire_immune"));
+            Identifier.fromNamespaceAndPath(MODID, "soul_fire_immune"));
     public static final TagKey<Item> SOUL_STEEL_OFFHAND = TagKey.create(Registries.ITEM,
-            ResourceLocation.fromNamespaceAndPath(MODID, "soul_steel_offhand"));
+            Identifier.fromNamespaceAndPath(MODID, "soul_steel_offhand"));
 
     public static final int SOUL_COLOR = 0xFF00fffb;
 

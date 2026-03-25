@@ -1,32 +1,22 @@
 package me.codexadrian.spirit.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.codexadrian.spirit.Spirit;
-import me.codexadrian.spirit.entity.CrudeSoulEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.resources.Identifier;
 
-public class CrudeSoulEntityModel extends EntityModel<CrudeSoulEntity> {
+public class CrudeSoulEntityModel extends EntityModel<LivingEntityRenderState> {
     // This layer location should be baked with EntityRendererProvider.Context in
     // the entity renderer and passed into this model's constructor
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
-            ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "crudesoulentitymodel"), "main");
-    private final ModelPart head;
-    private final ModelPart right_arm;
-    private final ModelPart left_arm;
-    private final ModelPart body;
+            Identifier.fromNamespaceAndPath(Spirit.MODID, "crudesoulentitymodel"), "main");
 
     public CrudeSoulEntityModel(ModelPart root) {
-        this.head = root.getChild("head");
-        this.right_arm = root.getChild("right_arm");
-        this.left_arm = root.getChild("left_arm");
-        this.body = root.getChild("body");
+        super(root);
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -56,19 +46,5 @@ public class CrudeSoulEntityModel extends EntityModel<CrudeSoulEntity> {
                 PartPose.offsetAndRotation(0.0F, 20.5F, 1.0F, 0.2182F, 0.0F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 64, 32);
-    }
-
-    @Override
-    public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer vertexConsumer, int packedLight,
-            int packedOverlay, int color) {
-        head.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        right_arm.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        left_arm.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-    }
-
-    @Override
-    public void setupAnim(@NotNull CrudeSoulEntity entity, float f, float g, float h, float i, float j) {
-
     }
 }

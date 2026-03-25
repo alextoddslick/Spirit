@@ -13,12 +13,14 @@ import me.codexadrian.spirit.utils.CodecUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -43,19 +45,28 @@ public record SoulEngulfingRecipe(SoulEngulfingInput input, int duration, boolea
                 .apply(instance, SoulEngulfingRecipe::new));
     }
 
-    @Override
     public ItemStack getResultItem(HolderLookup.Provider provider) {
         return new ItemStack(this.output, this.outputAmount);
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends net.minecraft.world.item.crafting.Recipe<SoulEngulfingInput>> getSerializer() {
         return SpiritMisc.SOUL_ENGULFING_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends net.minecraft.world.item.crafting.Recipe<SoulEngulfingInput>> getType() {
         return SpiritMisc.SOUL_ENGULFING_RECIPE.get();
+    }
+
+    @Override
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
+    }
+
+    @Override
+    public RecipeBookCategory recipeBookCategory() {
+        return new RecipeBookCategory();
     }
 
     // Recipe Interface Implementation
@@ -73,10 +84,6 @@ public record SoulEngulfingRecipe(SoulEngulfingInput input, int duration, boolea
         return this.getResultItem(registries).copy();
     }
 
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return true;
-    }
 
     public boolean validateRecipe(BlockPos blockPos, ItemEntity itemE, ServerLevel level) {
         SoulfireMultiblock multiblock = input().multiblock();
@@ -106,7 +113,7 @@ public record SoulEngulfingRecipe(SoulEngulfingInput input, int duration, boolea
                     net.minecraft.world.item.component.CustomData customData = stack.getOrDefault(
                             net.minecraft.core.component.DataComponents.CUSTOM_DATA,
                             net.minecraft.world.item.component.CustomData.EMPTY);
-                    if (customData.contains("SpiritEngulfing")) {
+                    if (customData.copyTag().contains("SpiritEngulfing")) {
                         net.minecraft.nbt.CompoundTag tag = customData.copyTag();
                         tag.remove("SpiritEngulfing");
                         if (tag.isEmpty()) {
@@ -146,7 +153,7 @@ public record SoulEngulfingRecipe(SoulEngulfingInput input, int duration, boolea
                         net.minecraft.world.item.component.CustomData customData = stack.getOrDefault(
                                 net.minecraft.core.component.DataComponents.CUSTOM_DATA,
                                 net.minecraft.world.item.component.CustomData.EMPTY);
-                        if (customData.contains("SpiritEngulfing")) {
+                        if (customData.copyTag().contains("SpiritEngulfing")) {
                             net.minecraft.nbt.CompoundTag tag = customData.copyTag();
                             tag.remove("SpiritEngulfing");
                             if (tag.isEmpty()) {

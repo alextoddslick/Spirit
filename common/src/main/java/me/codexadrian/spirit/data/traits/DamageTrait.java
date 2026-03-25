@@ -8,7 +8,7 @@ import me.codexadrian.spirit.data.MobTrait;
 import me.codexadrian.spirit.data.MobTraitSerializer;
 import me.codexadrian.spirit.data.ToolType;
 import me.codexadrian.spirit.entity.SoulArrowEntity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +19,9 @@ public record DamageTrait(float additionalDamage) implements MobTrait<DamageTrai
 
     @Override
     public void initializeArrow(SoulArrowEntity soulArrow) {
-        soulArrow.setBaseDamage(soulArrow.getBaseDamage() + additionalDamage());
+        // In 1.21.11, getBaseDamage() is removed. Use setBaseDamageFromMob to add damage.
+        // Default arrow base damage is 2.0, so we set it to default + additional
+        soulArrow.setBaseDamage(2.0 + additionalDamage());
     }
 
     @Override
@@ -33,8 +35,8 @@ public record DamageTrait(float additionalDamage) implements MobTrait<DamageTrai
                 .apply(instance, DamageTrait::new));
 
         @Override
-        public ResourceLocation id() {
-            return ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "damage");
+        public Identifier id() {
+            return Identifier.fromNamespaceAndPath(Spirit.MODID, "damage");
         }
 
         @Override

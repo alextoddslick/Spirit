@@ -1,9 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "key": {
-    "#": {
-      "item": "spirit:soul_steel_ingot"
-    }
+    "#": "spirit:soul_steel_ingot"
   },
   "pattern": [
     "###",
@@ -11,6 +9,6 @@
     "###"
   ],
   "result": {
-    "item": "spirit:soul_steel_block"
+    "id": "spirit:soul_steel_block"
   }
 }

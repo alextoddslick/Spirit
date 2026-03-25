@@ -1,9 +1,7 @@
 {
   "type": "spirit:soul_engulfing",
   "input": {
-    "ingredient": {
-      "item": "minecraft:tinted_glass"
-    },
+    "ingredient": "minecraft:tinted_glass",
     "multiblock": {
       "pattern": [
         [

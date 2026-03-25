@@ -10,18 +10,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-public class SoulSteelSword extends SwordItem {
+public class SoulSteelSword extends Item {
     public SoulSteelSword(Properties properties) {
-        super(SoulMetalMaterial.INSTANCE,
-                properties.attributes(SwordItem.createAttributes(SoulMetalMaterial.INSTANCE, 3, -2.4F)));
+        super(properties.sword(SoulMetalMaterial.INSTANCE, 3, -2.4F));
     }
 
     @Override
@@ -30,16 +28,16 @@ public class SoulSteelSword extends SwordItem {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack itemStack, LivingEntity victim, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack itemStack, LivingEntity victim, LivingEntity attacker) {
         if (attacker instanceof Player player)
             ToolUtils.handleOnHitEntity(itemStack, ToolType.SWORD, victim, player);
-        return super.hurtEnemy(itemStack, victim, attacker);
+        super.hurtEnemy(itemStack, victim, attacker);
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, List<Component> list,
-            TooltipFlag tooltipFlag) {
-        super.appendHoverText(itemStack, context, list, tooltipFlag);
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, TooltipDisplay tooltipDisplay,
+            Consumer<Component> list, TooltipFlag tooltipFlag) {
+        super.appendHoverText(itemStack, context, tooltipDisplay, list, tooltipFlag);
         ToolUtils.appendEmpoweredText(itemStack, list);
     }
 }

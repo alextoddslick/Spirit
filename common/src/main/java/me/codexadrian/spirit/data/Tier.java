@@ -3,8 +3,10 @@ package me.codexadrian.spirit.data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.codexadrian.spirit.registry.SpiritMisc;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -46,16 +48,16 @@ public record Tier(
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends net.minecraft.world.item.crafting.Recipe<RecipeInput>> getSerializer() {
         return SpiritMisc.TIER_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends net.minecraft.world.item.crafting.Recipe<RecipeInput>> getType() {
         return SpiritMisc.TIER_RECIPE.get();
     }
 
-    // Recipe interface implementation for 1.21
+    // Recipe interface implementation for 1.21.11
     @Override
     public boolean matches(RecipeInput input, Level level) {
         return false;
@@ -67,13 +69,13 @@ public record Tier(
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return true;
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
     }
 
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
-        return ItemStack.EMPTY;
+    public RecipeBookCategory recipeBookCategory() {
+        return new RecipeBookCategory();
     }
 
     @Nullable
@@ -119,7 +121,7 @@ public record Tier(
 
     public static List<Tier> getTiers(Level level) {
         // In 1.21, RecipeManager#getRecipes returns holders
-        var recipes = level.getRecipeManager().getRecipes();
+        var recipes = ((net.minecraft.world.item.crafting.RecipeManager) level.recipeAccess()).getRecipes();
 
         var tiers = recipes.stream()
                 .filter(holder -> holder.value().getType() == SpiritMisc.TIER_RECIPE.get())
@@ -130,7 +132,7 @@ public record Tier(
 
         if (tiers.isEmpty()) {
             recipes.stream()
-                    .filter(r -> r.id().getNamespace().equals("spirit"))
+                    .filter(r -> r.id().identifier().getNamespace().equals("spirit"))
                     .forEach(r -> System.out.println(
                             "Spirit Recipe Found: " + r.id() + " Type: " + r.value().getType()));
         }

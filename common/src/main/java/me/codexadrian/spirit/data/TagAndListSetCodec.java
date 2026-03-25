@@ -48,12 +48,16 @@ public class TagAndListSetCodec<E> implements Codec<HolderSet<E>> {
     @Override
     public <T> DataResult<Pair<HolderSet<E>, T>> decode(DynamicOps<T> ops, T input) {
         return this.holderCodec.decode(ops, input)
-                .map(pair -> pair.mapFirst(either -> either.map(registry::getOrCreateTag, HolderSet::direct)));
+                .map(pair -> pair.mapFirst(either -> either.map(
+                        tagKey -> registry.get(tagKey)
+                                .<HolderSet<E>>map(holders -> holders)
+                                .orElseGet(HolderSet::direct),
+                        HolderSet::direct)));
     }
 
     @Override
     public <T> DataResult<T> encode(HolderSet<E> p_206674_, DynamicOps<T> p_206675_, T p_206676_) {
-        if (!p_206674_.canSerializeIn(registry.asLookup())) {
+        if (!p_206674_.canSerializeIn(registry)) {
             return DataResult.error(() -> "HolderSet " + p_206674_ + " is not valid in current registry set");
         }
 

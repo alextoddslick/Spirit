@@ -11,34 +11,26 @@ import me.codexadrian.spirit.utils.ToolUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.Item.TooltipContext;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class SoulSteelBow extends BowItem {
     public SoulSteelBow(Properties properties) {
@@ -46,45 +38,32 @@ public class SoulSteelBow extends BowItem {
     }
 
     @Override
-    public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity,
+    public boolean releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity,
             int drawTime) {
         if (livingEntity instanceof Player player) {
             float power;
             boolean isCreative = player.getAbilities().instabuild;
             ItemStack soulCrystal = SoulUtils.findCrystal(player, null, true);
             if ((soulCrystal.isEmpty() || SoulUtils.getSoulsInCrystal(soulCrystal) == 0) && !isCreative) {
-                return;
+                return false;
             }
-            // getUseDuration in 1.21 BowItem takes (ItemStack, LivingEntity)
             if ((double) (power = BowItem.getPowerForTime(72000 - drawTime)) < 0.1) {
-                return;
+                return false;
             }
-            if (!level.isClientSide) {
-                int l;
-                int k;
-                SoulArrowEntity soulArrow = SpiritMisc.SOUL_ARROW_ENTITY.get().create(level);
+            if (!level.isClientSide()) {
+                SoulArrowEntity soulArrow = SpiritMisc.SOUL_ARROW_ENTITY.get().create(level, net.minecraft.world.entity.EntitySpawnReason.TRIGGERED);
                 if (soulArrow == null)
-                    return;
+                    return false;
                 soulArrow.setOwner(player);
                 soulArrow.setPos(player.getEyePosition());
                 soulArrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0f, power * 3.0f, 1.0f);
                 if (soulCrystal.is(SpiritItems.SOUL_CRYSTAL.get())) {
                     var arrowEffect = MobTraitData.getEffectForEntity(
-                            BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation
+                            BuiltInRegistries.ENTITY_TYPE.getValue(Identifier
                                     .tryParse(Objects.requireNonNull(SoulUtils.getSoulCrystalType(soulCrystal)))),
-                            level.getRecipeManager());
+                            (net.minecraft.world.item.crafting.RecipeManager) level.recipeAccess());
                     arrowEffect.ifPresent(soulArrow::addArrowEffect);
                 }
-                // In 1.21, enchantments are looked up via the level's registry access, not
-                // BuiltInRegistries
-                // For now, skip enchantment effects on the bow - they can be added via data
-                // pack
-                // TODO: Properly look up enchantments via
-                // level.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
-                // var powerKey = ResourceKey.create(Registries.ENCHANTMENT,
-                // ResourceLocation.withDefaultNamespace("power"));
-                // var powerHolder =
-                // level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(powerKey);
 
                 itemStack.hurtAndBreak(1, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
                 soulArrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
@@ -96,11 +75,13 @@ public class SoulSteelBow extends BowItem {
                 SoulUtils.deviateSoulCount(soulCrystal, -1, level, null);
             }
             player.awardStat(Stats.ITEM_USED.get(this));
+            return true;
         }
+        return false;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
+    public InteractionResult use(@NotNull Level level, @NotNull Player player,
             @NotNull InteractionHand interactionHand) {
         return ToolUtils.handleToolDrawing(player, interactionHand);
     }
@@ -111,9 +92,8 @@ public class SoulSteelBow extends BowItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext context,
-            List<Component> list,
-            TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context,
+            TooltipDisplay tooltipDisplay, Consumer<Component> list, TooltipFlag tooltipFlag) {
         Component bowDescription = Component.translatable("item.spirit.soul_steel_bow.description")
                 .withStyle(ChatFormatting.GRAY);
         Component description = Component.translatable("item.spirit.soul_steel_tools.description")

@@ -10,7 +10,7 @@ import me.codexadrian.spirit.utils.SoulUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -55,9 +55,10 @@ public class SoulPedestalBlock extends BaseEntityBlock {
         return CODEC;
     }
 
-    public @NotNull InteractionResult use(@NotNull BlockState blockState, @NotNull Level level,
-            @NotNull BlockPos blockPos, @NotNull Player player, @NotNull InteractionHand interactionHand,
-            @NotNull BlockHitResult blockHitResult) {
+    @Override
+    protected @NotNull InteractionResult useItemOn(@NotNull ItemStack heldItem, @NotNull BlockState blockState,
+            @NotNull Level level, @NotNull BlockPos blockPos, @NotNull Player player,
+            @NotNull InteractionHand interactionHand, @NotNull BlockHitResult blockHitResult) {
         if (interactionHand != InteractionHand.OFF_HAND) {
             ItemStack stack = player.getItemInHand(interactionHand);
             if (level.getBlockEntity(blockPos) instanceof SoulPedestalBlockEntity soulPedestal) {
@@ -67,20 +68,20 @@ public class SoulPedestalBlock extends BaseEntityBlock {
                         if (stack.is(SpiritItems.SOUL_CRYSTAL.get())
                                 || stack.is(SpiritItems.SOUL_CRYSTAL_SHARD.get())) {
                             soulPedestal.setType(BuiltInRegistries.ENTITY_TYPE
-                                    .get(ResourceLocation.tryParse(SoulUtils.getSoulCrystalType(stack))));
+                                    .getValue(Identifier.tryParse(SoulUtils.getSoulCrystalType(stack))));
                         } else {
                             soulPedestal.setType(SpiritMisc.SOUL_ENTITY.get());
                         }
                         SoulUtils.deviateSoulCount(stack, -1, level, null);
                         level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_ALL);
-                        return InteractionResult.sidedSuccess(level.isClientSide());
+                        return InteractionResult.SUCCESS;
                     } else if (soulPedestal.type != null
                             && SoulUtils.canCrystalAcceptSoul(stack, level, soulPedestal.type)) {
                         SoulUtils.deviateSoulCount(stack, 1, level,
                                 BuiltInRegistries.ENTITY_TYPE.getKey(soulPedestal.type).toString());
                         level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_ALL);
                         soulPedestal.setType(null);
-                        return InteractionResult.sidedSuccess(level.isClientSide());
+                        return InteractionResult.SUCCESS;
                     }
                 } else if (soulPedestal.type != null) {
                     if (stack.is(SpiritItems.SOUL_STEEL_WAND.get())) {
@@ -91,10 +92,10 @@ public class SoulPedestalBlock extends BaseEntityBlock {
                             serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, blockPos.getX() + 0.5,
                                     blockPos.getY() + 1.25, blockPos.getZ() + 0.5, 10, 0, 0, 0, 0.05);
                         }
-                        return InteractionResult.sidedSuccess(level.isClientSide());
+                        return InteractionResult.SUCCESS;
                     }
                     var recipes = PedestalRecipe.getRecipesForEntity(soulPedestal.type, stack,
-                            level.getRecipeManager());
+                            ((net.minecraft.world.item.crafting.RecipeManager) level.recipeAccess()));
                     if (!recipes.isEmpty()) {
                         for (var recipe : recipes) {
                             if (RecipeUtils.validatePedestals(blockPos, level, new ArrayList<>(recipe.ingredients()),
@@ -102,7 +103,7 @@ public class SoulPedestalBlock extends BaseEntityBlock {
                                 soulPedestal.setRecipe(recipe);
                                 if (recipe.consumesActivator() && !stack.isEmpty())
                                     stack.shrink(1);
-                                return InteractionResult.sidedSuccess(level.isClientSide());
+                                return InteractionResult.SUCCESS;
                             }
                         }
                     }
@@ -121,12 +122,6 @@ public class SoulPedestalBlock extends BaseEntityBlock {
                 SoulPedestalBlockEntity::tick);
     }
 
-    @Override
-    public boolean isOcclusionShapeFullBlock(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
-            @NotNull BlockPos blockPos) {
-        return false;
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
@@ -134,12 +129,12 @@ public class SoulPedestalBlock extends BaseEntityBlock {
     }
 
     @Override
-    public RenderShape getRenderShape(@NotNull BlockState blockState) {
+    protected RenderShape getRenderShape(@NotNull BlockState blockState) {
         return RenderShape.MODEL;
     }
 
     @Override
-    public VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
+    protected VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
             @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
         return SHAPE;
     }

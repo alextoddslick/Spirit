@@ -9,7 +9,7 @@ public class PatchouliCompat {
     public static void bookRecipe(BlockPos blockPos, ItemEntity itemE, CallbackInfo ci) {
         /*
         itemE.setInvulnerable(true);
-        ItemStack glossary = PatchouliAPI.get().getBookStack(ResourceLocation.fromNamespaceAndPath(MODID, "revenant_enchiridion"));
+        ItemStack glossary = PatchouliAPI.get().getBookStack(Identifier.fromNamespaceAndPath(MODID, "revenant_enchiridion"));
         glossary.setCount(itemE.getItem().getCount());
         ItemEntity book = new ItemEntity(itemE.level, itemE.getX(), itemE.getY(), itemE.getZ(), glossary);
         book.setInvulnerable(true);

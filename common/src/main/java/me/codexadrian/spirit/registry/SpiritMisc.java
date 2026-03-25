@@ -81,7 +81,7 @@ public class SpiritMisc {
         // Enchantments are data-driven in 1.21
         public static final net.minecraft.resources.ResourceKey<Enchantment> SOUL_REAPER = net.minecraft.resources.ResourceKey
                         .create(net.minecraft.core.registries.Registries.ENCHANTMENT,
-                                        net.minecraft.resources.ResourceLocation.parse(
+                                        net.minecraft.resources.Identifier.parse(
                                                         me.codexadrian.spirit.Spirit.MODID + ":" + "soul_reaper"));
 
         public static void registerAll() {

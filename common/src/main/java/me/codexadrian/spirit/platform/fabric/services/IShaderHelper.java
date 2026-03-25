@@ -1,16 +1,13 @@
 package me.codexadrian.spirit.platform.fabric.services;
 
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 
 public interface IShaderHelper {
 
-    void setSoulShader(ShaderInstance shader);
+    // TODO: setSoulShader removed - ShaderInstance no longer exists in 1.21.11
+    // The shader system has been completely overhauled. Need to use RenderPipeline/RenderSetup instead.
 
-    <T extends Entity> RenderType getSoulShader(T entity, ResourceLocation texture);
+    <T extends Entity> RenderType getSoulShader(T entity, Identifier texture);
 }

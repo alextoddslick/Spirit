@@ -1,9 +1,7 @@
 {
   "type": "spirit:soul_engulfing",
   "input": {
-    "ingredient": {
-      "item": "minecraft:deepslate"
-    }
+    "ingredient": "minecraft:deepslate"
   },
   "duration": 5,
   "destroysStructure": false,

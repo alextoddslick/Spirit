@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ChippedBlockItem extends BlockItem {
     public ChippedBlockItem(Block block, Properties properties) {
@@ -20,10 +21,11 @@ public class ChippedBlockItem extends BlockItem {
 
     @Override
     public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext context,
-            List<Component> list, TooltipFlag tooltipFlag) {
-        super.appendHoverText(itemStack, context, list, tooltipFlag);
+            net.minecraft.world.item.component.TooltipDisplay tooltipDisplay,
+            Consumer<Component> list, TooltipFlag tooltipFlag) {
+        super.appendHoverText(itemStack, context, tooltipDisplay, list, tooltipFlag);
         if (!Services.PLATFORM.isModLoaded("chipped") && SpiritConfig.showChippedError()) {
-            list.add(Component.translatable("spirit.tooltip.chipped_loaded").withStyle(ChatFormatting.RED));
+            list.accept(Component.translatable("spirit.tooltip.chipped_loaded").withStyle(ChatFormatting.RED));
         }
     }
 }

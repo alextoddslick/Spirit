@@ -2,50 +2,58 @@ package me.codexadrian.spirit.registry;
 
 import me.codexadrian.spirit.items.*;
 import me.codexadrian.spirit.items.tools.*;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 
 import java.util.function.Supplier;
 
+import static me.codexadrian.spirit.Spirit.MODID;
 import static me.codexadrian.spirit.Spirit.SPIRIT;
 import static me.codexadrian.spirit.platform.fabric.Services.REGISTRY;
 
 public class SpiritItems {
         public static final Supplier<Item> SOUL_CRYSTAL_SHARD = registerItem("soul_crystal_shard",
-                        () -> new MobCrystalItem(new Item.Properties().stacksTo(1)));
+                        () -> new MobCrystalItem(itemProps("soul_crystal_shard").stacksTo(1)));
 
         public static final Supplier<Item> CRUDE_SOUL_CRYSTAL = registerItem("crude_soul_crystal",
-                        () -> new CrudeSoulCrystalItem(new Item.Properties().stacksTo(1)));
+                        () -> new CrudeSoulCrystalItem(itemProps("crude_soul_crystal").stacksTo(1)));
 
         public static final Supplier<Item> SOUL_CRYSTAL = registerItem("soul_crystal",
-                        () -> new SoulCrystalItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+                        () -> new SoulCrystalItem(itemProps("soul_crystal").stacksTo(1).rarity(Rarity.RARE)));
 
         public static final Supplier<Item> SOUL_STEEL = registerItem("soul_steel_ingot",
-                        () -> new Item(new Item.Properties()));
+                        () -> new Item(itemProps("soul_steel_ingot")));
 
         public static final Supplier<Item> SOUL_POWDER = registerItem("soul_powder",
-                        () -> new Item(new Item.Properties()));
+                        () -> new Item(itemProps("soul_powder")));
 
         public static final Supplier<Item> SOUL_STEEL_AXE = registerItem("soul_steel_axe",
-                        () -> new SoulSteelAxe(new Item.Properties().rarity(Rarity.RARE)));
+                        () -> new SoulSteelAxe(itemProps("soul_steel_axe").rarity(Rarity.RARE)));
 
         public static final Supplier<Item> SOUL_BOW = registerItem("soul_steel_bow",
-                        () -> new SoulSteelBow(new Item.Properties().durability(64).rarity(Rarity.RARE)));
+                        () -> new SoulSteelBow(itemProps("soul_steel_bow").durability(64).rarity(Rarity.RARE)));
 
         public static final Supplier<Item> SOUL_STEEL_HOE = registerItem("soul_steel_hoe",
-                        () -> new SoulSteelHoe(new Item.Properties().rarity(Rarity.RARE)));
+                        () -> new SoulSteelHoe(itemProps("soul_steel_hoe").rarity(Rarity.RARE)));
 
         public static final Supplier<Item> SOUL_STEEL_PICKAXE = registerItem("soul_steel_pickaxe",
-                        () -> new SoulSteelPickaxe(new Item.Properties().rarity(Rarity.RARE)));
+                        () -> new SoulSteelPickaxe(itemProps("soul_steel_pickaxe").rarity(Rarity.RARE)));
 
         public static final Supplier<Item> SOUL_STEEL_SHOVEL = registerItem("soul_steel_shovel",
-                        () -> new SoulSteelShovel(new Item.Properties().rarity(Rarity.RARE)));
+                        () -> new SoulSteelShovel(itemProps("soul_steel_shovel").rarity(Rarity.RARE)));
 
         public static final Supplier<Item> SOUL_STEEL_BLADE = registerItem("soul_steel_sword",
-                        () -> new SoulSteelSword(new Item.Properties().rarity(Rarity.RARE)));
+                        () -> new SoulSteelSword(itemProps("soul_steel_sword").rarity(Rarity.RARE)));
 
         public static final Supplier<Item> SOUL_STEEL_WAND = registerItem("soul_steel_wand",
-                        () -> new SoulSteelWand(new Item.Properties().rarity(Rarity.RARE).stacksTo(1)));
+                        () -> new SoulSteelWand(itemProps("soul_steel_wand").rarity(Rarity.RARE).stacksTo(1)));
+
+        static Item.Properties itemProps(String name) {
+                return new Item.Properties().setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MODID, name)));
+        }
 
         private static Supplier<Item> registerItem(String name, Supplier<Item> item) {
                 var newItem = REGISTRY.registerItem(name, item);

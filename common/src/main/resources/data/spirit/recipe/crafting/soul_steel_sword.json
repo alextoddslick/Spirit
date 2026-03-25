@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "item": "minecraft:netherrack"
-    },
-    "X": {
-      "item": "spirit:soul_steel_ingot"
-    }
+    "#": "minecraft:netherrack",
+    "X": "spirit:soul_steel_ingot"
   },
   "pattern": [
     "X",

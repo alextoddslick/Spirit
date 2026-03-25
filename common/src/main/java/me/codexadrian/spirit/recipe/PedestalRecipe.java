@@ -12,10 +12,12 @@ import me.codexadrian.spirit.utils.CodecUtils;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -23,11 +25,11 @@ import net.minecraft.world.item.crafting.RecipeType;
 import java.util.List;
 import java.util.Optional;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +40,7 @@ public record PedestalRecipe(HolderSet<EntityType<?>> entityInput,
         implements SyncedData, net.minecraft.world.item.crafting.Recipe<net.minecraft.world.item.crafting.RecipeInput> {
 
     public static Optional<PedestalRecipe> getEffect(String id, RecipeManager manager) {
-        return manager.byKey(ResourceLocation.tryParse(id))
+        return manager.byKey(ResourceKey.create(Registries.RECIPE, Identifier.tryParse(id)))
                 .map(holder -> holder.value())
                 .filter(recipe -> recipe instanceof PedestalRecipe)
                 .map(recipe -> (PedestalRecipe) recipe);
@@ -60,7 +62,7 @@ public record PedestalRecipe(HolderSet<EntityType<?>> entityInput,
                                     consumesActivator, ingredients, entityOutput, duration, outputNbt)));
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends net.minecraft.world.item.crafting.Recipe<net.minecraft.world.item.crafting.RecipeInput>> getType() {
         return SpiritMisc.SOUL_TRANSMUTATION_RECIPE.get();
     }
 
@@ -69,7 +71,7 @@ public record PedestalRecipe(HolderSet<EntityType<?>> entityInput,
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends net.minecraft.world.item.crafting.Recipe<net.minecraft.world.item.crafting.RecipeInput>> getSerializer() {
         return SpiritMisc.SOUL_TRANSMUTATION_SERIALIZER.get();
     }
 
@@ -86,13 +88,13 @@ public record PedestalRecipe(HolderSet<EntityType<?>> entityInput,
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return true;
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
     }
 
     @Override
-    public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider registries) {
-        return ItemStack.EMPTY;
+    public RecipeBookCategory recipeBookCategory() {
+        return new RecipeBookCategory();
     }
 
     public static List<PedestalRecipe> getRecipesForEntity(EntityType<?> entity, ItemStack stack,

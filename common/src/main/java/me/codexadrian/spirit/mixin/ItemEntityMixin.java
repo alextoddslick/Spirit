@@ -2,12 +2,13 @@ package me.codexadrian.spirit.mixin;
 
 import me.codexadrian.spirit.EngulfableItem;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,19 +34,19 @@ public abstract class ItemEntityMixin implements EngulfableItem {
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    private void readCorrupted(CompoundTag compoundTag, CallbackInfo ci) {
+    private void readCorrupted(ValueInput input, CallbackInfo ci) {
         var entityData = ((ItemEntity) (Object) this).getEntityData();
-        entityData.set(RECIPE_OUTPUT, compoundTag.getBoolean("isRecipeOutput"));
-        this.engulfTime = compoundTag.getInt("EngulfTime");
-        this.engulfTime = compoundTag.getInt("MaxEngulfTime");
+        entityData.set(RECIPE_OUTPUT, input.getBooleanOr("isRecipeOutput", false));
+        this.engulfTime = input.getIntOr("EngulfTime", 0);
+        this.maxEngulfTime = input.getIntOr("MaxEngulfTime", 0);
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    private void saveCorrupted(CompoundTag compoundTag, CallbackInfo ci) {
+    private void saveCorrupted(ValueOutput output, CallbackInfo ci) {
         var entityData = ((ItemEntity) (Object) this).getEntityData();
-        compoundTag.putBoolean("IsRecipeOutput", entityData.get(RECIPE_OUTPUT));
-        compoundTag.putInt("EngulfTime", engulfTime);
-        compoundTag.putInt("MaxEngulfTime", maxEngulfTime);
+        output.putBoolean("IsRecipeOutput", entityData.get(RECIPE_OUTPUT));
+        output.putInt("EngulfTime", engulfTime);
+        output.putInt("MaxEngulfTime", maxEngulfTime);
     }
 
     @Override

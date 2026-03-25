@@ -5,7 +5,7 @@ import me.codexadrian.spirit.data.ToolType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,7 +31,7 @@ public class SoulArrowEntity extends Arrow implements ItemSupplier {
     }
 
     @Override
-    protected ItemStack getPickupItem() {
+    protected ItemStack getDefaultPickupItem() {
         return ItemStack.EMPTY;
     }
 
@@ -43,8 +43,8 @@ public class SoulArrowEntity extends Arrow implements ItemSupplier {
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide) {
-            if (this.inGround) {
+        if (this.level().isClientSide()) {
+            if (this.isInGround()) {
                 if (this.inGroundTime % 5 == 0) {
                     this.makeSoulParticle(1);
                 }

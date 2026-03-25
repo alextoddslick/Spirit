@@ -1,0 +1,119 @@
+Starting a Gradle Daemon, 2 busy and 1 incompatible and 1 stopped Daemons could not be reused, use --status for details
+
+> Configure project :
+Architect Plugin: 3.4.162
+Minecraft Version: 1.20.6
+Architectury Loom: 1.7.435
+You are using an outdated version of Architectury Loom! This version will not receive any support, please consider updating!
+
+> Task :common:compileJava FAILED
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/net/minecraft/world/level/block/BlockUtils.java:12: error: <B>propertiesCodec() has protected access in BlockBehaviour
+                BlockBehaviour.propertiesCodec()).apply(instance, factory));
+                              ^
+  where B is a type-variable:
+    B extends Block declared in method <B>propertiesCodec()
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/PedestalBlockEntity.java:89: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/PedestalBlockEntity.java:91: error: cannot find symbol
+        super.load(compoundTag, provider);
+             ^
+  symbol: method load(@org.jetbrains.annotations.NotNull CompoundTag,Provider)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageSpawner.java:87: error: cannot find symbol
+                if (level.noCollision(soulCageBlockEntity.type.getAABB(x, y, z))) {
+                                                              ^
+  symbol:   method getAABB(double,double,double)
+  location: variable type of type EntityType<?>
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageSpawner.java:116: error: method finalizeSpawn in class Mob cannot be applied to given types;
+                            mob.finalizeSpawn(serverLevel, level.getCurrentDifficultyAt(spawned.blockPosition()),
+                               ^
+  required: ServerLevelAccessor,DifficultyInstance,MobSpawnType,SpawnGroupData
+  found:    ServerLevel,DifficultyInstance,MobSpawnType,<null>,<null>
+  reason: actual and formal argument lists differ in length
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageBlockEntity.java:111: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageBlockEntity.java:113: error: cannot find symbol
+        super.load(compoundTag, provider);
+             ^
+  symbol: method load(@org.jetbrains.annotations.NotNull CompoundTag,Provider)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:101: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:103: error: cannot find symbol
+        super.load(compoundTag);
+             ^
+  symbol: method load(@org.jetbrains.annotations.NotNull CompoundTag)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:119: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:121: error: method saveAdditional in class BlockEntity cannot be applied to given types;
+        super.saveAdditional(compoundTag);
+             ^
+  required: CompoundTag,Provider
+  found:    @org.jetbrains.annotations.NotNull CompoundTag
+  reason: actual and formal argument lists differ in length
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:128: error: cannot find symbol
+            compoundTag.putString("PedestalRecipe", containedRecipe.id().toString());
+                                                                   ^
+  symbol:   method id()
+  location: variable containedRecipe of type @org.jetbrains.annotations.Nullable PedestalRecipe
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:135: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/PedestalRecipe.java:53: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/SoulCageBlock.java:66: error: cannot find symbol
+                    if (SoulUtils.canCrystalBeUsedInCage(itemStack)
+                        ^
+  symbol:   variable SoulUtils
+  location: class SoulCageBlock
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/SoulCageBlock.java:67: error: cannot find symbol
+                            && itemStack.has(DataComponents.CUSTOM_DATA)
+                                             ^
+  symbol:   variable DataComponents
+  location: class SoulCageBlock
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/SoulCageBlock.java:68: error: cannot find symbol
+                            && SoulUtils.getTier(itemStack, level) != null) {
+                               ^
+  symbol:   variable SoulUtils
+  location: class SoulCageBlock
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/SoulfireMultiblock.java:135: error: method saveWithFullMetadata in class BlockEntity cannot be applied to given types;
+                    return new NbtPredicate(this.nbtTag().get()).matches(blockEntity.saveWithFullMetadata());
+                                                                                    ^
+  required: Provider
+  found:    no arguments
+  reason: actual and formal argument lists differ in length
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/compat/rei/displays/PedestalDisplay.java:24: error: cannot find symbol
+        super(createEntityInput(recipe), List.of(createEntityOutput(recipe), EntryIngredients.of(SpawnEggItem.byId(recipe.entityOutput()))), Optional.ofNullable(recipe.getId()));
+                                                                                                                                                                       ^
+  symbol:   method getId()
+  location: variable recipe of type PedestalRecipe
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/registry/SpiritMisc.java:76: error: non-static method codec() cannot be referenced from a static context
+                                                        PedestalRecipe.codec()));
+                                                                      ^
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: /Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/mixin/EntityRendererMixin.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+20 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':common:compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 6s
+1 actionable task: 1 executed

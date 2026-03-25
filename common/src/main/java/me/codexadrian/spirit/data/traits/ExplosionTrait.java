@@ -8,7 +8,7 @@ import me.codexadrian.spirit.data.MobTrait;
 import me.codexadrian.spirit.data.MobTraitSerializer;
 import me.codexadrian.spirit.data.ToolType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -44,8 +44,8 @@ public record ExplosionTrait(float power, Level.ExplosionInteraction blockIntera
                 .apply(instance, ExplosionTrait::new));
 
         @Override
-        public ResourceLocation id() {
-            return ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "explosion");
+        public Identifier id() {
+            return Identifier.fromNamespaceAndPath(Spirit.MODID, "explosion");
         }
 
         @Override

@@ -1,9 +1,7 @@
 {
   "type": "spirit:soul_engulfing",
   "input": {
-    "ingredient": {
-      "item": "spirit:soul_powder"
-    },
+    "ingredient": "spirit:soul_powder",
     "multiblock": {
       "pattern": [
         [

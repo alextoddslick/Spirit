@@ -1,0 +1,401 @@
+
+> Configure project :
+Architect Plugin: 3.4.162
+Architectury Loom: 1.6.422
+You are using an outdated version of Architectury Loom! This version will not receive any support, please consider updating!
+
+> Task :common:compileJava FAILED
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/CrystalPedestalBlock.java:35: error: CrystalPedestalBlock is not abstract and does not override abstract method codec() in BaseEntityBlock
+public class CrystalPedestalBlock extends BaseEntityBlock {
+       ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/CrystalPedestalBlock.java:89: error: cannot find symbol
+                                || !pedestalItem.hasTag()) {
+                                                ^
+  symbol:   method hasTag()
+  location: variable pedestalItem of type ItemStack
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/CrystalPedestalBlock.java:100: error: cannot find symbol
+                        if ((pedestalItem.getTag() == null || !pedestalItem.getTag().contains("EntityType"))) {
+                                         ^
+  symbol:   method getTag()
+  location: variable pedestalItem of type ItemStack
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/CrystalPedestalBlock.java:100: error: cannot find symbol
+                        if ((pedestalItem.getTag() == null || !pedestalItem.getTag().contains("EntityType"))) {
+                                                                           ^
+  symbol:   method getTag()
+  location: variable pedestalItem of type ItemStack
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/PedestalBlockEntity.java:87: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/PedestalBlockEntity.java:89: error: cannot find symbol
+        super.load(compoundTag);
+             ^
+  symbol: method load(@org.jetbrains.annotations.NotNull CompoundTag)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/PedestalBlockEntity.java:91: error: cannot find symbol
+            item = ItemStack.of(compoundTag.getCompound("item"));
+                            ^
+  symbol:   method of(CompoundTag)
+  location: class ItemStack
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/PedestalBlockEntity.java:97: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/PedestalBlockEntity.java:99: error: method saveAdditional in class BlockEntity cannot be applied to given types;
+        super.saveAdditional(compoundTag);
+             ^
+  required: CompoundTag,Provider
+  found:    @org.jetbrains.annotations.NotNull CompoundTag
+  reason: actual and formal argument lists differ in length
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/PedestalBlockEntity.java:101: error: incompatible types: CompoundTag cannot be converted to Provider
+            compoundTag.put("item", item.save(new CompoundTag()));
+                                              ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/PedestalBlockEntity.java:107: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageSpawner.java:87: error: cannot find symbol
+                if (level.noCollision(soulCageBlockEntity.type.getAABB(x, y, z))) {
+                                                              ^
+  symbol:   method getAABB(double,double,double)
+  location: variable type of type EntityType<?>
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageSpawner.java:116: error: method finalizeSpawn in class Mob cannot be applied to given types;
+                            mob.finalizeSpawn(serverLevel, level.getCurrentDifficultyAt(spawned.blockPosition()),
+                               ^
+  required: ServerLevelAccessor,DifficultyInstance,MobSpawnType,SpawnGroupData
+  found:    ServerLevel,DifficultyInstance,MobSpawnType,<null>,<null>
+  reason: actual and formal argument lists differ in length
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageBlockEntity.java:110: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageBlockEntity.java:112: error: cannot find symbol
+        super.load(compoundTag);
+             ^
+  symbol: method load(@org.jetbrains.annotations.NotNull CompoundTag)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageBlockEntity.java:114: error: cannot find symbol
+        soulCrystal = ItemStack.of(compoundTag.getCompound("crystal"));
+                               ^
+  symbol:   method of(CompoundTag)
+  location: class ItemStack
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageBlockEntity.java:118: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageBlockEntity.java:120: error: method saveAdditional in class BlockEntity cannot be applied to given types;
+        super.saveAdditional(compoundTag);
+             ^
+  required: CompoundTag,Provider
+  found:    @org.jetbrains.annotations.NotNull CompoundTag
+  reason: actual and formal argument lists differ in length
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageBlockEntity.java:121: error: incompatible types: CompoundTag cannot be converted to Provider
+        compoundTag.put("crystal", soulCrystal.save(new CompoundTag()));
+                                                    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulCageBlockEntity.java:124: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/data/Tier.java:14: error: Tier is not abstract and does not override abstract method getResultItem(Provider) in Recipe
+public record Tier(String displayName, int requiredSouls, int minSpawnDelay, int maxSpawnDelay,
+       ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/data/Tier.java:84: error: incompatible types: no instance(s) of type variable(s) C,T exist so that List<RecipeHolder<T>> conforms to List<Tier>
+        return level.getRecipeManager().getAllRecipesFor(SpiritMisc.TIER_RECIPE.get());
+                                                        ^
+  where C,T are type-variables:
+    C extends Container declared in method <C,T>getAllRecipesFor(RecipeType<T>)
+    T extends Recipe<C> declared in method <C,T>getAllRecipesFor(RecipeType<T>)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/data/SyncedData.java:13: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/data/SyncedData.java:23: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/data/SyncedData.java:33: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:101: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:103: error: cannot find symbol
+        super.load(compoundTag);
+             ^
+  symbol: method load(@org.jetbrains.annotations.NotNull CompoundTag)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:119: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:121: error: method saveAdditional in class BlockEntity cannot be applied to given types;
+        super.saveAdditional(compoundTag);
+             ^
+  required: CompoundTag,Provider
+  found:    @org.jetbrains.annotations.NotNull CompoundTag
+  reason: actual and formal argument lists differ in length
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:128: error: cannot find symbol
+            compoundTag.putString("PedestalRecipe", containedRecipe.id().toString());
+                                                                   ^
+  symbol:   method id()
+  location: variable containedRecipe of type @org.jetbrains.annotations.Nullable PedestalRecipe
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/blockentity/SoulPedestalBlockEntity.java:135: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/PedestalRecipe.java:25: error: PedestalRecipe is not abstract and does not override abstract method getResultItem(Provider) in Recipe
+public record PedestalRecipe(HolderSet<EntityType<?>> entityInput,
+       ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/PedestalRecipe.java:63: error: cannot find symbol
+            if (recipe.activationItem().isPresent()) {
+                      ^
+  symbol:   method activationItem()
+  location: variable recipe of type RecipeHolder<PedestalRecipe>
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/PedestalRecipe.java:64: error: cannot find symbol
+                stackMatches = recipe.activationItem().get().test(stack);
+                                     ^
+  symbol:   method activationItem()
+  location: variable recipe of type RecipeHolder<PedestalRecipe>
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/PedestalRecipe.java:68: error: cannot find symbol
+            return recipe.entityInput().contains(entity.builtInRegistryHolder()) && stackMatches;
+                         ^
+  symbol:   method entityInput()
+  location: variable recipe of type RecipeHolder<PedestalRecipe>
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/PedestalRecipe.java:69: error: incompatible types: List<RecipeHolder<PedestalRecipe>> cannot be converted to List<PedestalRecipe>
+        }).toList();
+                 ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/PedestalRecipe.java:73: error: incompatible types: Optional<RecipeHolder<?>> cannot be converted to Optional<PedestalRecipe>
+        return (Optional<PedestalRecipe>) manager.byKey(ResourceLocation.tryParse(id));
+                                                       ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/SoulCageBlock.java:31: error: SoulCageBlock is not abstract and does not override abstract method codec() in BaseEntityBlock
+public class SoulCageBlock extends BaseEntityBlock {
+       ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/SoulCageBlock.java:57: error: cannot find symbol
+                    if (SoulUtils.canCrystalBeUsedInCage(itemStack) && itemStack.hasTag()
+                                 ^
+  symbol:   method canCrystalBeUsedInCage(ItemStack)
+  location: class SoulUtils
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/SoulCageBlock.java:57: error: cannot find symbol
+                    if (SoulUtils.canCrystalBeUsedInCage(itemStack) && itemStack.hasTag()
+                                                                                ^
+  symbol:   method hasTag()
+  location: variable itemStack of type ItemStack
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/PedestalBlock.java:31: error: PedestalBlock is not abstract and does not override abstract method codec() in BaseEntityBlock
+public class PedestalBlock extends BaseEntityBlock {
+       ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/blocks/SoulPedestalBlock.java:37: error: SoulPedestalBlock is not abstract and does not override abstract method codec() in BaseEntityBlock
+public class SoulPedestalBlock extends BaseEntityBlock {
+       ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/SoulEngulfingRecipe.java:29: error: SoulEngulfingRecipe is not abstract and does not override abstract method getResultItem(Provider) in Recipe
+public record SoulEngulfingRecipe(SoulEngulfingInput input, int duration, boolean breaksBlocks,
+       ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/SoulEngulfingRecipe.java:91: error: cannot find symbol
+                .filter(recipe -> recipe.input.item().test(stack)).toList();
+                                        ^
+  symbol:   variable input
+  location: variable recipe of type RecipeHolder<SoulEngulfingRecipe>
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/SoulEngulfingRecipe.java:91: error: incompatible types: List<RecipeHolder<SoulEngulfingRecipe>> cannot be converted to List<SoulEngulfingRecipe>
+                .filter(recipe -> recipe.input.item().test(stack)).toList();
+                                                                         ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/recipe/SoulfireMultiblock.java:135: error: method saveWithFullMetadata in class BlockEntity cannot be applied to given types;
+                    return new NbtPredicate(this.nbtTag().get()).matches(blockEntity.saveWithFullMetadata());
+                                                                                    ^
+  required: Provider
+  found:    no arguments
+  reason: actual and formal argument lists differ in length
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/compat/rei/SpiritPlugin.java:50: error: no suitable method found for registerRecipeFiller(Class<PedestalRecipe>,RecipeType<PedestalRecipe>,PedestalDi[...]::new)
+        registry.registerRecipeFiller(PedestalRecipe.class, SpiritMisc.SOUL_TRANSMUTATION_RECIPE.get(), PedestalDisplay::new);
+                ^
+    method DisplayRegistry.<T#1,D#1>registerRecipeFiller(Class<T#1>,RecipeType<? super T#1>,Function<? extends RecipeHolder<T#1>,D#1>) is not applicable
+      (cannot infer type-variable(s) T#1,D#1
+        (argument mismatch; invalid constructor reference
+          incompatible types: RecipeHolder<T#1> cannot be converted to PedestalRecipe))
+    method DisplayRegistry.<T#2,D#2>registerRecipeFiller(Class<T#2>,Predicate<RecipeType<? super T#2>>,Function<? extends RecipeHolder<T#2>,D#2>) is not applicable
+      (cannot infer type-variable(s) T#2,D#2
+        (argument mismatch; RecipeType<PedestalRecipe> cannot be converted to Predicate<RecipeType<? super T#2>>))
+    method DisplayRegistry.<T#3,D#3>registerRecipeFiller(Class<T#3>,Predicate<RecipeType<? super T#3>>,Predicate<? extends RecipeHolder<T#3>>,Function<? extends RecipeHolder<T#3>,D#3>) is not applicable
+      (cannot infer type-variable(s) T#3,D#3
+        (actual and formal argument lists differ in length))
+  where T#1,D#1,T#2,D#2,T#3,D#3 are type-variables:
+    T#1 extends Recipe<?> declared in method <T#1,D#1>registerRecipeFiller(Class<T#1>,RecipeType<? super T#1>,Function<? extends RecipeHolder<T#1>,D#1>)
+    D#1 extends Display declared in method <T#1,D#1>registerRecipeFiller(Class<T#1>,RecipeType<? super T#1>,Function<? extends RecipeHolder<T#1>,D#1>)
+    T#2 extends Recipe<?> declared in method <T#2,D#2>registerRecipeFiller(Class<T#2>,Predicate<RecipeType<? super T#2>>,Function<? extends RecipeHolder<T#2>,D#2>)
+    D#2 extends Display declared in method <T#2,D#2>registerRecipeFiller(Class<T#2>,Predicate<RecipeType<? super T#2>>,Function<? extends RecipeHolder<T#2>,D#2>)
+    T#3 extends Recipe<?> declared in method <T#3,D#3>registerRecipeFiller(Class<T#3>,Predicate<RecipeType<? super T#3>>,Predicate<? extends RecipeHolder<T#3>>,Function<? extends RecipeHolder<T#3>,D#3>)
+    D#3 extends Display declared in method <T#3,D#3>registerRecipeFiller(Class<T#3>,Predicate<RecipeType<? super T#3>>,Predicate<? extends RecipeHolder<T#3>>,Function<? extends RecipeHolder<T#3>,D#3>)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/compat/rei/SpiritPlugin.java:51: error: no suitable method found for registerRecipeFiller(Class<Tier>,RecipeType<Tier>,TierDisplay::new)
+        registry.registerRecipeFiller(Tier.class, SpiritMisc.TIER_RECIPE.get(), TierDisplay::new);
+                ^
+    method DisplayRegistry.<T#1,D#1>registerRecipeFiller(Class<T#1>,RecipeType<? super T#1>,Function<? extends RecipeHolder<T#1>,D#1>) is not applicable
+      (cannot infer type-variable(s) T#1,D#1
+        (argument mismatch; invalid constructor reference
+          incompatible types: RecipeHolder<T#1> cannot be converted to Tier))
+    method DisplayRegistry.<T#2,D#2>registerRecipeFiller(Class<T#2>,Predicate<RecipeType<? super T#2>>,Function<? extends RecipeHolder<T#2>,D#2>) is not applicable
+      (cannot infer type-variable(s) T#2,D#2
+        (argument mismatch; RecipeType<Tier> cannot be converted to Predicate<RecipeType<? super T#2>>))
+    method DisplayRegistry.<T#3,D#3>registerRecipeFiller(Class<T#3>,Predicate<RecipeType<? super T#3>>,Predicate<? extends RecipeHolder<T#3>>,Function<? extends RecipeHolder<T#3>,D#3>) is not applicable
+      (cannot infer type-variable(s) T#3,D#3
+        (actual and formal argument lists differ in length))
+  where T#1,D#1,T#2,D#2,T#3,D#3 are type-variables:
+    T#1 extends Recipe<?> declared in method <T#1,D#1>registerRecipeFiller(Class<T#1>,RecipeType<? super T#1>,Function<? extends RecipeHolder<T#1>,D#1>)
+    D#1 extends Display declared in method <T#1,D#1>registerRecipeFiller(Class<T#1>,RecipeType<? super T#1>,Function<? extends RecipeHolder<T#1>,D#1>)
+    T#2 extends Recipe<?> declared in method <T#2,D#2>registerRecipeFiller(Class<T#2>,Predicate<RecipeType<? super T#2>>,Function<? extends RecipeHolder<T#2>,D#2>)
+    D#2 extends Display declared in method <T#2,D#2>registerRecipeFiller(Class<T#2>,Predicate<RecipeType<? super T#2>>,Function<? extends RecipeHolder<T#2>,D#2>)
+    T#3 extends Recipe<?> declared in method <T#3,D#3>registerRecipeFiller(Class<T#3>,Predicate<RecipeType<? super T#3>>,Predicate<? extends RecipeHolder<T#3>>,Function<? extends RecipeHolder<T#3>,D#3>)
+    D#3 extends Display declared in method <T#3,D#3>registerRecipeFiller(Class<T#3>,Predicate<RecipeType<? super T#3>>,Predicate<? extends RecipeHolder<T#3>>,Function<? extends RecipeHolder<T#3>,D#3>)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/compat/rei/SpiritPlugin.java:52: error: incompatible types: cannot infer type-variable(s) T,D
+        registry.registerRecipeFiller(SoulEngulfingRecipe.class, SpiritMisc.SOUL_ENGULFING_RECIPE.get(), SoulEngulfingDisplay::new);
+                                     ^
+    (argument mismatch; invalid constructor reference
+      no suitable constructor found for SoulEngulfingDisplay(RecipeHolder<SoulEngulfingRecipe>)
+          constructor SoulEngulfingDisplay.SoulEngulfingDisplay(SoulEngulfingRecipe) is not applicable
+            (argument mismatch; RecipeHolder<SoulEngulfingRecipe> cannot be converted to SoulEngulfingRecipe)
+          constructor SoulEngulfingDisplay.SoulEngulfingDisplay(SoulEngulfingRecipeWrapper) is not applicable
+            (argument mismatch; RecipeHolder<SoulEngulfingRecipe> cannot be converted to SoulEngulfingRecipeWrapper))
+  where T,D are type-variables:
+    T extends Recipe<?> declared in method <T,D>registerRecipeFiller(Class<T>,RecipeType<? super T>,Function<? extends RecipeHolder<T>,D>)
+    D extends Display declared in method <T,D>registerRecipeFiller(Class<T>,RecipeType<? super T>,Function<? extends RecipeHolder<T>,D>)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/compat/jei/SpiritPlugin.java:38: error: method addRecipes in interface IRecipeRegistration cannot be applied to given types;
+            registration.addRecipes(PedestalRecipeCategory.RECIPE, level.getRecipeManager().getAllRecipesFor(SpiritMisc.SOUL_TRANSMUTATION_RECIPE.get()));
+                        ^
+  required: mezz.jei.api.recipe.RecipeType<T#1>,List<T#1>
+  found:    mezz.jei.api.recipe.RecipeType<PedestalRecipe>,List<RecipeHolder<PedestalRecipe>>
+  reason: inference variable T#1 has incompatible equality constraints RecipeHolder<T#2>,PedestalRecipe
+  where T#1,T#2,C are type-variables:
+    T#1 extends Object declared in method <T#1>addRecipes(mezz.jei.api.recipe.RecipeType<T#1>,List<T#1>)
+    T#2 extends Recipe<C> declared in method <C,T#2>getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType<T#2>)
+    C extends Container declared in method <C,T#2>getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType<T#2>)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/compat/jei/SpiritPlugin.java:39: error: method addRecipes in interface IRecipeRegistration cannot be applied to given types;
+            registration.addRecipes(SoulCageCategory.RECIPE, level.getRecipeManager().getAllRecipesFor(SpiritMisc.TIER_RECIPE.get()));
+                        ^
+  required: mezz.jei.api.recipe.RecipeType<T#1>,List<T#1>
+  found:    mezz.jei.api.recipe.RecipeType<Tier>,List<RecipeHolder<Tier>>
+  reason: inference variable T#1 has incompatible equality constraints RecipeHolder<T#2>,Tier
+  where T#1,T#2,C are type-variables:
+    T#1 extends Object declared in method <T#1>addRecipes(mezz.jei.api.recipe.RecipeType<T#1>,List<T#1>)
+    T#2 extends Recipe<C> declared in method <C,T#2>getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType<T#2>)
+    C extends Container declared in method <C,T#2>getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType<T#2>)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/compat/jei/SpiritPlugin.java:40: error: incompatible types: no instance(s) of type variable(s) C,T exist so that List<RecipeHolder<T>> conforms to Collection<SoulEngulfingRecipe>
+            registration.addRecipes(SoulEngulfingCategory.RECIPE, SoulEngulfingCategory.getRecipes(level.getRecipeManager().getAllRecipesFor(SpiritMisc.SOUL_ENGULFING_RECIPE.get())));
+                                                                                       ^
+  where C,T are type-variables:
+    C extends Container declared in method <C,T>getAllRecipesFor(RecipeType<T>)
+    T extends Recipe<C> declared in method <C,T>getAllRecipesFor(RecipeType<T>)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/enchantments/SoulReaperEnchantment.java:9: error: constructor EnchantmentDefinition in record EnchantmentDefinition cannot be applied to given types;
+        super(new Enchantment.EnchantmentDefinition(
+              ^
+  required: TagKey<Item>,Optional<TagKey<Item>>,int,int,Cost,Cost,int,FeatureFlagSet,EquipmentSlot[]
+  found:    TagKey<Item>,int,int,Cost,Cost,int,EquipmentSlot
+  reason: actual and formal argument lists differ in length
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/enchantments/SoulReaperEnchantment.java:20: error: getMaxLevel() in SoulReaperEnchantment cannot override getMaxLevel() in Enchantment
+    public int getMaxLevel() {
+               ^
+  overridden method is final
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/entity/SoulArrowEntity.java:87: error: cannot find symbol
+        int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER_ARROWS, arg);
+                                                                  ^
+  symbol:   variable POWER_ARROWS
+  location: class Enchantments
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/entity/SoulArrowEntity.java:88: error: cannot find symbol
+        int j = EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH_ARROWS, arg);
+                                                                  ^
+  symbol:   variable PUNCH_ARROWS
+  location: class Enchantments
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/entity/SoulArrowEntity.java:98: error: cannot find symbol
+        if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAMING_ARROWS, arg) > 0) {
+                                                              ^
+  symbol:   variable FLAMING_ARROWS
+  location: class Enchantments
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/entity/SoulArrowEntity.java:99: error: cannot find symbol
+            this.setSecondsOnFire(100);
+                ^
+  symbol: method setSecondsOnFire(int)
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/data/MobTraitData.java:17: error: MobTraitData is not abstract and does not override abstract method getResultItem(Provider) in Recipe
+public record MobTraitData(EntityType<?> entity, List<MobTrait<?>> traits) implements SyncedData {
+       ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/registry/SpiritBlocks.java:57: error: cannot find symbol
+                        () -> new Block(Block.Properties.copy(Blocks.GLASS).noOcclusion()
+                                                        ^
+  symbol:   method copy(Block)
+  location: class Properties
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/registry/SpiritBlocks.java:67: error: cannot find symbol
+                        () -> new Block(Block.Properties.copy(Blocks.IRON_BLOCK)),
+                                                        ^
+  symbol:   method copy(Block)
+  location: class Properties
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/registry/SpiritBlocks.java:71: error: cannot find symbol
+                        () -> new Block(Block.Properties.copy(Blocks.SOUL_SAND)), new Item.Properties());
+                                                        ^
+  symbol:   method copy(Block)
+  location: class Properties
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/registry/SpiritBlocks.java:75: error: cannot find symbol
+                        () -> new Block(Block.Properties.copy(Blocks.SOUL_SAND)), new Item.Properties());
+                                                        ^
+  symbol:   method copy(Block)
+  location: class Properties
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/registry/SpiritBlocks.java:78: error: cannot find symbol
+                        () -> new Block(Block.Properties.copy(Blocks.SOUL_SAND)), new Item.Properties());
+                                                        ^
+  symbol:   method copy(Block)
+  location: class Properties
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/registry/SpiritBlocks.java:81: error: cannot find symbol
+                        () -> new Block(Block.Properties.copy(Blocks.SPAWNER)
+                                                        ^
+  symbol:   method copy(Block)
+  location: class Properties
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/registry/SpiritBlocks.java:89: error: cannot find symbol
+                        () -> new Block(Block.Properties.copy(Blocks.OBSIDIAN)));
+                                                        ^
+  symbol:   method copy(Block)
+  location: class Properties
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/registry/SpiritBlocks.java:92: error: cannot find symbol
+                        () -> new Block(Block.Properties.copy(Blocks.GLASS)));
+                                                        ^
+  symbol:   method copy(Block)
+  location: class Properties
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/items/tools/SoulSteelBow.java:97: error: incompatible types: EquipmentSlot is not a functional interface
+                itemStack.hurtAndBreak(1, player,
+                         ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/items/SoulMetalMaterial.java:27: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/items/SoulCrystalItem.java:34: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/items/SoulCrystalItem.java:54: error: cannot find symbol
+        if(tier == null && (SoulUtils.canCrystalBeUsedInCage(itemStack) || (Services.PLATFORM.isModLoaded("vitalize") && SoulUtils.isAllowed(itemStack, Spirit.REVITALIZER_TAG)))) {
+                                     ^
+  symbol:   method canCrystalBeUsedInCage(@org.jetbrains.annotations.NotNull ItemStack)
+  location: class SoulUtils
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/items/SoulCrystalItem.java:61: error: cannot find symbol
+        if(SoulUtils.canCrystalBeUsedInCage(itemStack)) {
+                    ^
+  symbol:   method canCrystalBeUsedInCage(@org.jetbrains.annotations.NotNull ItemStack)
+  location: class SoulUtils
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/data/MobTraitRegistry.java:23: error: incompatible types: cannot infer type-variable(s) E
+    public static final Codec<MobTrait<?>> CODEC = TRAIT_CODEC.dispatch(MobTrait::serializer,
+                                                                       ^
+    (argument mismatch; bad return type in lambda expression
+      Codec<CAP#1> cannot be converted to MapCodec<? extends E>)
+  where E,A are type-variables:
+    E extends Object declared in method <E>dispatch(Function<? super E,? extends A>,Function<? super A,? extends MapCodec<? extends E>>)
+    A extends Object declared in interface Codec
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends MobTrait<CAP#1> from capture of ?
+/Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/data/traits/PotionTrait.java:91: error: cannot find symbol
+            return CODEC.codec();
+                        ^
+  symbol:   method codec()
+  location: variable CODEC of type Codec<PotionTrait>
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: /Users/alextodd/Downloads/Spirit 1.20.6 Forked copy/common/src/main/java/me/codexadrian/spirit/mixin/EntityRendererMixin.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+74 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':common:compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1s
+1 actionable task: 1 executed

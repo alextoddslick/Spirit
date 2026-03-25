@@ -1,38 +1,22 @@
 package me.codexadrian.spirit.items;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
 
-public class SoulMetalMaterial implements Tier {
-    public static final SoulMetalMaterial INSTANCE = new SoulMetalMaterial();
+public class SoulMetalMaterial {
+    public static final TagKey<Item> REPAIR_ITEMS = TagKey.create(Registries.ITEM,
+            Identifier.fromNamespaceAndPath("spirit", "repairs_soul_steel"));
 
-    @Override
-    public int getUses() {
-        return 200;
-    }
-
-    @Override
-    public float getSpeed() {
-        return 9;
-    }
-
-    @Override
-    public float getAttackDamageBonus() {
-        return 3.5F;
-    }
-
-    public int getEnchantmentValue() {
-        return 25;
-    }
-
-    public Ingredient getRepairIngredient() {
-        return Ingredient.EMPTY;
-    }
-
-    public TagKey<Block> getIncorrectBlocksForDrops() {
-        return BlockTags.INCORRECT_FOR_DIAMOND_TOOL;
-    }
+    public static final ToolMaterial INSTANCE = new ToolMaterial(
+            BlockTags.INCORRECT_FOR_DIAMOND_TOOL,
+            200,    // durability
+            9.0F,   // speed
+            3.5F,   // attackDamageBonus
+            25,     // enchantmentValue
+            REPAIR_ITEMS
+    );
 }

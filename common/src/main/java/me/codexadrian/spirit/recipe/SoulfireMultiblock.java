@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.codexadrian.spirit.data.TagAndListSetCodec;
-import net.minecraft.advancements.critereon.NbtPredicate;
+import net.minecraft.advancements.criterion.NbtPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -41,16 +41,20 @@ public record SoulfireMultiblock(List<List<String>> pattern, Map<String, Strippe
                     .forGetter(SoulfireMultiblock::keys))
             .apply(instance, SoulfireMultiblock::new));
 
-    public static HashMap<String, StrippedBlockPredicate> RESERVED_VALUES = new HashMap<>();
+    private static HashMap<String, StrippedBlockPredicate> RESERVED_VALUES;
 
-    static {
-        RESERVED_VALUES.put("@", new StrippedBlockPredicate(
-                Optional.of(HolderSet.direct(Blocks.SOUL_FIRE.builtInRegistryHolder())), Optional.empty()));
-        RESERVED_VALUES.put("&",
-                new StrippedBlockPredicate(
-                        Optional.of(BuiltInRegistries.BLOCK.getOrCreateTag(BlockTags.SOUL_FIRE_BASE_BLOCKS)),
-                        Optional.empty()));
-        RESERVED_VALUES.put(" ", StrippedBlockPredicate.ANY);
+    public static HashMap<String, StrippedBlockPredicate> getReservedValues() {
+        if (RESERVED_VALUES == null) {
+            RESERVED_VALUES = new HashMap<>();
+            RESERVED_VALUES.put("@", new StrippedBlockPredicate(
+                    Optional.of(HolderSet.direct(Blocks.SOUL_FIRE.builtInRegistryHolder())), Optional.empty()));
+            RESERVED_VALUES.put("&",
+                    new StrippedBlockPredicate(
+                            Optional.of(BuiltInRegistries.BLOCK.getOrThrow(BlockTags.SOUL_FIRE_BASE_BLOCKS)),
+                            Optional.empty()));
+            RESERVED_VALUES.put(" ", StrippedBlockPredicate.ANY);
+        }
+        return RESERVED_VALUES;
     }
 
     public static final SoulfireMultiblock DEFAULT_RECIPE = new SoulfireMultiblock(List.of(List.of("@"), List.of("&")),
@@ -85,7 +89,7 @@ public record SoulfireMultiblock(List<List<String>> pattern, Map<String, Strippe
             String key = String.valueOf(block.getValue());
             StrippedBlockPredicate blockPredicate = keys.get(key);
             if (blockPredicate == null)
-                blockPredicate = RESERVED_VALUES.get(key);
+                blockPredicate = getReservedValues().get(key);
             if (blockPredicate == null || !blockPredicate.matches(level, block.getKey())) {
                 return false;
             }
@@ -95,7 +99,7 @@ public record SoulfireMultiblock(List<List<String>> pattern, Map<String, Strippe
                 String key = String.valueOf(block.getValue());
                 StrippedBlockPredicate blockPredicate = keys.get(key);
                 if (blockPredicate == null)
-                    blockPredicate = RESERVED_VALUES.get(key);
+                    blockPredicate = getReservedValues().get(key);
                 if (blockPredicate != null) {
                     if (blockPredicate.matches(level, block.getKey())) {
                         level.destroyBlock(block.getKey(), false);

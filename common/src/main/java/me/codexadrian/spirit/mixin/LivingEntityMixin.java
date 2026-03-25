@@ -13,11 +13,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -30,6 +29,8 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -56,16 +57,16 @@ public abstract class LivingEntityMixin extends Entity implements Corrupted {
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    private void readCorrupted(CompoundTag compoundTag, CallbackInfo ci) {
-        if (compoundTag.getBoolean("Corrupted")) {
+    private void readCorrupted(ValueInput input, CallbackInfo ci) {
+        if (input.getBooleanOr("Corrupted", false)) {
             setCorrupted();
         }
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    private void saveCorrupted(CompoundTag compoundTag, CallbackInfo ci) {
+    private void saveCorrupted(ValueOutput output, CallbackInfo ci) {
         if (isCorrupted()) {
-            compoundTag.putBoolean("Corrupted", true);
+            output.putBoolean("Corrupted", true);
         }
     }
 
@@ -73,7 +74,7 @@ public abstract class LivingEntityMixin extends Entity implements Corrupted {
     private void onDeath(DamageSource source, CallbackInfo ci) {
         LivingEntity victim = (LivingEntity) (Object) this;
         Corrupted corrupt = (Corrupted) victim;
-        if (!victim.level().isClientSide) {
+        if (!victim.level().isClientSide()) {
             Entity entity = source.getEntity();
             if (entity instanceof Projectile projectile)
                 entity = projectile.getOwner();
@@ -148,9 +149,10 @@ public abstract class LivingEntityMixin extends Entity implements Corrupted {
                     if (!soulCrystal.isEmpty()) {
                         String soulCrystalType = SoulUtils.getSoulCrystalType(soulCrystal);
                         if (soulCrystalType != null && SoulUtils.getSoulsInCrystal(soulCrystal) > 0) {
-                            var entityEffect = MobTraitData.getEffectForEntity(
-                                    BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(soulCrystalType)),
-                                    player.level().getRecipeManager());
+                            var entityEffect = BuiltInRegistries.ENTITY_TYPE.get(Identifier.tryParse(soulCrystalType))
+                                    .map(net.minecraft.core.Holder::value)
+                                    .flatMap(et -> MobTraitData.getEffectForEntity(et,
+                                    ((ServerLevel) player.level()).recipeAccess()));
                             if (entityEffect.isPresent()) {
                                 int damage = 0;
                                 for (var trait : entityEffect.get().traits()) {

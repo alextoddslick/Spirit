@@ -55,9 +55,10 @@ public class CrystalPedestalBlock extends BaseEntityBlock {
         super($$0);
     }
 
-    public @NotNull InteractionResult use(@NotNull BlockState blockState, @NotNull Level level,
-            @NotNull BlockPos blockPos, @NotNull Player player, @NotNull InteractionHand interactionHand,
-            @NotNull BlockHitResult blockHitResult) {
+    @Override
+    protected @NotNull InteractionResult useItemOn(@NotNull ItemStack heldStack, @NotNull BlockState blockState,
+            @NotNull Level level, @NotNull BlockPos blockPos, @NotNull Player player,
+            @NotNull InteractionHand interactionHand, @NotNull BlockHitResult blockHitResult) {
         if (interactionHand != InteractionHand.OFF_HAND) {
             ItemStack itemStack = player.getMainHandItem();
             if (level.getBlockEntity(blockPos) instanceof PedestalBlockEntity crystalPedestal) {
@@ -144,12 +145,6 @@ public class CrystalPedestalBlock extends BaseEntityBlock {
         return createTickerHelper(blockEntityType, SpiritBlocks.PEDESTAL_ENTITY.get(), PedestalBlockEntity::tick);
     }
 
-    @Override
-    public boolean isOcclusionShapeFullBlock(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
-            @NotNull BlockPos blockPos) {
-        return false;
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
@@ -157,7 +152,7 @@ public class CrystalPedestalBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull List<ItemStack> getDrops(@NotNull BlockState blockState, LootParams.@NotNull Builder builder) {
+    protected @NotNull List<ItemStack> getDrops(@NotNull BlockState blockState, LootParams.@NotNull Builder builder) {
         List<ItemStack> drops = super.getDrops(blockState, builder);
         BlockEntity blockE = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (blockE instanceof PedestalBlockEntity pedestalBlock) {
@@ -168,12 +163,12 @@ public class CrystalPedestalBlock extends BaseEntityBlock {
     }
 
     @Override
-    public RenderShape getRenderShape(@NotNull BlockState blockState) {
+    protected RenderShape getRenderShape(@NotNull BlockState blockState) {
         return RenderShape.MODEL;
     }
 
     @Override
-    public VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
+    protected VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
             @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
         return SHAPE;
     }

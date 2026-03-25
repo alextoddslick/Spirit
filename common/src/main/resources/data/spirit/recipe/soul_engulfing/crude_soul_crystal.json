@@ -1,9 +1,7 @@
 {
   "type": "spirit:soul_engulfing",
   "input": {
-    "ingredient": {
-      "item": "spirit:soul_crystal_shard"
-    },
+    "ingredient": "spirit:soul_crystal_shard",
     "multiblock": {
       "pattern": [
         [

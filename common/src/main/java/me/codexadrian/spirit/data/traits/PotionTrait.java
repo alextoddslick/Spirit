@@ -11,7 +11,7 @@ import me.codexadrian.spirit.data.ToolType;
 import me.codexadrian.spirit.entity.SoulArrowEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -37,7 +37,7 @@ public record PotionTrait(List<MobEffectInstance> effects) implements MobTrait<P
 
     @Override
     public void onHitBlock(ToolType type, Entity entity, BlockState blockState, Level level, BlockPos pos) {
-        AreaEffectCloud potionCloud = EntityType.AREA_EFFECT_CLOUD.create(entity.level());
+        AreaEffectCloud potionCloud = EntityType.AREA_EFFECT_CLOUD.create(entity.level(), net.minecraft.world.entity.EntitySpawnReason.TRIGGERED);
         if (potionCloud == null)
             return;
         for (var effect : effects()) {
@@ -82,8 +82,8 @@ public record PotionTrait(List<MobEffectInstance> effects) implements MobTrait<P
                 .apply(instance, PotionTrait::new));
 
         @Override
-        public ResourceLocation id() {
-            return ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "potion_effect");
+        public Identifier id() {
+            return Identifier.fromNamespaceAndPath(Spirit.MODID, "potion_effect");
         }
 
         @Override

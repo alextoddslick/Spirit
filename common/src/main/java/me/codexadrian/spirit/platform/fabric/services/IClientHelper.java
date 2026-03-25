@@ -1,17 +1,11 @@
 package me.codexadrian.spirit.platform.fabric.services;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -19,13 +13,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import java.util.function.Supplier;
 
 public interface IClientHelper {
-    
-    void registerItemProperty(Item pItem, ResourceLocation pName, ClampedItemPropertyFunction pProperty);
 
-    <T extends BlockEntity> void registerBlockEntityRenderers(BlockEntityType<T> type, BlockEntityRendererProvider<T> provider);
+    // TODO: Item properties system completely changed in 1.21.11 - ClampedItemPropertyFunction removed.
+    // Item model properties (pull, pulling, filled) are now data-driven via item model definition JSON files.
+
+    <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderers(BlockEntityType<T> type, BlockEntityRendererProvider<T, S> provider);
 
     <T extends Entity> void registerEntityRenderer(Supplier<EntityType<T>> entity, EntityRendererProvider<T> rendererProvider);
 
-    void setRenderLayer(Block block, RenderType type);
-
+    void setRenderLayer(Block block, ChunkSectionLayer layer);
 }

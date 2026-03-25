@@ -8,6 +8,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -85,32 +87,23 @@ public class PedestalBlockEntity extends BlockEntity implements WorldlyContainer
         return 1;
     }
 
-    // 1.20.6 Standard: Requires HolderLookup.Provider
     @Override
-    protected void loadAdditional(@NotNull CompoundTag compoundTag, HolderLookup.Provider provider) {
-        super.loadAdditional(compoundTag, provider);
-        if (compoundTag.contains("item")) {
-            item = ItemStack.parseOptional(provider, compoundTag.getCompound("item"));
-        } else {
-            item = ItemStack.EMPTY;
-        }
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        item = input.read("item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
     }
 
-    // 1.20.6 Standard: Requires HolderLookup.Provider
     @Override
-    protected void saveAdditional(@NotNull CompoundTag compoundTag, HolderLookup.Provider provider) {
-        super.saveAdditional(compoundTag, provider);
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
         if (!item.isEmpty()) {
-            compoundTag.put("item", item.saveOptional(provider));
+            output.store("item", ItemStack.OPTIONAL_CODEC, item);
         }
     }
 
-    // 1.20.6 Standard: Requires HolderLookup.Provider
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, provider);
-        return tag;
+        return this.saveCustomOnly(provider);
     }
 
     @Override

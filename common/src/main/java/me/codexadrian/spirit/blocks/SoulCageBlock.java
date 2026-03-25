@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -59,7 +58,7 @@ public class SoulCageBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected @NotNull ItemInteractionResult useItemOn(
+    protected @NotNull InteractionResult useItemOn(
             @NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos,
             @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
 
@@ -80,7 +79,7 @@ public class SoulCageBlock extends BaseEntityBlock {
                     }
                     soulSpawner.setType();
                     soulSpawner.update(Block.UPDATE_ALL);
-                    return ItemInteractionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             } else if (player.isShiftKeyDown()) {
                 soulSpawner.entity = null;
@@ -88,11 +87,11 @@ public class SoulCageBlock extends BaseEntityBlock {
                 ItemStack divineCrystal = soulSpawner.removeItemNoUpdate(0);
                 player.getInventory().placeItemBackInInventory(divineCrystal);
                 soulSpawner.update(Block.UPDATE_ALL);
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override
@@ -113,7 +112,7 @@ public class SoulCageBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull List<ItemStack> getDrops(@NotNull BlockState blockState, LootParams.@NotNull Builder builder) {
+    protected @NotNull List<ItemStack> getDrops(@NotNull BlockState blockState, LootParams.@NotNull Builder builder) {
         List<ItemStack> drops = super.getDrops(blockState, builder);
         BlockEntity blockE = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (blockE instanceof SoulCageBlockEntity) {
@@ -124,13 +123,13 @@ public class SoulCageBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
+    protected @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
             @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
         return SHAPE;
     }
 
     @Override
-    public @NotNull RenderShape getRenderShape(@NotNull BlockState blockState) {
+    protected @NotNull RenderShape getRenderShape(@NotNull BlockState blockState) {
         return RenderShape.MODEL;
     }
 }

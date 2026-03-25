@@ -11,7 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class NetworkHandlerImpl {
 
@@ -20,7 +20,7 @@ public class NetworkHandlerImpl {
         ClientPlayNetworking.send(new GenericPacketPayload<>(packet, payloadType));
     }
 
-    public static <T> void registerClientToServerPacket(ResourceLocation location, IPacketHandler<T> handler,
+    public static <T> void registerClientToServerPacket(Identifier location, IPacketHandler<T> handler,
             Class<T> tClass) {
         // Create the payload type for this packet
         CustomPacketPayload.Type<GenericPacketPayload<T>> payloadType = new CustomPacketPayload.Type<>(location);
@@ -36,8 +36,8 @@ public class NetworkHandlerImpl {
         // Register the receiver
         ServerPlayNetworking.registerGlobalReceiver(payloadType, (payload, context) -> {
             T decode = payload.packet();
-            context.player().getServer()
-                    .execute(() -> handler.handle(decode).accept(context.player().getServer(), context.player()));
+            net.minecraft.server.MinecraftServer server = ((net.minecraft.server.level.ServerLevel) context.player().level()).getServer();
+            server.execute(() -> handler.handle(decode).accept(server, context.player()));
         });
     }
 
@@ -53,7 +53,7 @@ public class NetworkHandlerImpl {
     // A wrapper for sending packets
     public record WrappedPacketPayload<T extends IPacket<T>>(T packet) implements CustomPacketPayload {
         public static final Type<WrappedPacketPayload<?>> TYPE = new Type<>(
-                ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "wrapped"));
+                Identifier.fromNamespaceAndPath(Spirit.MODID, "wrapped"));
 
         @Override
         public Type<? extends CustomPacketPayload> type() {

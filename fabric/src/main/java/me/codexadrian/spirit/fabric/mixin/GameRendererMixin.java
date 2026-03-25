@@ -1,46 +1,15 @@
 package me.codexadrian.spirit.fabric.mixin;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.datafixers.util.Pair;
-import me.codexadrian.spirit.platform.fabric.ClientServices;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.server.packs.resources.ResourceProvider;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
+/**
+ * TODO: This mixin previously loaded a custom soul shader via ShaderInstance.
+ * ShaderInstance has been completely removed in 1.21.11.
+ * The rendering pipeline now uses RenderPipeline/RenderSetup.
+ * The soul shader effect needs to be reimplemented using the new system.
+ */
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
-
-    @Shadow
-    @Final
-    private Map<String, ShaderInstance> shaders;
-
-    @Inject(method = "reloadShaders", at = @At("TAIL"))
-    private void reloadShaders(ResourceProvider resourceProvider, CallbackInfo ci) {
-        List<Pair<ShaderInstance, Consumer<ShaderInstance>>> list = new ArrayList<>();
-        try {
-            list.add(Pair.of(
-                    new ShaderInstance(resourceProvider, "rendertype_entity_corrupted", DefaultVertexFormat.BLOCK),
-                    ClientServices.SHADERS::setSoulShader));
-        } catch (Exception e) {
-            list.forEach(pair -> pair.getFirst().close());
-            throw new RuntimeException("could not reload shaders", e);
-        }
-
-        list.forEach(pair -> {
-            ShaderInstance shaderInstance = pair.getFirst();
-            this.shaders.put(shaderInstance.getName(), shaderInstance);
-            pair.getSecond().accept(shaderInstance);
-        });
-    }
+    // Stubbed out - ShaderInstance no longer exists in 1.21.11
 }

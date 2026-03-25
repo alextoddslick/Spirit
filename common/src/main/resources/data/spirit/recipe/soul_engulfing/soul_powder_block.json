@@ -1,9 +1,7 @@
 {
   "type": "spirit:soul_engulfing",
   "input": {
-    "ingredient": {
-      "item": "minecraft:glowstone"
-    }
+    "ingredient": "minecraft:glowstone"
   },
   "duration": 2,
   "destroysStructure": false,

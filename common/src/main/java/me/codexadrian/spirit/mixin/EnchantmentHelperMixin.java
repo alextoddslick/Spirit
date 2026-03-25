@@ -6,7 +6,7 @@ import me.codexadrian.spirit.data.traits.KnockbackTrait;
 import me.codexadrian.spirit.registry.SpiritItems;
 import me.codexadrian.spirit.utils.SoulUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 
 import net.minecraft.world.entity.player.Player;
@@ -31,9 +31,10 @@ public class EnchantmentHelperMixin {
                     ItemStack soulCrystal = SoulUtils.findCrystal(player, null, true, true, false);
                     String type = SoulUtils.getSoulCrystalType(soulCrystal);
                     if (type != null && SoulUtils.getSoulsInCrystal(soulCrystal) > 0) {
-                        var entityEffect = MobTraitData.getEffectForEntity(
-                                BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(type)),
-                                livingEntity.level().getRecipeManager());
+                        var entityEffect = BuiltInRegistries.ENTITY_TYPE.get(Identifier.tryParse(type))
+                                .map(net.minecraft.core.Holder::value)
+                                .flatMap(et -> MobTraitData.getEffectForEntity(et,
+                                ((net.minecraft.server.level.ServerLevel) livingEntity.level()).recipeAccess()));
                         if (entityEffect.isPresent()) {
                             int knockback = 0;
                             for (var trait : entityEffect.get().traits()) {

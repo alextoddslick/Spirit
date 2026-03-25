@@ -13,18 +13,18 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class SoulSteelAxe extends AxeItem {
     public SoulSteelAxe(Properties properties) {
-        super(SoulMetalMaterial.INSTANCE,
-                properties.attributes(AxeItem.createAttributes(SoulMetalMaterial.INSTANCE, 5, -3.0F)));
+        super(SoulMetalMaterial.INSTANCE, 5, -3.0F, properties);
     }
 
     @Override
@@ -33,11 +33,11 @@ public class SoulSteelAxe extends AxeItem {
     }
 
     @Override
-    public boolean hurtEnemy(@NotNull ItemStack itemStack, @NotNull LivingEntity victim,
+    public void hurtEnemy(@NotNull ItemStack itemStack, @NotNull LivingEntity victim,
             @NotNull LivingEntity attacker) {
         if (attacker instanceof Player player)
             ToolUtils.handleOnHitEntity(itemStack, ToolType.AXE, victim, player);
-        return super.hurtEnemy(itemStack, victim, attacker);
+        super.hurtEnemy(itemStack, victim, attacker);
     }
 
     @Override
@@ -48,9 +48,10 @@ public class SoulSteelAxe extends AxeItem {
 
     @Override
     public void appendHoverText(@NotNull ItemStack itemStack, Item.TooltipContext context,
-            @NotNull List<Component> list, @NotNull TooltipFlag tooltipFlag) {
+            @NotNull TooltipDisplay tooltipDisplay, @NotNull Consumer<Component> list,
+            @NotNull TooltipFlag tooltipFlag) {
         ToolUtils.appendEmpoweredText(itemStack, list);
-        super.appendHoverText(itemStack, context, list, tooltipFlag);
+        super.appendHoverText(itemStack, context, tooltipDisplay, list, tooltipFlag);
     }
 
     @Override

@@ -6,7 +6,9 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -30,15 +32,15 @@ public class FabricRegistryHelper implements IRegistryHelper {
 
     @Override
     public <T extends Item> Supplier<T> registerItem(String id, Supplier<T> item) {
-        var register = Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MODID, id),
-                item.get());
+        var identifier = Identifier.fromNamespaceAndPath(MODID, id);
+        var register = Registry.register(BuiltInRegistries.ITEM, identifier, item.get());
         return () -> register;
     }
 
     @Override
     public <T extends Block> Supplier<T> registerBlock(String id, Supplier<T> item) {
-        var register = Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(MODID, id),
-                item.get());
+        var identifier = Identifier.fromNamespaceAndPath(MODID, id);
+        var register = Registry.register(BuiltInRegistries.BLOCK, identifier, item.get());
         return () -> register;
     }
 
@@ -46,7 +48,7 @@ public class FabricRegistryHelper implements IRegistryHelper {
     public <E extends BlockEntity, T extends BlockEntityType<E>> Supplier<T> registerBlockEntity(String id,
             Supplier<T> item) {
         var register = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
-                ResourceLocation.fromNamespaceAndPath(MODID, id),
+                Identifier.fromNamespaceAndPath(MODID, id),
                 item.get());
         return () -> register;
     }
@@ -60,7 +62,7 @@ public class FabricRegistryHelper implements IRegistryHelper {
     @Override
     public <T extends Enchantment> Supplier<T> registerEnchantment(String id, Supplier<T> enchantment) {
         // var register = Registry.register(BuiltInRegistries.ENCHANTMENT,
-        // ResourceLocation.fromNamespaceAndPath(MODID, id),
+        // Identifier.fromNamespaceAndPath(MODID, id),
         // enchantment.get());
         // return () -> register;
         return enchantment;
@@ -70,9 +72,9 @@ public class FabricRegistryHelper implements IRegistryHelper {
     public <T extends Entity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory,
             MobCategory group, float width, float height) {
         var register = Registry.register(BuiltInRegistries.ENTITY_TYPE,
-                ResourceLocation.fromNamespaceAndPath(MODID, name),
+                Identifier.fromNamespaceAndPath(MODID, name),
                 FabricEntityTypeBuilder.create(group, factory).dimensions(EntityDimensions.fixed(width, height))
-                        .build());
+                        .build(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(MODID, name))));
         return () -> register;
     }
 
@@ -80,7 +82,7 @@ public class FabricRegistryHelper implements IRegistryHelper {
     public <R extends Recipe<?>, T extends RecipeType<R>> Supplier<T> registerRecipeType(String name,
             Supplier<T> recipe) {
         var register = Registry.register(BuiltInRegistries.RECIPE_TYPE,
-                ResourceLocation.fromNamespaceAndPath(MODID, name),
+                Identifier.fromNamespaceAndPath(MODID, name),
                 recipe.get());
         return () -> register;
     }
@@ -89,13 +91,13 @@ public class FabricRegistryHelper implements IRegistryHelper {
     public <R extends Recipe<?>, T extends RecipeSerializer<R>> Supplier<T> registerRecipeSerializer(String name,
             Supplier<T> recipe) {
         var register = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
-                ResourceLocation.fromNamespaceAndPath(MODID, name),
+                Identifier.fromNamespaceAndPath(MODID, name),
                 recipe.get());
         return () -> register;
     }
 
     @Override
-    public Supplier<CreativeModeTab> registerCreativeTab(ResourceLocation tab, Supplier<ItemStack> supplier,
+    public Supplier<CreativeModeTab> registerCreativeTab(Identifier tab, Supplier<ItemStack> supplier,
             CreativeModeTab.DisplayItemsGenerator displayItems) {
         var group = Registry.register(net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB, tab,
                 net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup.builder()

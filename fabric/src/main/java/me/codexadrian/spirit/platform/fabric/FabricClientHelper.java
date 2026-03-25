@@ -1,18 +1,15 @@
 package me.codexadrian.spirit.platform.fabric;
 
 import me.codexadrian.spirit.platform.fabric.services.IClientHelper;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -22,12 +19,7 @@ import java.util.function.Supplier;
 public class FabricClientHelper implements IClientHelper {
 
     @Override
-    public void registerItemProperty(Item pItem, ResourceLocation pName, ClampedItemPropertyFunction pProperty) {
-        ItemProperties.register(pItem, pName, pProperty);
-    }
-
-    @Override
-    public <T extends BlockEntity> void registerBlockEntityRenderers(BlockEntityType<T> type, BlockEntityRendererProvider<T> provider) {
+    public <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderers(BlockEntityType<T> type, BlockEntityRendererProvider<T, S> provider) {
         BlockEntityRendererRegistry.register(type, provider);
     }
 
@@ -37,7 +29,7 @@ public class FabricClientHelper implements IClientHelper {
     }
 
     @Override
-    public void setRenderLayer(Block block, RenderType type) {
-        BlockRenderLayerMap.INSTANCE.putBlock(block, type);
+    public void setRenderLayer(Block block, ChunkSectionLayer layer) {
+        BlockRenderLayerMap.putBlock(block, layer);
     }
 }

@@ -1,8 +1,8 @@
 package me.codexadrian.spirit.network.packet;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface IPacket<T> {
-    ResourceLocation getID();
+    Identifier getID();
     IPacketHandler<T> getHandler();
 }

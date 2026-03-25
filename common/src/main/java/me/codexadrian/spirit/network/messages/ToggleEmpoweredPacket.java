@@ -6,7 +6,7 @@ import me.codexadrian.spirit.network.packet.IPacketHandler;
 import me.codexadrian.spirit.registry.SpiritItems;
 import me.codexadrian.spirit.utils.SoulUtils;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -16,10 +16,10 @@ import java.util.function.BiConsumer;
 
 public record ToggleEmpoweredPacket() implements IPacket<ToggleEmpoweredPacket> {
     public static Handler HANDLER = new Handler();
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Spirit.MODID, "empower");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(Spirit.MODID, "empower");
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return ID;
     }
 
