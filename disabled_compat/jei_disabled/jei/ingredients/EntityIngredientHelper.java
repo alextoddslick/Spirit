@@ -1,7 +1,6 @@
-package jei.ingredients;
+package me.codexadrian.spirit.compat.jei.ingredients;
 
-import earth.terrarium.spirit.compat.common.EntityIngredient;
-import earth.terrarium.spirit.compat.jei.SpiritPlugin;
+import me.codexadrian.spirit.compat.jei.SpiritPlugin;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -11,13 +10,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SpawnEggItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
- * This class was largely inspired by or taken from the Resourceful Bees repository with
+ * This class was largely inspired by or taken from the Resourceful Bees
+ * repository with
  * the expressed permission from one of their developers.
- *
+ * 
  * @author Team Resourceful
  */
 public class EntityIngredientHelper implements IIngredientHelper<EntityIngredient> {
@@ -26,7 +29,6 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityIngredien
     public @NotNull IIngredientType<EntityIngredient> getIngredientType() {
         return SpiritPlugin.ENTITY_INGREDIENT;
     }
-
 
     @NotNull
     @Override
@@ -37,7 +39,8 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityIngredien
     @Override
     public @NotNull String getUniqueId(@NotNull EntityIngredient entityIngredient, @NotNull UidContext context) {
         Entity entity = entityIngredient.getEntity();
-        if (entity == null) return "spirit_entity:error";
+        if (entity == null)
+            return "spirit_entity:error";
         ResourceLocation id = EntityType.getKey(entity.getType());
         return id == null ? "spirit_entity:error" : "spirit_entity:" + id;
     }
@@ -57,12 +60,8 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityIngredien
     @Override
     public @NotNull ResourceLocation getResourceLocation(EntityIngredient ingredient) {
         ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(ingredient.getEntityType());
-<<<<<<<< Updated upstream:common/src/main/resources/jei/ingredients/EntityIngredientHelper.java
-        if (id == null) return new ResourceLocation("error");
-========
         if (id == null)
             return ResourceLocation.fromNamespaceAndPath("error");
->>>>>>>> Stashed changes:disabled_compat/jei_disabled/jei/ingredients/EntityIngredientHelper.java
         return id;
     }
 

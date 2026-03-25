@@ -3,51 +3,36 @@
   "id": "spirit",
   "version": "${version}",
   "name": "Spirit",
-  "description": "A soul based magic mod",
+  "description": "A Soul Shards inspired mod - Spawn your own mobs with an enhanced mob spawner",
   "authors": [
-    "CodexAdrian"
+    "Head Dev: CodexAdrian",
+    "Dev: Ashh/MsRandom1",
+    "Dev: ExpensiveKoala",
+    "Dev: ThatGravyBoat",
+    "Dev: abused_master/moe/pain in my ass",
+    "Artist: Kekie6",
+    "Artist: Shrimp",
+    "Artist: Facu"
   ],
-  "contact": {
-    "repo": "https://github.com/terrarium-earth/Spirit",
-    "issues": "https://github.com/terrarium-earth/Spirit/issues"
-  },
-  "license": "All-Rights-Reserved",
-  "icon": "icon.png",
+  "license": "ARR",
   "environment": "*",
+  "accessWidener": "spirit.accesswidener",
   "entrypoints": {
     "main": [
-      "earth.terrarium.spirit.fabric.SpiritFabric",
-      "earth.terrarium.spirit.Spirit::postInit"
+      "me.codexadrian.spirit.fabric.FabricSpirit"
     ],
     "client": [
-<<<<<<< Updated upstream
-      "earth.terrarium.spirit.client.fabric.SpiritClientFabric"
-    ],
-    "jei_mod_plugin": [
-      "jei.SpiritPlugin"
-    ],
-    "rei_client": [
-      "earth.terrarium.spirit.compat.rei.SpiritPlugin"
-=======
       "me.codexadrian.spirit.fabric.FabricSpiritClient"
->>>>>>> Stashed changes
     ]
   },
   "mixins": [
-    "spirit-common.mixins.json",
-    "spirit.mixins.json",
-    "spirit-client.mixins.json"
+    "spirit.common.mixins.json",
+    "spirit.fabric.mixins.json"
   ],
   "depends": {
-<<<<<<< Updated upstream
-    "fabric": "*",
-    "minecraft": ">=1.20",
-    "resourcefullib": ">=1.2.7"
-=======
     "fabricloader": ">=0.16.9",
     "fabric": ">=0.100.0",
     "minecraft": ">=1.21",
     "java": ">=21"
->>>>>>> Stashed changes
   }
 }

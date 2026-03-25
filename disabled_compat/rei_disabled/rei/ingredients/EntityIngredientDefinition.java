@@ -1,7 +1,7 @@
-package earth.terrarium.spirit.compat.rei.ingredients;
+package me.codexadrian.spirit.compat.rei.ingredients;
 
-import earth.terrarium.spirit.compat.common.EntityIngredient;
-import earth.terrarium.spirit.compat.rei.SpiritPlugin;
+import me.codexadrian.spirit.compat.jei.ingredients.EntityIngredient;
+import me.codexadrian.spirit.compat.rei.SpiritPlugin;
 import me.shedaniel.rei.api.client.entry.renderer.EntryRenderer;
 import me.shedaniel.rei.api.common.entry.EntrySerializer;
 import me.shedaniel.rei.api.common.entry.EntryStack;
@@ -70,7 +70,8 @@ public class EntityIngredientDefinition implements EntryDefinition<EntityIngredi
 
     @Override
     public boolean equals(EntityIngredient o1, EntityIngredient o2, ComparisonContext context) {
-        return o1.getEntityType() == o2.getEntityType() && o1.getRotation() == o2.getRotation() && o1.getNbt().equals(o2.getNbt());
+        return o1.getEntityType() == o2.getEntityType() && o1.getRotation() == o2.getRotation()
+                && o1.getNbt().equals(o2.getNbt());
     }
 
     @Override
@@ -86,7 +87,9 @@ public class EntityIngredientDefinition implements EntryDefinition<EntityIngredi
 
     @Override
     public Stream<? extends TagKey<?>> getTagsFor(EntryStack<EntityIngredient> entry, EntityIngredient value) {
-        return BuiltInRegistries.ENTITY_TYPE.getHolder(ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(), BuiltInRegistries.ENTITY_TYPE.getKey(value.getEntityType())))
+        return BuiltInRegistries.ENTITY_TYPE
+                .getHolder(ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(),
+                        BuiltInRegistries.ENTITY_TYPE.getKey(value.getEntityType())))
                 .map(Holder::tags).orElse(Stream.empty());
     }
 }

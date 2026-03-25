@@ -1,4 +1,4 @@
-package earth.terrarium.spirit.compat.common;
+package me.codexadrian.spirit.compat.jei.ingredients;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -15,9 +15,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * This class was largely inspired by or taken from the Resourceful Bees repository with
+ * This class was largely inspired by or taken from the Resourceful Bees
+ * repository with
  * the expressed permission from one of their developers.
- *
+ * 
  * @author Team Resourceful
  */
 public class EntityIngredient {
@@ -40,7 +41,8 @@ public class EntityIngredient {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null) {
             entity = this.entityType.create(mc.level);
-            if (entity != null) nbt.ifPresent(entity::load);
+            if (entity != null)
+                nbt.ifPresent(entity::load);
         } else {
             entity = null;
         }

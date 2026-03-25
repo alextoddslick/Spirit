@@ -1,4 +1,4 @@
-package earth.terrarium.spirit.compat;
+package me.codexadrian.spirit.compat.jei.multiblock;
 
 import org.jetbrains.annotations.NotNull;
 
