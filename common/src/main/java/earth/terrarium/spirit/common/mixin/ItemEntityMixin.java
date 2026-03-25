@@ -23,11 +23,10 @@ public abstract class ItemEntityMixin implements EngulfableItem {
     private static final EntityDataAccessor<Integer> MAX_ENGULF_TIME = SynchedEntityData.defineId(ItemEntity.class, EntityDataSerializers.INT);
 
     @Inject(method = "defineSynchedData", at = @At("TAIL"))
-    private void defineCorrupted(CallbackInfo ci) {
-        var entityData = ((ItemEntity) (Object) this).getEntityData();
-        entityData.define(RECIPE_OUTPUT, false);
-        entityData.define(ENGULF_TIME, 0);
-        entityData.define(MAX_ENGULF_TIME, 0);
+    private void defineCorrupted(SynchedEntityData.Builder builder, CallbackInfo ci) {
+        builder.define(RECIPE_OUTPUT, false);
+        builder.define(ENGULF_TIME, 0);
+        builder.define(MAX_ENGULF_TIME, 0);
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))

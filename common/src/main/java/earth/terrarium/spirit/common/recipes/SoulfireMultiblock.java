@@ -119,7 +119,8 @@ public record SoulfireMultiblock(List<List<String>> pattern, Map<String, Strippe
             if (nbtTag().isPresent()) {
                 var blockEntity = serverLevel.getBlockEntity(blockPos);
                 if (blockEntity != null)
-                    return new NbtPredicate(this.nbtTag().get()).matches(blockEntity.saveWithFullMetadata());
+                    return new NbtPredicate(this.nbtTag().get())
+                            .matches(blockEntity.saveWithFullMetadata(serverLevel.registryAccess()));
             }
             return true;
         }

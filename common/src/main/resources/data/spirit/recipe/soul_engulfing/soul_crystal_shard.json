@@ -1,0 +1,29 @@
+{
+  "type": "spirit:soul_engulfing",
+  "input": {
+    "ingredient": {
+      "item": "spirit:soul_powder"
+    },
+    "multiblock": {
+      "pattern": [
+        [
+          "   ",
+          " @ ",
+          "   "
+        ],
+        [
+          " S ",
+          "S&S",
+          " S "
+        ]
+      ],
+      "keys": {
+        "S": {
+          "block": "minecraft:quartz_block"
+        }
+      }
+    }
+  },
+  "duration": 40,
+  "outputItem": "spirit:soul_crystal_shard"
+}

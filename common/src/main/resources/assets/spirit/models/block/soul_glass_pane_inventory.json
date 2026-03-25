@@ -1,0 +1,7 @@
+{
+    "parent": "minecraft:block/pane_noside",
+    "textures": {
+        "pane": "spirit:block/soul_glass",
+        "edge": "spirit:block/soul_glass"
+    }
+}

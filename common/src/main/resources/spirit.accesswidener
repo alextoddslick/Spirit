@@ -17,5 +17,10 @@ accessible field net/minecraft/world/item/ArmorItem ARMOR_MODIFIER_UUID_PER_TYPE
 
 
 accessible method net/minecraft/client/renderer/RenderType create (Ljava/lang/String;Lcom/mojang/blaze3d/vertex/VertexFormat;Lcom/mojang/blaze3d/vertex/VertexFormat$Mode;IZZLnet/minecraft/client/renderer/RenderType$CompositeState;)Lnet/minecraft/client/renderer/RenderType$CompositeRenderType;
+<<<<<<< Updated upstream:common/src/main/resources/spirit.accesswidener
 accessible method net/minecraft/client/renderer/RenderType$CompositeRenderType state ()Lnet/minecraft/client/renderer/RenderType$CompositeState;
 accessible method net/minecraft/world/entity/LivingEntity calculateFallDamage (FF)I
+=======
+
+accessible method net/minecraft/client/renderer/item/ItemProperties register (Lnet/minecraft/world/item/Item;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/renderer/item/ClampedItemPropertyFunction;)V
+>>>>>>> Stashed changes:fabric/src/main/resources/spirit.accesswidener

@@ -1,3 +1,20 @@
+<<<<<<< Updated upstream
+=======
+plugins {
+    id "dev.architectury.loom"
+}
+
+dependencies {
+    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
+    // Do NOT use other classes from fabric loader
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    modRuntimeOnly "mezz.jei:jei-${minecraft_version}-common:${jei_version}"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version"
+    modImplementation "com.teamresourceful.resourcefullib:resourcefullib-common-$rootProject.resourcefullib_version"
+}
+
+>>>>>>> Stashed changes
 architectury {
     common(rootProject.enabled_platforms.split(","))
 }

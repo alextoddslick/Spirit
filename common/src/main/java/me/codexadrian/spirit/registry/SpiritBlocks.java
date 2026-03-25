@@ -1,0 +1,133 @@
+package me.codexadrian.spirit.registry;
+
+import me.codexadrian.spirit.blocks.*;
+import me.codexadrian.spirit.blocks.blockentity.PedestalBlockEntity;
+import me.codexadrian.spirit.blocks.blockentity.SoulCageBlockEntity;
+import me.codexadrian.spirit.blocks.blockentity.SoulPedestalBlockEntity;
+import me.codexadrian.spirit.items.ChippedBlockItem;
+import me.codexadrian.spirit.platform.fabric.Services;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+
+import java.util.ArrayList;
+import java.util.function.Supplier;
+
+import static me.codexadrian.spirit.Spirit.SPIRIT;
+import static me.codexadrian.spirit.platform.fabric.Services.REGISTRY;
+
+public class SpiritBlocks {
+        public static final ArrayList<Supplier<Block>> SOUL_GLASS_BLOCKS = new ArrayList<>();
+
+        public static final Supplier<Block> SOUL_CAGE = registerBlockWithItem("soul_cage", () -> new SoulCageBlock(
+                        BlockBehaviour.Properties.of().strength(5.0F).sound(SoundType.METAL).noOcclusion()
+                                        .requiresCorrectToolForDrops()));
+
+        public static final Supplier<BlockEntityType<SoulCageBlockEntity>> SOUL_CAGE_ENTITY = REGISTRY
+                        .registerBlockEntity("soul_cage", () -> Services.REGISTRY
+                                        .createBlockEntityType(SoulCageBlockEntity::new, SOUL_CAGE.get()));
+
+        public static final Supplier<Block> SOUL_PEDESTAL = registerBlockWithItem("soul_pedestal",
+                        () -> new SoulPedestalBlock(
+                                        BlockBehaviour.Properties.of().strength(5.0F).sound(SoundType.METAL)
+                                                        .noOcclusion()
+                                                        .requiresCorrectToolForDrops()));
+
+        public static final Supplier<Block> CRYSTAL_PEDESTAL = registerBlockWithItem("crystal_pedestal",
+                        () -> new CrystalPedestalBlock(
+                                        BlockBehaviour.Properties.of().strength(5.0F).sound(SoundType.METAL)
+                                                        .noOcclusion()
+                                                        .requiresCorrectToolForDrops()));
+
+        public static final Supplier<BlockEntityType<SoulPedestalBlockEntity>> SOUL_PEDESTAL_ENTITY = REGISTRY
+                        .registerBlockEntity("soul_pedestal", () -> Services.REGISTRY
+                                        .createBlockEntityType(SoulPedestalBlockEntity::new, SOUL_PEDESTAL.get()));
+
+        public static final Supplier<Block> PEDESTAL = registerBlockWithItem("pedestal", () -> new PedestalBlock(
+                        BlockBehaviour.Properties.of().strength(5.0F).sound(SoundType.METAL).noOcclusion()
+                                        .requiresCorrectToolForDrops()));
+
+        public static final Supplier<BlockEntityType<PedestalBlockEntity>> PEDESTAL_ENTITY = REGISTRY
+                        .registerBlockEntity("pedestal",
+                                        () -> Services.REGISTRY.createBlockEntityType(PedestalBlockEntity::new,
+                                                        PEDESTAL.get(), CRYSTAL_PEDESTAL.get()));
+
+        public static final Supplier<Block> SOUL_GLASS = registerBlockWithItem("soul_glass",
+                        () -> new Block(BlockBehaviour.Properties.of().strength(0.3F).sound(SoundType.GLASS)
+                                        .noOcclusion()
+                                        .isValidSpawn((state, world, pos, entityType) -> false)
+                                        .isRedstoneConductor((state, world, pos) -> false)
+                                        .isSuffocating((state, world, pos) -> false)
+                                        .isViewBlocking((state, world, pos) -> false)));
+
+        public static final Supplier<Block> SOUL_SLATE = registerBlockWithItem("soul_slate",
+                        () -> new Block(BlockBehaviour.Properties.of().strength(3.0F, 6.0F)
+                                        .sound(SoundType.DEEPSLATE)));
+
+        public static final Supplier<Block> SOUL_STEEL_BLOCK = registerBlockWithItem("soul_steel_block",
+                        () -> new Block(BlockBehaviour.Properties.of().strength(5.0F, 6.0F).sound(SoundType.METAL)),
+                        new Item.Properties().rarity(Rarity.RARE));
+
+        public static final Supplier<Block> SOUL_POWDER_BLOCK = registerBlockWithItem("soul_powder_block",
+                        () -> new Block(BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.SAND)),
+                        new Item.Properties());
+
+        public static final Supplier<Block> COMPRESSED_SOUL_POWDER_BLOCK = registerBlockWithItem(
+                        "compressed_soul_powder_block",
+                        () -> new Block(BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.SAND)),
+                        new Item.Properties());
+
+        public static final Supplier<Block> COMPRESSED_SOUL_SAND = registerBlockWithItem("compressed_soul_sand",
+                        () -> new Block(BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.SAND)),
+                        new Item.Properties());
+
+        public static final Supplier<Block> BROKEN_SPAWNER = registerBlockWithItem("broken_spawner",
+                        () -> new Block(BlockBehaviour.Properties.of().strength(5.0F).sound(SoundType.METAL)
+                                        .noOcclusion()
+                                        .isValidSpawn((state, world, pos, entityType) -> false)
+                                        .isRedstoneConductor((state, world, pos) -> false)
+                                        .isSuffocating((state, world, pos) -> false)
+                                        .isViewBlocking((state, world, pos) -> false)));
+
+        public static final Supplier<Block> SOUL_OBSIDIAN = registerBlockWithItem("soul_obsidian",
+                        () -> new Block(BlockBehaviour.Properties.of().strength(50.0F, 1200.0F)
+                                        .sound(SoundType.STONE)));
+
+        public static final Supplier<Block> SOUL_GLASS_PANE = registerBlockWithItem("soul_glass_pane",
+                        () -> new Block(BlockBehaviour.Properties.of().strength(0.3F).sound(SoundType.GLASS)));
+
+        private static Supplier<Block> registerBlockWithItem(String name, Supplier<Block> block,
+                        Item.Properties properties) {
+                var newBlock = REGISTRY.registerBlock(name, block);
+                var item = REGISTRY.registerItem(name, () -> new BlockItem(newBlock.get(), properties));
+                me.codexadrian.spirit.Spirit.TAB_ITEMS.add(item);
+                return newBlock;
+        }
+
+        private static Supplier<Block> registerBlockWithItem(String name, Supplier<Block> block) {
+                return registerBlockWithItem(name, block, new Item.Properties());
+        }
+
+        private static void registerChippedVariants(String name, Supplier<Block> block, int blocks) {
+                for (int i = 1; i <= blocks; i++) {
+                        Supplier<Block> ctmBlock = REGISTRY.registerBlock(name + "_" + i, block);
+                        var item = REGISTRY.registerItem(name + "_" + i,
+                                        () -> new ChippedBlockItem(ctmBlock.get(),
+                                                        Services.PLATFORM.isModLoaded("chipped") ? new Item.Properties()
+                                                                        : new Item.Properties()));
+                        me.codexadrian.spirit.Spirit.TAB_ITEMS.add(item);
+                        SOUL_GLASS_BLOCKS.add(ctmBlock);
+                }
+        }
+
+        public static void registerAll() {
+                registerChippedVariants("soul_glass",
+                                () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)), 13);
+        }
+}

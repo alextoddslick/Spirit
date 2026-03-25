@@ -20,6 +20,7 @@
       "earth.terrarium.spirit.Spirit::postInit"
     ],
     "client": [
+<<<<<<< Updated upstream
       "earth.terrarium.spirit.client.fabric.SpiritClientFabric"
     ],
     "jei_mod_plugin": [
@@ -27,6 +28,9 @@
     ],
     "rei_client": [
       "earth.terrarium.spirit.compat.rei.SpiritPlugin"
+=======
+      "me.codexadrian.spirit.fabric.FabricSpiritClient"
+>>>>>>> Stashed changes
     ]
   },
   "mixins": [
@@ -35,8 +39,15 @@
     "spirit-client.mixins.json"
   ],
   "depends": {
+<<<<<<< Updated upstream
     "fabric": "*",
     "minecraft": ">=1.20",
     "resourcefullib": ">=1.2.7"
+=======
+    "fabricloader": ">=0.16.9",
+    "fabric": ">=0.100.0",
+    "minecraft": ">=1.21",
+    "java": ">=21"
+>>>>>>> Stashed changes
   }
 }

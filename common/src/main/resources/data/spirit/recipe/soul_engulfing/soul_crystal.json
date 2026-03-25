@@ -1,0 +1,29 @@
+{
+  "type": "spirit:soul_engulfing",
+  "input": {
+    "ingredient": {
+      "item": "spirit:crude_soul_crystal"
+    },
+    "multiblock": {
+      "pattern": [
+        [
+          "   ",
+          " @ ",
+          "   "
+        ],
+        [
+          " S ",
+          "S&S",
+          " S "
+        ]
+      ],
+      "keys": {
+        "S": {
+          "block": "#spirit:soul_glass"
+        }
+      }
+    }
+  },
+  "duration": 40,
+  "outputItem": "spirit:soul_crystal"
+}

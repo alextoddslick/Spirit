@@ -1,0 +1,20 @@
+package me.codexadrian.spirit.enchantments;
+
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.tags.ItemTags;
+
+public class SoulReaperEnchantment extends Enchantment {
+    public SoulReaperEnchantment() {
+        super(new Enchantment.EnchantmentDefinition(
+                ItemTags.SWORDS,
+                java.util.Optional.empty(),
+                2, // Weight: UNCOMMONish
+                3, // Max Level
+                new Enchantment.Cost(5, 8),
+                new Enchantment.Cost(10, 8),
+                2, // Anvil Cost
+                net.minecraft.world.flag.FeatureFlagSet.of(),
+                new EquipmentSlot[] { EquipmentSlot.MAINHAND }));
+    }
+}

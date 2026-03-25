@@ -1,10 +1,18 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
+<<<<<<< Updated upstream
     id "dev.architectury.loom" version "1.0-SNAPSHOT" apply false
+=======
+    id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
+
+    id"com.modrinth.minotaur" version "2.+"
+    id "com.matthewprenger.cursegradle" version "1.4.0" // literally never gonna update
+>>>>>>> Stashed changes
 }
 
 architectury {
     minecraft = rootProject.minecraft_version
+    println "Minecraft Version: ${rootProject.minecraft_version}"
 }
 
 subprojects {
@@ -33,6 +41,7 @@ allprojects {
     group = rootProject.maven_group
 
     repositories {
+<<<<<<< Updated upstream
         maven {
             url "https://cursemaven.com"
             content {
@@ -65,11 +74,23 @@ allprojects {
                 includeGroup("maven.modrinth")
             }
         }
+=======
+        // Add repositories to retrieve artifacts from in here.
+        // You should only use this when depending on other mods because
+        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
+        // for more information about repositories.
+
+        maven { url = "https://nexus.resourcefulbees.com/repository/maven-public/" }
+        maven { url "https://maven.terraformersmc.com" }
+        maven { url "https://maven.architectury.dev/" }
+        maven { url "https://maven.blamejared.com/" }
+>>>>>>> Stashed changes
     }
 
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
-        options.release = 17
+        options.release = 21
     }
 
     java {

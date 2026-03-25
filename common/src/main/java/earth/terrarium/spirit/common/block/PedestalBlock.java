@@ -28,18 +28,28 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import com.mojang.serialization.MapCodec;
+
 public class PedestalBlock extends BaseEntityBlock {
 
+    public static final MapCodec<PedestalBlock> CODEC = simpleCodec(PedestalBlock::new);
+
     public static final VoxelShape SHAPE = Shapes.or(
-            Block.box(4, 3, 4, 12, 7, 12),
+            Block.box(4, 3, 4, 12, 6, 12),
             Block.box(2, 0, 2, 14, 3, 14),
+<<<<<<< Updated upstream:common/src/main/java/earth/terrarium/spirit/common/block/PedestalBlock.java
             Block.box(2, 7, 2, 14, 10, 14)
     );
+=======
+            Block.box(2, 6, 2, 14, 9, 14),
+            Block.box(4, 9, 4, 12, 10, 12));
+>>>>>>> Stashed changes:common/src/main/java/me/codexadrian/spirit/blocks/PedestalBlock.java
 
     public PedestalBlock(Properties properties) {
         super(properties);
     }
 
+<<<<<<< Updated upstream:common/src/main/java/earth/terrarium/spirit/common/block/PedestalBlock.java
     public @NotNull InteractionResult use(@NotNull BlockState blockState, @NotNull Level level, @NotNull BlockPos blockPos, @NotNull Player player, @NotNull InteractionHand interactionHand, @NotNull BlockHitResult blockHitResult) {
         if (interactionHand == InteractionHand.MAIN_HAND) {
             if (!level.isClientSide) {
@@ -64,6 +74,30 @@ public class PedestalBlock extends BaseEntityBlock {
                     if ((cage.isEmpty() && !stack.isEmpty()) || (stack.isEmpty() && !cage.isEmpty())) {
                         return InteractionResult.SUCCESS;
                     }
+=======
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    public @NotNull InteractionResult use(@NotNull BlockState blockState, @NotNull Level level,
+            @NotNull BlockPos blockPos, @NotNull Player player, @NotNull InteractionHand interactionHand,
+            @NotNull BlockHitResult blockHitResult) {
+        if (interactionHand != InteractionHand.OFF_HAND) {
+            ItemStack itemStack = player.getMainHandItem();
+            if (level.getBlockEntity(blockPos) instanceof PedestalBlockEntity soulPedestal) {
+                if (soulPedestal.isEmpty()) {
+                    soulPedestal.setItem(0, itemStack.copy());
+                    if (!player.getAbilities().instabuild)
+                        itemStack.setCount(0);
+                    soulPedestal.update(Block.UPDATE_ALL);
+                    return InteractionResult.SUCCESS;
+                } else if (itemStack.isEmpty()) {
+                    ItemStack soulCrystal = soulPedestal.removeItemNoUpdate(0);
+                    player.getInventory().placeItemBackInInventory(soulCrystal);
+                    soulPedestal.update(Block.UPDATE_ALL);
+                    return InteractionResult.SUCCESS;
+>>>>>>> Stashed changes:common/src/main/java/me/codexadrian/spirit/blocks/PedestalBlock.java
                 }
             }
         }
