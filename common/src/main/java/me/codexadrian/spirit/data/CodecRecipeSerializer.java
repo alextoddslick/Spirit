@@ -55,7 +55,6 @@ public class CodecRecipeSerializer<R extends Recipe<?>> implements RecipeSeriali
                     // Read JSON string, then decode to recipe
                     String jsonString = ByteBufCodecs.STRING_UTF8.decode(buf);
                     JsonObject json = GSON.fromJson(jsonString, JsonObject.class);
-                    System.out.println("CodecRecipeSerializer: Decoding recipe: " + jsonString);
                     return codec.codec().parse(buf.registryAccess().createSerializationContext(JsonOps.INSTANCE), json)
                             .resultOrPartial(e -> Spirit.LOGGER.error("CodecRecipeSerializer Decode Error: " + e))
                             .orElseThrow(() -> new RuntimeException("Failed to decode recipe from network"));

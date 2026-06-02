@@ -48,10 +48,8 @@ public class SpiritMisc {
                         });
 
         public static final Supplier<RecipeSerializer<Tier>> TIER_SERIALIZER = REGISTRY.registerRecipeSerializer(
-                        "soul_cage_tier", () -> {
-                                System.out.println("Registering TIER_SERIALIZER");
-                                return new CodecRecipeSerializer<>(TIER_RECIPE.get(), Tier.codec());
-                        });
+                        "soul_cage_tier",
+                        () -> new CodecRecipeSerializer<>(TIER_RECIPE.get(), Tier.codec()));
 
         public static final Supplier<RecipeType<MobTraitData>> MOB_TRAIT = REGISTRY.registerRecipeType("mob_trait",
                         () -> new RecipeType<MobTraitData>() {

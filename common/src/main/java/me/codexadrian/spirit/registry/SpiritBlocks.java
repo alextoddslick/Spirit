@@ -100,7 +100,8 @@ public class SpiritBlocks {
                                         .sound(SoundType.STONE)));
 
         public static final Supplier<Block> SOUL_GLASS_PANE = registerBlockWithItem("soul_glass_pane",
-                        () -> new Block(BlockBehaviour.Properties.of().strength(0.3F).sound(SoundType.GLASS)));
+                        () -> new SoulGlassPaneBlock(BlockBehaviour.Properties.of().strength(0.3F)
+                                        .sound(SoundType.GLASS).noOcclusion()));
 
         private static Supplier<Block> registerBlockWithItem(String name, Supplier<Block> block,
                         Item.Properties properties) {

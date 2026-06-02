@@ -5,6 +5,7 @@ import me.codexadrian.spirit.entity.CrudeSoulEntity;
 import me.codexadrian.spirit.platform.fabric.Services;
 import me.codexadrian.spirit.registry.SpiritMisc;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 
 public class FabricSpirit implements ModInitializer {
@@ -14,5 +15,7 @@ public class FabricSpirit implements ModInitializer {
         Spirit.onInitialize();
         SpiritConfigImpl.loadConfig(Services.PLATFORM.getConfigDir());
         FabricDefaultAttributeRegistry.register(SpiritMisc.SOUL_ENTITY.get(), CrudeSoulEntity.createMobAttributes());
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+                SpiritCommand.register(dispatcher));
     }
 }

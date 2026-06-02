@@ -31,6 +31,9 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
     @Nullable
     public Entity entity;
 
+    /** Game time until which the wand-inspector stats are shown above the cage; synced to clients. */
+    public long inspectUntil = 0L;
+
     private final SoulCageSpawner enabledSpawner = new SoulCageSpawner(this);
 
     public SoulCageBlockEntity(BlockPos pos, BlockState state) {
@@ -113,6 +116,7 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
         super.loadAdditional(compoundTag, provider);
         type = null;
         soulCrystal = ItemStack.parseOptional(provider, compoundTag.getCompound("crystal"));
+        inspectUntil = compoundTag.getLong("inspectUntil");
         setType();
     }
 
@@ -126,6 +130,7 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         saveAdditional(tag, provider);
+        tag.putLong("inspectUntil", inspectUntil);
         return tag;
     }
 
