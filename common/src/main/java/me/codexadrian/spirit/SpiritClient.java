@@ -14,6 +14,7 @@ public class SpiritClient {
         ClientServices.CLIENT.setRenderLayer(SpiritBlocks.SOUL_PEDESTAL.get(), ChunkSectionLayer.CUTOUT);
         ClientServices.CLIENT.setRenderLayer(SpiritBlocks.PEDESTAL.get(), ChunkSectionLayer.CUTOUT);
         ClientServices.CLIENT.setRenderLayer(SpiritBlocks.SOUL_GLASS.get(), ChunkSectionLayer.TRANSLUCENT);
+        ClientServices.CLIENT.setRenderLayer(SpiritBlocks.SOUL_GLASS_PANE.get(), ChunkSectionLayer.TRANSLUCENT);
         for (var glass : SpiritBlocks.SOUL_GLASS_BLOCKS) {
             ClientServices.CLIENT.setRenderLayer(glass.get(), ChunkSectionLayer.TRANSLUCENT);
         }
