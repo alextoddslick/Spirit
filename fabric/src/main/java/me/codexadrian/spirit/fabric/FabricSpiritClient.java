@@ -2,6 +2,7 @@ package me.codexadrian.spirit.fabric;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import me.codexadrian.spirit.SpiritClient;
+import me.codexadrian.spirit.client.CageStatsHud;
 import me.codexadrian.spirit.client.CrudeSoulEntityModel;
 import me.codexadrian.spirit.network.NetworkHandler;
 import me.codexadrian.spirit.network.messages.ToggleEmpoweredPacket;
@@ -9,6 +10,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
@@ -34,5 +36,7 @@ public class FabricSpiritClient implements ClientModInitializer {
                 NetworkHandler.sendToServer(new ToggleEmpoweredPacket());
             }
         });
+
+        HudRenderCallback.EVENT.register((graphics, tickDelta) -> CageStatsHud.render(graphics));
     }
 }

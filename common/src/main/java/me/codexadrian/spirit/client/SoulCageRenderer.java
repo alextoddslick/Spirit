@@ -8,14 +8,12 @@ import me.codexadrian.spirit.data.Tier;
 import me.codexadrian.spirit.utils.SoulUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.joml.Matrix4f;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -34,8 +32,10 @@ public class SoulCageRenderer implements BlockEntityRenderer<SoulCageBlockEntity
             return;
 
         Level level = blockEntity.getLevel();
-        if (level != null && !blockEntity.isEmpty() && level.getGameTime() < blockEntity.inspectUntil) {
-            renderStats(blockEntity, level, matrixStack, multiBufferSource, i);
+        // Stats are drawn as a HUD overlay (see CageStatsHud) rather than floating world text:
+        // Font#drawInBatch produces no visible output inside this block-entity renderer in this build.
+        if (level != null && shouldShowStats(blockEntity, level)) {
+            CageStatsHud.submit(buildStatsLines(blockEntity, level));
         }
 
         if (blockEntity.type == null)
@@ -43,6 +43,10 @@ public class SoulCageRenderer implements BlockEntityRenderer<SoulCageBlockEntity
         matrixStack.pushPose();
         matrixStack.translate(0.5D, 0.0D, 0.5D);
         var entity = blockEntity.getOrCreateEntity();
+        if (entity == null) {
+            matrixStack.popPose();
+            return;
+        }
 
         float g = 0.53125F;
         float h = Math.max(entity.getBbWidth(), entity.getBbHeight());
@@ -60,8 +64,16 @@ public class SoulCageRenderer implements BlockEntityRenderer<SoulCageBlockEntity
         matrixStack.popPose();
     }
 
-    private void renderStats(SoulCageBlockEntity be, Level level, PoseStack pose,
-            MultiBufferSource buffers, int packedLight) {
+    /** Show stats while this cage is pinned (wand toggle), or during a temporary wand inspect. */
+    private boolean shouldShowStats(SoulCageBlockEntity be, Level level) {
+        if (be.isEmpty()) {
+            return false;
+        }
+        return be.pinned || level.getGameTime() < be.inspectUntil;
+    }
+
+    /** Builds the stat readout lines shown for a cage (rendered by {@link CageStatsHud}). */
+    private List<Component> buildStatsLines(SoulCageBlockEntity be, Level level) {
         ItemStack crystal = be.getItem(0);
         int souls = SoulUtils.getSoulsInCrystal(crystal);
         Tier tier = SoulUtils.getTier(crystal, level);
@@ -76,22 +88,16 @@ public class SoulCageRenderer implements BlockEntityRenderer<SoulCageBlockEntity
         lines.add((next != null
                 ? Component.literal(souls + " / " + next.requiredSouls() + " souls")
                 : Component.literal(souls + " souls")).withStyle(ChatFormatting.GRAY));
-
-        Minecraft mc = Minecraft.getInstance();
-        Font font = mc.font;
-        pose.pushPose();
-        pose.translate(0.5D, 1.6D, 0.5D);
-        pose.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        pose.scale(-0.025F, -0.025F, 0.025F);
-        Matrix4f matrix = pose.last().pose();
-        int bg = (int) (mc.options.getBackgroundOpacity(0.25F) * 255.0F) << 24;
-        float y = -(lines.size() * 10) / 2.0F;
-        for (Component line : lines) {
-            float x = -font.width(line) / 2.0F;
-            font.drawInBatch(line, x, y, 0xFFFFFFFF, false, matrix, buffers,
-                    Font.DisplayMode.NORMAL, bg, packedLight);
-            y += 10.0F;
+        if (tier != null) {
+            int remaining = Math.max(0,
+                    be.clientSpawnDelay - (int) (level.getGameTime() - be.clientSpawnDelaySyncTime));
+            lines.add(Component.literal("Next spawn: ~" + (remaining / 20) + "s").withStyle(ChatFormatting.GRAY));
+            lines.add(Component.literal("Spawns " + tier.spawnCount() + " · radius " + tier.spawnRange())
+                    .withStyle(ChatFormatting.DARK_GRAY));
+            String range = tier.nearbyRange() > 0 ? (tier.nearbyRange() + " blocks") : "unlimited";
+            lines.add(Component.literal("Range " + range + (tier.redstoneControlled() ? " · redstone" : ""))
+                    .withStyle(ChatFormatting.DARK_GRAY));
         }
-        pose.popPose();
+        return lines;
     }
 }

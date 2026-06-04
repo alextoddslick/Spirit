@@ -70,14 +70,19 @@ public class SoulCageBlock extends BaseEntityBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        // Soul Steel Wand: inspect the caged crystal, or extract a level if an empty soul crystal
-        // is held in the off hand.
+        // Soul Steel Wand interactions.
         if (stack.is(SpiritItems.SOUL_STEEL_WAND.get())) {
             if (soulSpawner.isEmpty()) {
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
             ItemStack caged = soulSpawner.getItem(0);
             String cagedType = SoulUtils.getSoulCrystalType(caged);
+
+            // Note: shift-right-click "pin" is handled in SoulSteelWand#useOn, not here — vanilla's
+            // sneak bypass skips block interaction when sneaking with a non-empty hand, so this
+            // method is never reached for a shift-click while holding the wand.
+
+            // Off-hand empty soul crystal: extract a level from the caged crystal.
             ItemStack offhand = player.getOffhandItem();
             if (offhand.is(SpiritItems.SOUL_CRYSTAL.get())
                     && SoulUtils.getSoulsInCrystal(offhand) == 0 && SoulUtils.getSoulCrystalType(offhand) == null
@@ -199,11 +204,16 @@ public class SoulCageBlock extends BaseEntityBlock {
         Component tierComp = Component
                 .translatable(tier == null ? SpiritConfig.getInitialTierName() : tier.displayName());
         String soulsStr = souls + (next != null ? " / " + next.requiredSouls() : "") + " souls";
+        String extra = "";
+        if (tier != null) {
+            int secs = Math.max(0, cage.getSpawner().getSpawnDelay()) / 20;
+            extra = "  next ~" + secs + "s  x" + tier.spawnCount() + "  r" + tier.spawnRange();
+        }
         return Component.empty()
                 .append(name)
                 .append(Component.literal("  "))
                 .append(Component.translatable("misc.spirit.tier", tierComp))
-                .append(Component.literal("  " + soulsStr));
+                .append(Component.literal("  " + soulsStr + extra));
     }
 
     @Override
