@@ -5,6 +5,7 @@ import me.codexadrian.spirit.items.MobCrystalItem;
 import me.codexadrian.spirit.platform.fabric.ClientServices;
 import me.codexadrian.spirit.registry.SpiritBlocks;
 import me.codexadrian.spirit.registry.SpiritItems;
+import me.codexadrian.spirit.registry.SpiritMenus;
 import me.codexadrian.spirit.registry.SpiritMisc;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 public class SpiritClient {
 
     public static void initClient() {
+        ClientServices.CLIENT.registerMenuScreen(SpiritMenus.SOUL_CAGE_MENU, SoulCageScreen::new);
         ClientServices.CLIENT.setRenderLayer(SpiritBlocks.BROKEN_SPAWNER.get(), RenderType.cutout());
         ClientServices.CLIENT.setRenderLayer(SpiritBlocks.SOUL_CAGE.get(), RenderType.cutout());
         ClientServices.CLIENT.setRenderLayer(SpiritBlocks.SOUL_PEDESTAL.get(), RenderType.cutout());

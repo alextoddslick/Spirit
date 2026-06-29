@@ -5,6 +5,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -40,10 +43,21 @@ public interface IRegistryHelper {
     <R extends Recipe<?>, T extends RecipeSerializer<R>> Supplier<T> registerRecipeSerializer(String name,
             Supplier<T> recipe);
 
+    /**
+     * Registers a block-bound menu type. The factory receives the cage's {@link BlockPos}, which the
+     * platform syncs to the client so the client-side menu can locate the same block entity.
+     */
+    <T extends AbstractContainerMenu> Supplier<MenuType<T>> registerMenu(String name, BlockPosMenuFactory<T> factory);
+
     @FunctionalInterface
     interface BlockEntityFactory<T extends BlockEntity> {
         @NotNull
         T create(BlockPos blockPos, BlockState blockState);
+    }
+
+    @FunctionalInterface
+    interface BlockPosMenuFactory<T extends AbstractContainerMenu> {
+        T create(int containerId, Inventory inventory, BlockPos pos);
     }
 
     Supplier<CreativeModeTab> registerCreativeTab(ResourceLocation tab, Supplier<ItemStack> supplier,

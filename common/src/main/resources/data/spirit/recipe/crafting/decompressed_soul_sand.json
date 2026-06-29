@@ -6,7 +6,7 @@
     }
   ],
   "result": {
-    "count": 9,
-    "item": "minecraft:soul_sand"
+    "id": "minecraft:soul_sand",
+    "count": 9
   }
 }

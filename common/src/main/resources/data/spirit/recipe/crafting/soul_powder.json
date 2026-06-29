@@ -6,7 +6,7 @@
     }
   ],
   "result": {
-    "count": 4,
-    "item": "spirit:soul_powder"
+    "id": "spirit:soul_powder",
+    "count": 4
   }
 }

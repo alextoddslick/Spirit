@@ -2,6 +2,7 @@ package me.codexadrian.spirit.fabric;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
@@ -66,7 +67,8 @@ public class SpiritConfigImpl {
             }
         }
         try {
-            FileUtils.write(configPath.toFile(), CODEC.encodeStart(JsonOps.INSTANCE, config).toString(), StandardCharsets.UTF_8);
+            JsonElement encoded = CODEC.encodeStart(JsonOps.INSTANCE, config).result().orElseThrow();
+            FileUtils.write(configPath.toFile(), GSON.toJson(encoded), StandardCharsets.UTF_8);
         } catch (Exception exception) {
             Spirit.LOGGER.error("Error writing config file for mod " + Spirit.MODID);
         }

@@ -26,7 +26,8 @@ public class SpiritBlocks {
         public static final ArrayList<Supplier<Block>> SOUL_GLASS_BLOCKS = new ArrayList<>();
 
         public static final Supplier<Block> SOUL_CAGE = registerBlockWithItem("soul_cage", () -> new SoulCageBlock(
-                        BlockBehaviour.Properties.of().strength(5.0F).sound(SoundType.METAL).noOcclusion()
+                        // Obsidian-grade hardness/blast resistance: slow to break with normal picks, blast-proof.
+                        BlockBehaviour.Properties.of().strength(50.0F, 1200.0F).sound(SoundType.METAL).noOcclusion()
                                         .requiresCorrectToolForDrops()));
 
         public static final Supplier<BlockEntityType<SoulCageBlockEntity>> SOUL_CAGE_ENTITY = REGISTRY
