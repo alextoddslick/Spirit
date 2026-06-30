@@ -48,6 +48,24 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
     public int clientSpawnDelay = 0;
     public long clientSpawnDelaySyncTime = 0L;
 
+    /**
+     * Server-only: game time until which a survival "force extract" is armed. The first shift-right-click
+     * warns and arms this; a second click before it expires performs the one-tier-penalty extraction.
+     * Transient — not persisted, so a reload safely cancels any pending confirmation.
+     */
+    public long extractArmedUntil = 0L;
+
+    /** Extra spawn range added on top of the tier's, tuned in the upgrade menu (may go negative). Persisted + synced. */
+    public int spawnRangeBonus = 0;
+    /** Soul steel banked (in ingot-equivalents) toward the next, exponentially-priced range level. Persisted + synced. */
+    public int pendingSteelIngots = 0;
+    /** Reduction (ticks) to the tier's MAX spawn delay, bought with netherite (block -1.8s, ingot -0.2s). Persisted + synced. */
+    public int maxDelayReductionTicks = 0;
+    /** Reduction (ticks) to the tier's MIN spawn delay, bought with netherite BLOCKS only (-0.2s each). Persisted + synced. */
+    public int minDelayReductionTicks = 0;
+    /** Penalty (ticks) added back to the MAX spawn delay from lowering range (+1s per step). Persisted + synced. */
+    public int rangeDelayPenaltyTicks = 0;
+
     private final SoulCageSpawner enabledSpawner = new SoulCageSpawner(this);
 
     public SoulCageBlockEntity(BlockPos pos, BlockState state) {
@@ -140,6 +158,11 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
         pinned = input.getBooleanOr("pinned", false);
         clientSpawnDelay = input.getIntOr("spawnDelay", 0);
         clientSpawnDelaySyncTime = input.getLongOr("spawnDelaySync", 0L);
+        spawnRangeBonus = input.getIntOr("spawnRangeBonus", 0);
+        pendingSteelIngots = input.getIntOr("pendingSteel", 0);
+        maxDelayReductionTicks = input.getIntOr("maxDelayReduction", 0);
+        minDelayReductionTicks = input.getIntOr("minDelayReduction", 0);
+        rangeDelayPenaltyTicks = input.getIntOr("rangeDelayPenalty", 0);
         setType();
     }
 
@@ -151,6 +174,11 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
         output.putBoolean("pinned", pinned);
         output.putInt("spawnDelay", enabledSpawner.getSpawnDelay());
         output.putLong("spawnDelaySync", getLevel() != null ? getLevel().getGameTime() : 0L);
+        output.putInt("spawnRangeBonus", spawnRangeBonus);
+        output.putInt("pendingSteel", pendingSteelIngots);
+        output.putInt("maxDelayReduction", maxDelayReductionTicks);
+        output.putInt("minDelayReduction", minDelayReductionTicks);
+        output.putInt("rangeDelayPenalty", rangeDelayPenaltyTicks);
     }
 
     @Override

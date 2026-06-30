@@ -2,6 +2,7 @@ package me.codexadrian.spirit.blocks.blockentity;
 
 import me.codexadrian.spirit.Corrupted;
 import me.codexadrian.spirit.data.Tier;
+import me.codexadrian.spirit.menu.SoulCageMenu;
 import me.codexadrian.spirit.registry.SpiritBlocks;
 import me.codexadrian.spirit.utils.SoulUtils;
 import net.minecraft.core.BlockPos;
@@ -78,10 +79,10 @@ public class SoulCageSpawner {
                     return;
                 }
 
-                double x = blockPos.getX() + (level.random.nextDouble() - level.random.nextDouble()) * tier.spawnRange()
+                double x = blockPos.getX() + (level.random.nextDouble() - level.random.nextDouble()) * effectiveSpawnRange(tier)
                         + 0.5D;
                 double y = blockPos.getY() + level.random.nextInt(3) - 1;
-                double z = blockPos.getZ() + (level.random.nextDouble() - level.random.nextDouble()) * tier.spawnRange()
+                double z = blockPos.getZ() + (level.random.nextDouble() - level.random.nextDouble()) * effectiveSpawnRange(tier)
                         + 0.5D;
 
                 if (level.noCollision(soulCageBlockEntity.type.getDimensions().makeBoundingBox(x, y, z))) {
@@ -97,7 +98,7 @@ public class SoulCageSpawner {
                         spawned.snapTo(x, y, z, spawned.getYRot(), spawned.getXRot());
 
                         int l = level
-                                .getEntitiesOfClass(spawned.getClass(), new AABB(blockPos).inflate(tier.spawnRange()))
+                                .getEntitiesOfClass(spawned.getClass(), new AABB(blockPos).inflate(effectiveSpawnRange(tier)))
                                 .size();
                         if (l >= 6) {
                             this.delay(tier);
@@ -157,12 +158,21 @@ public class SoulCageSpawner {
 
     }
 
+    /** Tier spawn range plus the cage's purchased range bonus (clamped non-negative). */
+    private int effectiveSpawnRange(Tier tier) {
+        return Math.max(0, tier.spawnRange() + soulCageBlockEntity.spawnRangeBonus);
+    }
+
     private void delay(Tier tier) {
-        if (tier.maxSpawnDelay() <= tier.minSpawnDelay()) {
-            this.spawnDelay = tier.minSpawnDelay();
+        // Netherite reduces min/max separately; lowering range adds a penalty back onto max. Floor at MIN_DELAY_FLOOR.
+        int minReduction = Math.max(0, soulCageBlockEntity.minDelayReductionTicks);
+        int min = Math.max(SoulCageMenu.MIN_DELAY_FLOOR, tier.minSpawnDelay() - minReduction);
+        int max = Math.max(min, tier.maxSpawnDelay() - soulCageBlockEntity.maxDelayReductionTicks
+                + Math.max(0, soulCageBlockEntity.rangeDelayPenaltyTicks));
+        if (max <= min) {
+            this.spawnDelay = min;
         } else {
-            this.spawnDelay = tier.minSpawnDelay() +
-                    this.getLevel().random.nextInt(tier.maxSpawnDelay() - tier.minSpawnDelay());
+            this.spawnDelay = min + this.getLevel().random.nextInt(max - min);
         }
 
         this.broadcastEvent(1);
@@ -179,7 +189,8 @@ public class SoulCageSpawner {
                 return false;
             }
 
-            this.spawnDelay = tier.minSpawnDelay();
+            this.spawnDelay = Math.max(SoulCageMenu.MIN_DELAY_FLOOR,
+                    tier.minSpawnDelay() - Math.max(0, soulCageBlockEntity.minDelayReductionTicks));
             return true;
         } else {
             return false;

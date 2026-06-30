@@ -3,12 +3,14 @@ package me.codexadrian.spirit;
 import me.codexadrian.spirit.client.*;
 import me.codexadrian.spirit.platform.fabric.ClientServices;
 import me.codexadrian.spirit.registry.SpiritBlocks;
+import me.codexadrian.spirit.registry.SpiritMenus;
 import me.codexadrian.spirit.registry.SpiritMisc;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 
 public class SpiritClient {
 
     public static void initClient() {
+        ClientServices.CLIENT.registerMenuScreen(SpiritMenus.SOUL_CAGE_MENU, SoulCageScreen::new);
         ClientServices.CLIENT.setRenderLayer(SpiritBlocks.BROKEN_SPAWNER.get(), ChunkSectionLayer.CUTOUT);
         ClientServices.CLIENT.setRenderLayer(SpiritBlocks.SOUL_CAGE.get(), ChunkSectionLayer.CUTOUT);
         ClientServices.CLIENT.setRenderLayer(SpiritBlocks.SOUL_PEDESTAL.get(), ChunkSectionLayer.CUTOUT);

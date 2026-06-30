@@ -1,11 +1,16 @@
 package me.codexadrian.spirit.platform.fabric.services;
 
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -22,4 +27,12 @@ public interface IClientHelper {
     <T extends Entity> void registerEntityRenderer(Supplier<EntityType<T>> entity, EntityRendererProvider<T> rendererProvider);
 
     void setRenderLayer(Block block, ChunkSectionLayer layer);
+
+    <M extends AbstractContainerMenu> void registerMenuScreen(Supplier<MenuType<M>> type, MenuScreenFactory<M> factory);
+
+    @FunctionalInterface
+    interface MenuScreenFactory<M extends AbstractContainerMenu> {
+        AbstractContainerScreen<M> create(M menu, Inventory inventory, Component title);
+    }
+
 }

@@ -4,6 +4,7 @@ import me.codexadrian.spirit.network.NetworkHandler;
 import me.codexadrian.spirit.platform.fabric.Services;
 import me.codexadrian.spirit.registry.SpiritBlocks;
 import me.codexadrian.spirit.registry.SpiritItems;
+import me.codexadrian.spirit.registry.SpiritMenus;
 import me.codexadrian.spirit.registry.SpiritMisc;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
@@ -61,6 +62,7 @@ public class Spirit {
         SpiritMisc.registerAll();
         SpiritBlocks.registerAll();
         SpiritItems.registerAll();
+        SpiritMenus.registerAll();
         NetworkHandler.register();
     }
 }

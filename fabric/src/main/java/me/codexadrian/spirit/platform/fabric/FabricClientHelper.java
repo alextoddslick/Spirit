@@ -4,12 +4,15 @@ import me.codexadrian.spirit.platform.fabric.services.IClientHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -31,5 +34,11 @@ public class FabricClientHelper implements IClientHelper {
     @Override
     public void setRenderLayer(Block block, ChunkSectionLayer layer) {
         BlockRenderLayerMap.putBlock(block, layer);
+    }
+
+    @Override
+    public <M extends AbstractContainerMenu> void registerMenuScreen(Supplier<MenuType<M>> type,
+            MenuScreenFactory<M> factory) {
+        MenuScreens.register(type.get(), factory::create);
     }
 }

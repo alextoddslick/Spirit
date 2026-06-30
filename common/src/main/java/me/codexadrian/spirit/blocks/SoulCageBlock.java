@@ -1,18 +1,30 @@
 package me.codexadrian.spirit.blocks;
 
 import me.codexadrian.spirit.blocks.blockentity.SoulCageBlockEntity;
+import me.codexadrian.spirit.menu.SoulCageMenu;
 import me.codexadrian.spirit.registry.SpiritBlocks;
 import me.codexadrian.spirit.registry.SpiritItems;
 import me.codexadrian.spirit.data.Tier; // Added missing import
 import me.codexadrian.spirit.utils.SoulUtils;
+import me.codexadrian.spirit.platform.fabric.Services;
 import me.codexadrian.spirit.SpiritConfig;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -30,6 +42,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.serialization.MapCodec;
@@ -92,11 +105,9 @@ public class SoulCageBlock extends BaseEntityBlock {
                 }
                 return InteractionResult.SUCCESS;
             }
-            // Inspect: server sets+syncs the timer (floating text) and sends a readout to the action bar.
-            if (!level.isClientSide()) {
-                soulSpawner.inspectUntil = level.getGameTime() + 100L;
-                soulSpawner.update(Block.UPDATE_ALL);
-                player.displayClientMessage(inspectSummary(caged, soulSpawner, level), true);
+            // Open the cage upgrade/stats menu (range via soul steel blocks, spawn time via netherite).
+            if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+                Services.PLATFORM.openSoulCageMenu(serverPlayer, pos);
             }
             return InteractionResult.SUCCESS;
         }
@@ -130,11 +141,29 @@ public class SoulCageBlock extends BaseEntityBlock {
                 return InteractionResult.SUCCESS;
             }
         } else if (player.isShiftKeyDown()) {
-            soulSpawner.entity = null;
-            soulSpawner.type = null;
-            ItemStack divineCrystal = soulSpawner.removeItemNoUpdate(0);
-            player.getInventory().placeItemBackInInventory(divineCrystal);
-            soulSpawner.update(Block.UPDATE_ALL);
+            // Creative: pull the exact caged crystal out, untouched.
+            if (player.getAbilities().instabuild) {
+                soulSpawner.entity = null;
+                soulSpawner.type = null;
+                ItemStack exact = soulSpawner.removeItemNoUpdate(0);
+                player.getInventory().placeItemBackInInventory(exact);
+                soulSpawner.extractArmedUntil = 0L;
+                soulSpawner.update(Block.UPDATE_ALL);
+                return InteractionResult.SUCCESS;
+            }
+            // Survival: two-step confirm. The first shift-right-click warns and arms a short window;
+            // a second click within it forces the crystal out at a one-tier penalty.
+            if (!level.isClientSide()) {
+                if (level.getGameTime() >= soulSpawner.extractArmedUntil) {
+                    soulSpawner.extractArmedUntil = level.getGameTime() + 100L; // ~5s confirm window
+                    player.displayClientMessage(Component.literal(
+                            "Forcing the crystal out will cost one full tier. Shift-right-click again to confirm.")
+                            .withStyle(ChatFormatting.RED), true);
+                } else {
+                    soulSpawner.extractArmedUntil = 0L;
+                    extractFullCrystalWithPenalty(soulSpawner, player, level);
+                }
+            }
             return InteractionResult.SUCCESS;
         }
 
@@ -194,6 +223,41 @@ public class SoulCageBlock extends BaseEntityBlock {
         cage.update(Block.UPDATE_ALL);
     }
 
+    /**
+     * Survival "force extract": pulls the whole caged crystal out but knocks it down one full tier as
+     * the cost (its souls are reset to the previous tier's threshold, honoring per-type blacklists).
+     * The cage is left empty. At the lowest tier there is no lower threshold, so the crystal comes out
+     * drained to 0 souls.
+     */
+    private static void extractFullCrystalWithPenalty(SoulCageBlockEntity cage, Player player, Level level) {
+        ItemStack caged = cage.getItem(0);
+        String type = SoulUtils.getSoulCrystalType(caged);
+        int oldSouls = SoulUtils.getSoulsInCrystal(caged);
+
+        Tier current = SoulUtils.getTier(caged, level);
+        int curReq = current != null ? current.requiredSouls() : 0;
+        int prevReq = 0;
+        for (Tier t : Tier.getTiers(level)) {
+            if (type != null && t.blacklist().contains(type)) {
+                continue;
+            }
+            int r = t.requiredSouls();
+            if (r < curReq && r > prevReq) {
+                prevReq = r;
+            }
+        }
+
+        cage.entity = null;
+        cage.type = null;
+        ItemStack extracted = cage.removeItemNoUpdate(0);
+        // Drop the extracted crystal a whole tier: souls -> previous tier threshold (0 at the bottom).
+        SoulUtils.deviateSoulCount(extracted, prevReq - oldSouls, level, type);
+        player.getInventory().placeItemBackInInventory(extracted);
+
+        cage.setType();
+        cage.update(Block.UPDATE_ALL);
+    }
+
     /** Concise crystal stats for the action-bar readout when inspecting with the wand. */
     private static Component inspectSummary(ItemStack caged, SoulCageBlockEntity cage, Level level) {
         int souls = SoulUtils.getSoulsInCrystal(caged);
@@ -234,13 +298,47 @@ public class SoulCageBlock extends BaseEntityBlock {
 
     @Override
     protected @NotNull List<ItemStack> getDrops(@NotNull BlockState blockState, LootParams.@NotNull Builder builder) {
-        List<ItemStack> drops = super.getDrops(blockState, builder);
+        // The cage can only be retrieved with a soul steel pickaxe enchanted with Silk Touch; any other
+        // tool breaks it for nothing. This gates the cage, the caged crystal, and the upgrade refund.
+        List<ItemStack> drops = new ArrayList<>();
         BlockEntity blockE = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (blockE instanceof SoulCageBlockEntity) {
-            drops.add(((SoulCageBlockEntity) blockE).getItem(0));
+        ItemStack tool = builder.getOptionalParameter(LootContextParams.TOOL);
+        if (!(blockE instanceof SoulCageBlockEntity cage) || !canHarvestCage(tool, builder.getLevel())) {
+            return drops;
         }
 
+        drops.add(new ItemStack(this));     // the cage itself
+        drops.add(cage.getItem(0));          // the caged soul crystal
+        // Refund invested soul steel: the exponential cost of every range level still installed, plus the bank.
+        int steelIngots = SoulCageMenu.totalRangeIngots(Math.max(0, cage.spawnRangeBonus)) + cage.pendingSteelIngots;
+        addStacks(drops, SpiritBlocks.SOUL_STEEL_BLOCK.get().asItem(), steelIngots / SoulCageMenu.INGOTS_PER_BLOCK);
+        addStacks(drops, SpiritItems.SOUL_STEEL.get(), steelIngots % SoulCageMenu.INGOTS_PER_BLOCK);
+        // Refund netherite: blocks are the only source of min-delay reduction, ingots cover the rest of max.
+        int netheriteBlocks = cage.minDelayReductionTicks / SoulCageMenu.NETHERITE_BLOCK_MIN_TICKS;
+        int ingotMaxTicks = cage.maxDelayReductionTicks - netheriteBlocks * SoulCageMenu.NETHERITE_BLOCK_MAX_TICKS;
+        int netheriteIngots = Math.max(0, ingotMaxTicks) / SoulCageMenu.NETHERITE_INGOT_MAX_TICKS;
+        addStacks(drops, Items.NETHERITE_BLOCK, netheriteBlocks);
+        addStacks(drops, Items.NETHERITE_INGOT, netheriteIngots);
         return drops;
+    }
+
+    /** True only for a soul steel pickaxe carrying Silk Touch. */
+    private static boolean canHarvestCage(ItemStack tool, ServerLevel level) {
+        if (tool == null || !tool.is(SpiritItems.SOUL_STEEL_PICKAXE.get())) {
+            return false;
+        }
+        Holder<Enchantment> silkTouch = level.registryAccess()
+                .lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH);
+        return EnchantmentHelper.getItemEnchantmentLevel(silkTouch, tool) > 0;
+    }
+
+    /** Adds {@code count} of {@code item} to {@code drops}, split into 64-item stacks. */
+    private static void addStacks(List<ItemStack> drops, Item item, int count) {
+        while (count > 0) {
+            int n = Math.min(count, 64);
+            drops.add(new ItemStack(item, n));
+            count -= n;
+        }
     }
 
     @Override

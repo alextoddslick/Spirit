@@ -4,11 +4,15 @@ import me.codexadrian.spirit.platform.fabric.services.IRegistryHelper;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -94,6 +98,16 @@ public class FabricRegistryHelper implements IRegistryHelper {
                 Identifier.fromNamespaceAndPath(MODID, name),
                 recipe.get());
         return () -> register;
+    }
+
+    @Override
+    public <T extends AbstractContainerMenu> Supplier<MenuType<T>> registerMenu(String name,
+            BlockPosMenuFactory<T> factory) {
+        ExtendedScreenHandlerType<T, BlockPos> type = new ExtendedScreenHandlerType<>(
+                (syncId, inventory, pos) -> factory.create(syncId, inventory, pos), BlockPos.STREAM_CODEC);
+        var registered = Registry.register(BuiltInRegistries.MENU,
+                Identifier.fromNamespaceAndPath(MODID, name), type);
+        return () -> registered;
     }
 
     @Override

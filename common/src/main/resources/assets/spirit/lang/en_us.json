@@ -48,6 +48,7 @@
   "spirit.soul_cage.tier_4": "Ultimate",
   "effect.spirit.corrupted": "Soulless",
   "itemGroup.spirit.itemgroup": "Spirit",
+  "container.spirit.soul_cage": "Soul Cage",
   "enchantment.spirit.soul_reaper": "Soul Reaper",
   "enchantment.spirit.soul_reaper.desc": "Grants one additional soul per kill for every level of enchantment",
   "config.spirit.toggletooltip": "Disable/Enable Entity Visual Effect",
