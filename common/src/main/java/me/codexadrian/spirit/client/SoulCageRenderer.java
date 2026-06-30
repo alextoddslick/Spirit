@@ -50,6 +50,10 @@ public class SoulCageRenderer implements BlockEntityRenderer<SoulCageBlockEntity
                 state.spinDegrees = (float) blockEntity.getSpawner().getSpin();
                 state.entityRenderState = Minecraft.getInstance().getEntityRenderDispatcher().extractEntity(entity,
                         partialTick);
+                // The caged entity is never placed in the world (no position set, never added to the
+                // level), so extractEntity computes lighting from its bogus default position and the
+                // model renders pitch black. Use the cage block's own light level instead.
+                state.entityRenderState.lightCoords = state.lightCoords;
             }
         }
 
