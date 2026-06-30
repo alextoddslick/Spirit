@@ -91,8 +91,8 @@ public abstract class ItemEntityMixin implements EngulfableItem {
             net.minecraft.world.item.ItemStack stack = itemEntity.getItem();
             net.minecraft.world.item.component.CustomData data =
                     stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-            if (data != null && data.contains("SpiritEngulfing")) {
-                CompoundTag tag = data.copyTag();
+            if (data != null && data.copyTag().contains("SpiritEngulfing")) {
+                net.minecraft.nbt.CompoundTag tag = data.copyTag();
                 tag.remove("SpiritEngulfing");
                 if (tag.isEmpty()) {
                     stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);

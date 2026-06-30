@@ -82,13 +82,13 @@ public class SoulCageBlock extends BaseEntityBlock {
                     && SoulUtils.getSoulsInCrystal(offhand) == 0 && SoulUtils.getSoulCrystalType(offhand) == null
                     && caged.is(SpiritItems.SOUL_CRYSTAL.get()) && cagedType != null
                     && SoulUtils.getSoulsInCrystal(caged) > 0) {
-                if (!level.isClientSide) {
+                if (!level.isClientSide()) {
                     extractCrystal(soulSpawner, caged, cagedType, offhand, player, level);
                 }
                 return InteractionResult.SUCCESS;
             }
             // Inspect: server sets+syncs the timer (floating text) and sends a readout to the action bar.
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 soulSpawner.inspectUntil = level.getGameTime() + 100L;
                 soulSpawner.update(Block.UPDATE_ALL);
                 player.displayClientMessage(inspectSummary(caged, soulSpawner, level), true);
@@ -103,7 +103,7 @@ public class SoulCageBlock extends BaseEntityBlock {
             ItemStack caged = soulSpawner.getItem(0);
             String type = SoulUtils.getSoulCrystalType(caged);
             if (caged.is(SpiritItems.SOUL_CRYSTAL.get()) && type != null && SoulUtils.getSoulsInCrystal(caged) > 0) {
-                if (!level.isClientSide) {
+                if (!level.isClientSide()) {
                     extractCrystal(soulSpawner, caged, type, stack, player, level);
                 }
                 return InteractionResult.SUCCESS;

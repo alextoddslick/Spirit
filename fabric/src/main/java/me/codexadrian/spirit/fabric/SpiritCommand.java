@@ -38,7 +38,7 @@ public final class SpiritCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("spirit")
-                .requires(source -> source.hasPermission(2))
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("kill")
                         .executes(SpiritCommand::killCageSpawns))
                 .then(Commands.literal("witherSkele")
@@ -53,7 +53,7 @@ public final class SpiritCommand {
         for (ServerLevel level : source.getServer().getAllLevels()) {
             for (Entity entity : level.getAllEntities()) {
                 if (entity instanceof Corrupted corrupted && corrupted.isCorrupted()) {
-                    entity.kill();
+                    entity.kill(level);
                     killed++;
                 }
             }
@@ -67,7 +67,7 @@ public final class SpiritCommand {
             throws CommandSyntaxException {
         CommandSourceStack source = context.getSource();
         ServerPlayer player = source.getPlayerOrException();
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = player.level();
 
         List<Tier> tiers = new ArrayList<>(Tier.getTiers(level));
         if (tiers.isEmpty()) {
