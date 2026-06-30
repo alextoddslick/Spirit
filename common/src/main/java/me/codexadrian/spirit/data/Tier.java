@@ -116,10 +116,15 @@ public record Tier(
     }
 
     public static List<Tier> getTiers(Level level) {
-        // In 1.21, RecipeManager#getRecipes returns holders
-        var recipes = ((net.minecraft.world.item.crafting.RecipeManager) level.recipeAccess()).getRecipes();
+        // recipeAccess() only returns the full RecipeManager on the server; on the client it's a
+        // ClientRecipeContainer (curated recipe-book subsets only), which can't enumerate Tier "recipes".
+        // Tier data isn't synced to clients yet, so client-side callers (e.g. item bar rendering) get
+        // nothing here rather than crashing.
+        if (!(level.recipeAccess() instanceof net.minecraft.world.item.crafting.RecipeManager recipeManager)) {
+            return List.of();
+        }
 
-        return recipes.stream()
+        return recipeManager.getRecipes().stream()
                 .filter(holder -> holder.value().getType() == SpiritMisc.TIER_RECIPE.get())
                 .map(holder -> (Tier) holder.value())
                 .toList();
