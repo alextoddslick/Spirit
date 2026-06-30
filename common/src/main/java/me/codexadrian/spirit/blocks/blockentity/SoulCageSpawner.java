@@ -1,6 +1,7 @@
 package me.codexadrian.spirit.blocks.blockentity;
 
 import me.codexadrian.spirit.Corrupted;
+import me.codexadrian.spirit.SpiritConfig;
 import me.codexadrian.spirit.data.Tier;
 import me.codexadrian.spirit.menu.SoulCageMenu;
 import me.codexadrian.spirit.registry.SpiritBlocks;
@@ -160,10 +161,25 @@ public class SoulCageSpawner {
 
     /** Tier spawn range plus the cage's purchased range bonus (clamped non-negative). */
     private int effectiveSpawnRange(Tier tier) {
+        // Vanilla mode ignores purchased upgrades — fall back to the plain tier range.
+        if (SpiritConfig.isVanillaMode()) {
+            return Math.max(0, tier.spawnRange());
+        }
         return Math.max(0, tier.spawnRange() + soulCageBlockEntity.spawnRangeBonus);
     }
 
     private void delay(Tier tier) {
+        // Vanilla mode ignores netherite upgrades and range penalties — use the plain tier delay window.
+        if (SpiritConfig.isVanillaMode()) {
+            int vMin = tier.minSpawnDelay();
+            int vMax = Math.max(vMin, tier.maxSpawnDelay());
+            this.spawnDelay = vMax <= vMin ? vMin : vMin + this.getLevel().random.nextInt(vMax - vMin);
+            this.broadcastEvent(1);
+            if (this.getLevel() != null && !this.getLevel().isClientSide()) {
+                this.soulCageBlockEntity.update(net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+            }
+            return;
+        }
         // Netherite reduces min/max separately; lowering range adds a penalty back onto max. Floor at MIN_DELAY_FLOOR.
         int minReduction = Math.max(0, soulCageBlockEntity.minDelayReductionTicks);
         int min = Math.max(SoulCageMenu.MIN_DELAY_FLOOR, tier.minSpawnDelay() - minReduction);
@@ -189,8 +205,10 @@ public class SoulCageSpawner {
                 return false;
             }
 
-            this.spawnDelay = Math.max(SoulCageMenu.MIN_DELAY_FLOOR,
-                    tier.minSpawnDelay() - Math.max(0, soulCageBlockEntity.minDelayReductionTicks));
+            this.spawnDelay = SpiritConfig.isVanillaMode()
+                    ? tier.minSpawnDelay()
+                    : Math.max(SoulCageMenu.MIN_DELAY_FLOOR,
+                            tier.minSpawnDelay() - Math.max(0, soulCageBlockEntity.minDelayReductionTicks));
             return true;
         } else {
             return false;

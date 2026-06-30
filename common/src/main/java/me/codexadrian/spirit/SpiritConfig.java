@@ -47,4 +47,15 @@ public class SpiritConfig {
     public static boolean showChippedError() {
         throw new AssertionError();
     }
+
+    /**
+     * Vanilla mode: disables the soul cage upgrade UI and the soul-steel/netherite upgrade systems,
+     * so cages behave like their plain tier. The wand's stat readout (shift-right-click pin) stays on
+     * regardless.
+     */
+    @Contract(pure = true)
+    @ExpectPlatform
+    public static boolean isVanillaMode() {
+        throw new AssertionError();
+    }
 }
