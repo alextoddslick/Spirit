@@ -105,9 +105,16 @@ public class SoulCageBlock extends BaseEntityBlock {
                 }
                 return InteractionResult.SUCCESS;
             }
-            // Open the cage upgrade/stats menu (range via soul steel blocks, spawn time via netherite).
+            // Vanilla mode disables the upgrade UI; the wand instead flashes a quick stat readout so it
+            // still does something useful (the shift-right-click pin lives in SoulSteelWand#useOn).
             if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-                Services.PLATFORM.openSoulCageMenu(serverPlayer, pos);
+                if (SpiritConfig.isVanillaMode()) {
+                    soulSpawner.inspectUntil = level.getGameTime() + 100L;
+                    soulSpawner.update(Block.UPDATE_CLIENTS);
+                    player.displayClientMessage(inspectSummary(caged, soulSpawner, level), true);
+                } else {
+                    Services.PLATFORM.openSoulCageMenu(serverPlayer, pos);
+                }
             }
             return InteractionResult.SUCCESS;
         }
