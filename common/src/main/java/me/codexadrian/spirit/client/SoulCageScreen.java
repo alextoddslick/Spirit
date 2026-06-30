@@ -151,19 +151,28 @@ public class SoulCageScreen extends AbstractContainerScreen<SoulCageMenu> {
                         .withStyle(ChatFormatting.DARK_GRAY));
         if (id == SoulCageMenu.STEEL_SLOT) {
             lines.add(Component.literal("Soul Steel").withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD));
-            lines.add(Component.literal("Raises spawn range").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
-            lines.add(Component.literal("Cost ").withStyle(ChatFormatting.DARK_GRAY)
+            lines.add(Component.literal("Expands the area mobs can spawn in").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            lines.add(Component.literal("Each upgrade adds ").withStyle(ChatFormatting.DARK_GRAY)
+                    .append(Component.literal("+1 block").withStyle(ChatFormatting.YELLOW))
+                    .append(Component.literal(" of spawn range").withStyle(ChatFormatting.DARK_GRAY)));
+            lines.add(Component.literal("Each level ").withStyle(ChatFormatting.DARK_GRAY)
                     .append(Component.literal("doubles").withStyle(ChatFormatting.RED))
-                    .append(Component.literal(" each level").withStyle(ChatFormatting.DARK_GRAY)));
+                    .append(Component.literal(" the steel needed (2x the last)").withStyle(ChatFormatting.DARK_GRAY)));
             if (cage != null && cage.spawnRangeBonus < SoulCageMenu.MAX_RANGE_BONUS) {
                 int stepIngots = SoulCageMenu.rangeStepIngots(cage.spawnRangeBonus + 1);
-                lines.add(Component.literal("Next +1: ").withStyle(ChatFormatting.GOLD)
-                        .append(Component.literal((stepIngots / SoulCageMenu.INGOTS_PER_BLOCK) + " blocks")
-                                .withStyle(ChatFormatting.YELLOW))
-                        .append(Component.literal("  (" + stepIngots + " ingots)").withStyle(ChatFormatting.DARK_GRAY)));
+                int remaining = Math.max(0, stepIngots - cage.pendingSteelIngots);
+                lines.add(Component.literal("Current bonus: ").withStyle(ChatFormatting.GRAY)
+                        .append(Component.literal("+" + cage.spawnRangeBonus + " range").withStyle(ChatFormatting.YELLOW)));
+                lines.add(Component.literal("Next level: ").withStyle(ChatFormatting.GOLD)
+                        .append(Component.literal("+" + (cage.spawnRangeBonus + 1) + " range").withStyle(ChatFormatting.YELLOW))
+                        .append(Component.literal(" costs " + (stepIngots / SoulCageMenu.INGOTS_PER_BLOCK) + " blocks")
+                                .withStyle(ChatFormatting.GRAY))
+                        .append(Component.literal(" (" + stepIngots + " ingots)").withStyle(ChatFormatting.DARK_GRAY)));
                 lines.add(Component.literal("Banked: ").withStyle(ChatFormatting.GRAY)
-                        .append(Component.literal(cage.pendingSteelIngots + " / " + stepIngots)
+                        .append(Component.literal(cage.pendingSteelIngots + " / " + stepIngots + " ingots")
                                 .withStyle(ChatFormatting.GREEN)));
+                lines.add(Component.literal(remaining + " ingot" + (remaining == 1 ? "" : "s") + " left until next upgrade")
+                        .withStyle(ChatFormatting.AQUA));
             } else if (cage != null) {
                 lines.add(Component.literal("Range maxed (+" + SoulCageMenu.MAX_RANGE_BONUS + ")")
                         .withStyle(ChatFormatting.GOLD));
