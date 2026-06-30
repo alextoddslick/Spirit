@@ -28,10 +28,6 @@ public record Tier(
         boolean ignoreSpawnConditions,
         Set<String> blacklist) implements SyncedData, net.minecraft.world.item.crafting.Recipe<RecipeInput> {
 
-    public Tier {
-        System.out.println("Tier Constructor called for: " + displayName);
-    }
-
     public static com.mojang.serialization.MapCodec<Tier> codec() {
         return RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.STRING.fieldOf("displayName").forGetter(Tier::displayName),
@@ -123,21 +119,10 @@ public record Tier(
         // In 1.21, RecipeManager#getRecipes returns holders
         var recipes = ((net.minecraft.world.item.crafting.RecipeManager) level.recipeAccess()).getRecipes();
 
-        var tiers = recipes.stream()
+        return recipes.stream()
                 .filter(holder -> holder.value().getType() == SpiritMisc.TIER_RECIPE.get())
                 .map(holder -> (Tier) holder.value())
                 .toList();
-
-        System.out.println("SoulUtils Debug: Tiers found via Type check: " + tiers.size());
-
-        if (tiers.isEmpty()) {
-            recipes.stream()
-                    .filter(r -> r.id().identifier().getNamespace().equals("spirit"))
-                    .forEach(r -> System.out.println(
-                            "Spirit Recipe Found: " + r.id() + " Type: " + r.value().getType()));
-        }
-
-        return tiers;
     }
 
     private static <A> Codec<Set<A>> createSetCodec(Codec<A> codec) {

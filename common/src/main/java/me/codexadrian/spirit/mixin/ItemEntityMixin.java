@@ -85,6 +85,23 @@ public abstract class ItemEntityMixin implements EngulfableItem {
     @Inject(method = "tick", at = @At("TAIL"))
     public void onTick(CallbackInfo ci) {
         ItemEntity itemEntity = (ItemEntity) (Object) this;
+        if (!itemEntity.level().isClientSide()) {
+            // Self-heal: strip the now-defunct "SpiritEngulfing" flag so previously-tainted items
+            // (which carry an extra custom_data component) become stackable again.
+            net.minecraft.world.item.ItemStack stack = itemEntity.getItem();
+            net.minecraft.world.item.component.CustomData data =
+                    stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+            if (data != null && data.contains("SpiritEngulfing")) {
+                CompoundTag tag = data.copyTag();
+                tag.remove("SpiritEngulfing");
+                if (tag.isEmpty()) {
+                    stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+                } else {
+                    stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                            net.minecraft.world.item.component.CustomData.of(tag));
+                }
+            }
+        }
         if (isEngulfed() && !itemEntity.level().isClientSide()) {
             if (engulfTime % 5 == 0) {
                 ServerLevel sLevel = (ServerLevel) itemEntity.level();

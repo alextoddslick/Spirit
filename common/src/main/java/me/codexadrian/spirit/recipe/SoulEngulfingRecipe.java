@@ -89,16 +89,9 @@ public record SoulEngulfingRecipe(SoulEngulfingInput input, int duration, boolea
         SoulfireMultiblock multiblock = input().multiblock();
         if (itemE instanceof EngulfableItem engulfableItem) {
             if (!engulfableItem.isEngulfed() && this.duration() > 0) {
+                // Engulf state is tracked on the item ENTITY (engulfTime/maxEngulfTime), not on the
+                // ItemStack — so we never patch the stack's components (which would break stacking).
                 engulfableItem.setMaxEngulfTime(this.duration());
-                ItemStack stack = itemE.getItem();
-                net.minecraft.world.item.component.CustomData customData = stack.getOrDefault(
-                        net.minecraft.core.component.DataComponents.CUSTOM_DATA,
-                        net.minecraft.world.item.component.CustomData.EMPTY);
-                net.minecraft.nbt.CompoundTag tag = customData.copyTag();
-                tag.putBoolean("SpiritEngulfing", true);
-                stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
-                        net.minecraft.world.item.component.CustomData.of(tag));
-                itemE.setItem(stack);
             } else if (engulfableItem.isEngulfed() || this.duration() == 0) {
 
                 // FIX START: Prevent pickup while converting.
@@ -109,21 +102,6 @@ public record SoulEngulfingRecipe(SoulEngulfingInput input, int duration, boolea
 
                 if (!multiblock.validateMultiblock(blockPos, level, false)) {
                     engulfableItem.resetEngulfing();
-                    ItemStack stack = itemE.getItem();
-                    net.minecraft.world.item.component.CustomData customData = stack.getOrDefault(
-                            net.minecraft.core.component.DataComponents.CUSTOM_DATA,
-                            net.minecraft.world.item.component.CustomData.EMPTY);
-                    if (customData.copyTag().contains("SpiritEngulfing")) {
-                        net.minecraft.nbt.CompoundTag tag = customData.copyTag();
-                        tag.remove("SpiritEngulfing");
-                        if (tag.isEmpty()) {
-                            stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-                        } else {
-                            stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
-                                    net.minecraft.world.item.component.CustomData.of(tag));
-                        }
-                        itemE.setItem(stack);
-                    }
                     if (!engulfableItem.isRecipeOutput())
                         itemE.setInvulnerable(false);
 
@@ -150,19 +128,6 @@ public record SoulEngulfingRecipe(SoulEngulfingInput input, int duration, boolea
                         itemE.setItem(ItemStack.EMPTY);
                         itemE.discard();
                     } else {
-                        net.minecraft.world.item.component.CustomData customData = stack.getOrDefault(
-                                net.minecraft.core.component.DataComponents.CUSTOM_DATA,
-                                net.minecraft.world.item.component.CustomData.EMPTY);
-                        if (customData.copyTag().contains("SpiritEngulfing")) {
-                            net.minecraft.nbt.CompoundTag tag = customData.copyTag();
-                            tag.remove("SpiritEngulfing");
-                            if (tag.isEmpty()) {
-                                stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-                            } else {
-                                stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
-                                        net.minecraft.world.item.component.CustomData.of(tag));
-                            }
-                        }
                         itemE.setItem(stack.copy());
                         // Reset invulnerability to allow normal entity behavior (e.g. burning)
                         // This prevents "ghost" items surviving in fire indefinitely with visual

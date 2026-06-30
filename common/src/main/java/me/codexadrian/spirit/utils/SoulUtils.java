@@ -56,18 +56,11 @@ public class SoulUtils {
     public static Tier getTier(ItemStack itemStack, Level level) {
         CompoundTag tag = getTag(itemStack);
         if (!tag.contains("StoredEntity") && !itemStack.is(SpiritItems.CRUDE_SOUL_CRYSTAL.get())) {
-            System.out.println("SoulUtils: Missing StoredEntity and not Crude Crystal");
             return null;
         }
         int souls = getSoulsInCrystal(itemStack);
         String type = getSoulCrystalType(itemStack);
-        System.out.println("SoulUtils: Checking Tier. Souls: " + souls + ", Type: " + type);
-        Tier tier = Tier.getTier(souls, type, level);
-        System.out.println("SoulUtils: Details - Tier found: " + (tier != null));
-        if (tier == null) {
-            System.out.println("SoulUtils: Tier verification failed. Tiers available: " + Tier.getTiers(level).size());
-        }
-        return tier;
+        return Tier.getTier(souls, type, level);
     }
 
     public static String getTierDisplay(ItemStack itemStack, Level level) {
@@ -302,17 +295,7 @@ public class SoulUtils {
             setTag(soulCrystal, tag);
 
             Tier tier = SoulUtils.getNextTier(soulCrystal, serverLevel);
-            int currentSouls = storedEntity.getIntOr("Souls", 0);
-
             int incrementAmount = getSoulHarvestAmount(player);
-
-            System.out.println("SoulUtils: Harvesting soul. Current: " + currentSouls + ", Added: " + incrementAmount);
-            if (tier != null) {
-                System.out.println(
-                        "SoulUtils: Next Tier found: " + tier.displayName() + ", Req: " + tier.requiredSouls());
-            } else {
-                System.out.println("SoulUtils: No next tier found.");
-            }
 
             if (tier != null && storedEntity.getIntOr("Souls", 0) + incrementAmount >= tier.requiredSouls()) {
                 player.displayClientMessage(Component.translatable("item.spirit.soul_crystal.upgrade_message")

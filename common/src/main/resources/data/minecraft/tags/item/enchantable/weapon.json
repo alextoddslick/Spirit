@@ -1,7 +1,7 @@
 {
-    "replace": false,
-    "values": [
-        "spirit:soul_steel_sword",
-        "spirit:soul_steel_axe"
-    ]
+  "replace": false,
+  "values": [
+    "spirit:soul_steel_sword",
+    "spirit:soul_steel_axe"
+  ]
 }
