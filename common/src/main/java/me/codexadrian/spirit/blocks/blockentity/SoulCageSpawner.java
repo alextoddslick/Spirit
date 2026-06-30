@@ -68,9 +68,8 @@ public class SoulCageSpawner {
 
             while (true) {
                 if (i >= tier.spawnCount()) {
-                    if (bl) {
-                        this.delay(tier);
-                    }
+                    // Always reset the delay (even when nothing spawned) to avoid a per-tick retry storm.
+                    this.delay(tier);
                     break;
                 }
 
@@ -167,6 +166,10 @@ public class SoulCageSpawner {
         }
 
         this.broadcastEvent(1);
+        // Sync the fresh spawn delay to clients so the wand's "next spawn" countdown stays accurate.
+        if (this.getLevel() != null && !this.getLevel().isClientSide()) {
+            this.soulCageBlockEntity.update(net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+        }
     }
 
     public boolean onEventTriggered(int i) {
@@ -200,6 +203,10 @@ public class SoulCageSpawner {
 
     public double getSpin() {
         return spin;
+    }
+
+    public int getSpawnDelay() {
+        return spawnDelay;
     }
 
 }

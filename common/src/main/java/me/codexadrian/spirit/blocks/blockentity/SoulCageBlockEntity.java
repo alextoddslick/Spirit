@@ -37,6 +37,17 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
     /** Game time until which the wand-inspector stats are shown above the cage; synced to clients. */
     public long inspectUntil = 0L;
 
+    /**
+     * When true the stats float above the cage continuously (a wand "pin"). Stored here rather than
+     * on the wand because block-entity state syncs reliably to the client via {@link #getUpdateTag},
+     * whereas held-item component changes were not reaching the renderer.
+     */
+    public boolean pinned = false;
+
+    /** Client-side spawn-delay snapshot (+ the game time it was synced) for the wand "next spawn" countdown. */
+    public int clientSpawnDelay = 0;
+    public long clientSpawnDelaySyncTime = 0L;
+
     private final SoulCageSpawner enabledSpawner = new SoulCageSpawner(this);
 
     public SoulCageBlockEntity(BlockPos pos, BlockState state) {
@@ -46,6 +57,12 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SoulCageBlockEntity blockEntity) {
         if (blockEntity.hasLevel() && !blockEntity.isEmpty()) {
             blockEntity.enabledSpawner.tick();
+            // While pinned, re-sync the block entity to tracking clients every tick so the floating
+            // stats update in real time (20 tps). sendBlockUpdated re-sends getUpdateTag without
+            // marking the chunk dirty, so there is no per-tick disk-save cost.
+            if (!level.isClientSide() && blockEntity.pinned) {
+                level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
+            }
         }
     }
 
@@ -120,6 +137,9 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
         type = null;
         soulCrystal = input.read("crystal", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         inspectUntil = input.getLongOr("inspectUntil", 0L);
+        pinned = input.getBooleanOr("pinned", false);
+        clientSpawnDelay = input.getIntOr("spawnDelay", 0);
+        clientSpawnDelaySyncTime = input.getLongOr("spawnDelaySync", 0L);
         setType();
     }
 
@@ -128,6 +148,9 @@ public class SoulCageBlockEntity extends BlockEntity implements WorldlyContainer
         super.saveAdditional(output);
         output.store("crystal", ItemStack.OPTIONAL_CODEC, soulCrystal);
         output.putLong("inspectUntil", inspectUntil);
+        output.putBoolean("pinned", pinned);
+        output.putInt("spawnDelay", enabledSpawner.getSpawnDelay());
+        output.putLong("spawnDelaySync", getLevel() != null ? getLevel().getGameTime() : 0L);
     }
 
     @Override

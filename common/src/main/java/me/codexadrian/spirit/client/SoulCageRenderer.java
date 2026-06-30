@@ -2,7 +2,11 @@ package me.codexadrian.spirit.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import me.codexadrian.spirit.SpiritConfig;
 import me.codexadrian.spirit.blocks.blockentity.SoulCageBlockEntity;
+import me.codexadrian.spirit.data.Tier;
+import me.codexadrian.spirit.utils.SoulUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -11,9 +15,15 @@ import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SoulCageRenderer implements BlockEntityRenderer<SoulCageBlockEntity, SoulCageRenderer.SoulCageRenderState> {
 
@@ -32,10 +42,22 @@ public class SoulCageRenderer implements BlockEntityRenderer<SoulCageBlockEntity
         state.hasEntity = blockEntity.hasLevel() && blockEntity.type != null;
         if (state.hasEntity) {
             Entity entity = blockEntity.getOrCreateEntity();
-            state.entityBbWidth = entity.getBbWidth();
-            state.entityBbHeight = entity.getBbHeight();
-            state.spinDegrees = (float) blockEntity.getSpawner().getSpin();
-            state.entityRenderState = Minecraft.getInstance().getEntityRenderDispatcher().extractEntity(entity, partialTick);
+            if (entity == null) {
+                state.hasEntity = false;
+            } else {
+                state.entityBbWidth = entity.getBbWidth();
+                state.entityBbHeight = entity.getBbHeight();
+                state.spinDegrees = (float) blockEntity.getSpawner().getSpin();
+                state.entityRenderState = Minecraft.getInstance().getEntityRenderDispatcher().extractEntity(entity,
+                        partialTick);
+            }
+        }
+
+        Level level = blockEntity.getLevel();
+        // Stats are drawn as a HUD overlay (see CageStatsHud) rather than floating world text:
+        // Font#drawInBatch produces no visible output inside this block-entity renderer in this build.
+        if (level != null && shouldShowStats(blockEntity, level)) {
+            CageStatsHud.submit(buildStatsLines(blockEntity, level));
         }
     }
 
@@ -61,6 +83,43 @@ public class SoulCageRenderer implements BlockEntityRenderer<SoulCageBlockEntity
         Minecraft.getInstance().getEntityRenderDispatcher().submit(
                 state.entityRenderState, cameraState, 0.0D, 0.0D, 0.0D, matrixStack, collector);
         matrixStack.popPose();
+    }
+
+    /** Show stats while this cage is pinned (wand toggle), or during a temporary wand inspect. */
+    private boolean shouldShowStats(SoulCageBlockEntity be, Level level) {
+        if (be.isEmpty()) {
+            return false;
+        }
+        return be.pinned || level.getGameTime() < be.inspectUntil;
+    }
+
+    /** Builds the stat readout lines shown for a cage (rendered by {@link CageStatsHud}). */
+    private List<Component> buildStatsLines(SoulCageBlockEntity be, Level level) {
+        ItemStack crystal = be.getItem(0);
+        int souls = SoulUtils.getSoulsInCrystal(crystal);
+        Tier tier = SoulUtils.getTier(crystal, level);
+        Tier next = SoulUtils.getNextTier(crystal, level);
+
+        List<Component> lines = new ArrayList<>();
+        Component title = be.type != null ? be.type.getDescription().copy() : crystal.getHoverName().copy();
+        lines.add(title.copy().withStyle(ChatFormatting.WHITE));
+        lines.add(Component.translatable("misc.spirit.tier",
+                Component.translatable(tier == null ? SpiritConfig.getInitialTierName() : tier.displayName()))
+                .withStyle(ChatFormatting.AQUA));
+        lines.add((next != null
+                ? Component.literal(souls + " / " + next.requiredSouls() + " souls")
+                : Component.literal(souls + " souls")).withStyle(ChatFormatting.GRAY));
+        if (tier != null) {
+            int remaining = Math.max(0,
+                    be.clientSpawnDelay - (int) (level.getGameTime() - be.clientSpawnDelaySyncTime));
+            lines.add(Component.literal("Next spawn: ~" + (remaining / 20) + "s").withStyle(ChatFormatting.GRAY));
+            lines.add(Component.literal("Spawns " + tier.spawnCount() + " · radius " + tier.spawnRange())
+                    .withStyle(ChatFormatting.DARK_GRAY));
+            String range = tier.nearbyRange() > 0 ? (tier.nearbyRange() + " blocks") : "unlimited";
+            lines.add(Component.literal("Range " + range + (tier.redstoneControlled() ? " · redstone" : ""))
+                    .withStyle(ChatFormatting.DARK_GRAY));
+        }
+        return lines;
     }
 
     public static class SoulCageRenderState extends BlockEntityRenderState {

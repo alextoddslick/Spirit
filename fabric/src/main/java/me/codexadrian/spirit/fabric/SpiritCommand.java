@@ -51,12 +51,17 @@ public final class SpiritCommand {
         CommandSourceStack source = context.getSource();
         int killed = 0;
         for (ServerLevel level : source.getServer().getAllLevels()) {
+            // Collect first: killing mutates the live entity map, so killing mid-iteration would throw CME.
+            List<Entity> toKill = new ArrayList<>();
             for (Entity entity : level.getAllEntities()) {
                 if (entity instanceof Corrupted corrupted && corrupted.isCorrupted()) {
-                    entity.kill(level);
-                    killed++;
+                    toKill.add(entity);
                 }
             }
+            for (Entity entity : toKill) {
+                entity.kill(level);
+            }
+            killed += toKill.size();
         }
         final int total = killed;
         source.sendSuccess(() -> Component.literal("Killed " + total + " soul cage spawn(s)."), true);
@@ -76,7 +81,7 @@ public final class SpiritCommand {
         }
         tiers.sort(Comparator.comparingInt(Tier::requiredSouls));
         int index = Math.min(tier, tiers.size()) - 1;
-        int souls = tiers.get(index).requiredSouls();
+        int souls = Math.max(1, tiers.get(index).requiredSouls());
 
         ItemStack crystal = new ItemStack(SpiritItems.SOUL_CRYSTAL.get());
         SoulUtils.deviateSoulCount(crystal, souls, level, WITHER_SKELETON);
