@@ -8,6 +8,7 @@ import me.codexadrian.spirit.utils.SoulUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -106,23 +107,20 @@ public class SoulCageScreen extends AbstractContainerScreen<SoulCageMenu> {
     /** Renders a dimmed "ghost" of the accepted item so an empty slot shows what goes in it. */
     private void drawGhost(GuiGraphics graphics, ItemStack stack, int x, int y) {
         graphics.renderItem(stack, x, y);
-        // Dim quad above the item (items render at z~232) to fade it into a placeholder.
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 250);
+        // Dim quad over the item; drawn after renderItem so it paints on top.
         graphics.fill(x, y, x + 16, y + 16, 0xAA161616);
-        graphics.pose().popPose();
     }
 
     @Override
     protected void renderTooltip(@NotNull GuiGraphics graphics, int x, int y) {
         // Button hints.
         if (isOver(x, y, CONFIRM_X, CONFIRM_Y, CONFIRM_W, CONFIRM_H)) {
-            graphics.renderTooltip(font, Component.literal(addMode
+            graphics.setTooltipForNextFrame(font, Component.literal(addMode
                     ? "Apply the items in the slots" : "Lower spawn range  (+1s spawn delay)"), x, y);
             return;
         }
         if (isOver(x, y, TOGGLE_X, TOGGLE_Y, TOGGLE_W, TOGGLE_H)) {
-            graphics.renderComponentTooltip(font, List.of(
+            graphics.setComponentTooltipForNextFrame(font, List.of(
                     Component.literal("Mode: " + (addMode ? "Increase range (+)" : "Decrease range (-)"))
                             .withStyle(addMode ? ChatFormatting.GREEN : ChatFormatting.RED),
                     Component.literal("Lowering range adds 1s to spawn delay").withStyle(ChatFormatting.DARK_GRAY),
@@ -130,14 +128,14 @@ public class SoulCageScreen extends AbstractContainerScreen<SoulCageMenu> {
             return;
         }
         if (isOver(x, y, RESET_X, RESET_Y, RESET_W, RESET_H)) {
-            graphics.renderTooltip(font, Component.literal("Reset upgrades (no refund)"), x, y);
+            graphics.setTooltipForNextFrame(font, Component.literal("Reset upgrades (no refund)"), x, y);
             return;
         }
         // Over an upgrade slot, explain what that slot upgrades (and what the current contents will do).
         if (hoveredSlot != null) {
             int id = menu.slots.indexOf(hoveredSlot);
             if (id == SoulCageMenu.STEEL_SLOT || id == SoulCageMenu.NETHERITE_SLOT) {
-                graphics.renderComponentTooltip(font, upgradeTooltip(id, hoveredSlot), x, y);
+                graphics.setComponentTooltipForNextFrame(font, upgradeTooltip(id, hoveredSlot), x, y);
                 return;
             }
         }
@@ -308,10 +306,10 @@ public class SoulCageScreen extends AbstractContainerScreen<SoulCageMenu> {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && minecraft != null && minecraft.gameMode != null) {
-            int mx = (int) mouseX;
-            int my = (int) mouseY;
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 0 && minecraft != null && minecraft.gameMode != null) {
+            int mx = (int) event.x();
+            int my = (int) event.y();
             if (isOver(mx, my, TOGGLE_X, TOGGLE_Y, TOGGLE_W, TOGGLE_H)) {
                 addMode = !addMode; // client-side mode flip; Confirm sends the matching button id
                 return true;
@@ -326,6 +324,6 @@ public class SoulCageScreen extends AbstractContainerScreen<SoulCageMenu> {
                 return true;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 }
