@@ -17,6 +17,18 @@ architectury {
 }
 
 loom {
+    // The common module isn't a loadable mod — its run configs launch a vanilla client,
+    // which made `gradlew runClient` open vanilla first and the modded client after.
+    // Only :fabric:runClient should ever launch a game.
+    runs.configureEach {
+        ideConfigGenerated = false
+    }
+}
+
+tasks.configureEach {
+    if (name == "runClient" || name == "runServer") {
+        enabled = false
+    }
 }
 
 publishing {
