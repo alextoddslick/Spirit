@@ -5,7 +5,6 @@ import me.codexadrian.spirit.data.MobTraitData;
 import me.codexadrian.spirit.data.ToolType;
 import me.codexadrian.spirit.registry.SpiritItems;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

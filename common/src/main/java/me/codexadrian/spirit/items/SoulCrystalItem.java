@@ -10,8 +10,6 @@ import me.codexadrian.spirit.utils.SoulUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-// import net.minecraft.client.multiplayer.ClientLevel; // Removed to prevent server crash
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -33,7 +31,7 @@ public class SoulCrystalItem extends Item {
 
     public void appendHoverText(@NotNull ItemStack itemStack, @NotNull TooltipContext context,
             @NotNull List<Component> list, @NotNull TooltipFlag tooltipFlag) {
-        Level level = Minecraft.getInstance().level;
+        Level level = ClientUtils.getClientLevel();
         Component entityOrNone = Optional.ofNullable(SoulUtils.getSoulCrystalType(itemStack))
                 .flatMap(EntityType::byString)
                 .map(entityType -> Component
@@ -114,7 +112,7 @@ public class SoulCrystalItem extends Item {
     @Environment(EnvType.CLIENT)
     @Override
     public int getBarWidth(@NotNull ItemStack itemStack) {
-        Level level = Minecraft.getInstance().level;
+        Level level = ClientUtils.getClientLevel();
         if (level != null)
             return (int) (getPercentage(itemStack, level) * 13);
         return 0;

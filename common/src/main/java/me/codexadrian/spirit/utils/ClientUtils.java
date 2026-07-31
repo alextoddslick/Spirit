@@ -9,11 +9,24 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class ClientUtils {
+    /**
+     * Client-side level lookup. Kept here (not in item classes) so server-loaded
+     * classes never reference client types in their bytecode — the verifier loads
+     * ClientLevel when checking a Minecraft.level field access, which crashes
+     * dedicated servers during item registration.
+     */
+    @Nullable
+    public static Level getClientLevel() {
+        return Minecraft.getInstance().level;
+    }
+
     public static boolean isItemInHand(ItemStack stack) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
